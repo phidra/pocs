@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class MyCustomHandler:  # TODO
+class MyCustomHandler:  # MyCustomHandler doesn't inherit from anything... yet it will be viewed as HandlerProtocol :-)
     """This is a custom handler (unknown in the library, and notably absent from the Union)."""
 
     def on_iteration_start(self, urls: Collection[str]):
