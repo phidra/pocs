@@ -54,7 +54,8 @@ print("===")
 do_speak(None)
 print("===")
 
-# non-implemented types are not detected, this fallbacks on the "initial" implementation :
+# non-implemented types are not detected, this fallbacks on the "initial" implementation.
+# mypy behaviour : mypy does NOT complain that `do_speak` is not implemented for floats here :
 try:
     do_speak(3.1415)
 except NotImplementedError:
@@ -62,6 +63,7 @@ except NotImplementedError:
 
 
 # sadly, it IS possible to register a function with mismatching interface (nb arguments) :
+# mypy behaviour : mypy does NOT complain that the specialisation has not the proper number of args here :
 @do_speak.register(bytes)
 def _do_speak_bytes(arg, coucou, pouet, youpi):
     print("...called with bytes...")
