@@ -1,0 +1,41 @@
+# vim temp files
+*.swp
+
+*.pyc
+
+# cpp files :
+a.out
+bin
+bin_*
+mybinary
+_build
+cmake_build_dir*
+core
+*.o
+*.so
+
+# pypocs files :
+# jinja2 :
+jinja2/index.html
+# logging :
+logging/activity.log
+
+# specific patterns to ignore :
+*GITIGNORE*
+*NOGIT*
+
+# perf / flamegraph :
+perf.data*
+perf.svg
+
+# sphinx generated doc :
+sphinx/doc/_build
+
+# ctags index :
+tags
+
+# clang index :
+.clangd
+
+# jupyter notebook :
+.ipynb_checkpoints
