@@ -16,6 +16,7 @@ print(
     - we DYNAMICALLY add a '__path__' attribute to 'greeter', that contains `/tmp`
     - moreover, we create a custom module `/tmp/poc_python_import08.py` that contains dummy code
     - after doing that, we CAN import and use /tmp/poc_python_import08.py as a SUBMODULE of the 'greeter' package !
+    - effectively, adding a __path__ attribute to the module TURNED it into a package :-)
 
     TL;DR : some_package.__path__ acts kind of like an additional sys.path entry.
 
