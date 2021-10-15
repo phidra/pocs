@@ -21,21 +21,27 @@ repos:
           - id: check-ast
           - id: check-merge-conflict
           - id: debug-statements
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v0.902
-      hooks:
-          - id: mypy
-            args: [--ignore-missing-import]
-            # in some POCs, mypy errors are DESIRED (to illustrate mypy behaviour), so we skip mypy for them :
-            exclude: "\
-                      python/type_checking/poc01_when_does_mypy_actually_run/poc_with_annotated_main.py|\
-                      python/type_checking/poc02_using_newtype/poc.py|\
-                      python/type_checking/poc03_using_newtype_bis/poc.py|\
-                      python/type_checking/poc04_abstractmethod_static_type_checking/poc.py|\
-                      python/type_checking/poc05_abstractmethod_runtime_behaviour/poc.py|\
-                      python/type_checking/poc08_interface3_using_metaclass_to_define_an_interface/library.py|\
-                      python/type_checking/poc09_interface4_using_abcmeta/library.py\
-              "
+    # sadly, mypy does not really like when we run it on several independant folders, see those issues on the same topic :
+    #   https://github.com/python/mypy/issues/4008
+    #   https://github.com/python/mypy/issues/10428
+    # a workaround would be to customize mypy run (to execute several independant mypy) but I don't want to do this
+    # (apart from the complexity, it would probably need to explicitly define the poc' folders , or to use discovering rules)
+    # as I still want to keep pocs independant from each other, the simplest choice is sadly to disable mypy pre-commit check :-(
+    # - repo: https://github.com/pre-commit/mirrors-mypy
+    #   rev: v0.902
+    #   hooks:
+    #       - id: mypy
+    #         args: [--ignore-missing-import]
+    #         # in some POCs, mypy errors are DESIRED (to illustrate mypy behaviour), so we skip mypy for them :
+    #         exclude: "\
+    #                   python/type_checking/poc01_when_does_mypy_actually_run/poc_with_annotated_main.py|\
+    #                   python/type_checking/poc02_using_newtype/poc.py|\
+    #                   python/type_checking/poc03_using_newtype_bis/poc.py|\
+    #                   python/type_checking/poc04_abstractmethod_static_type_checking/poc.py|\
+    #                   python/type_checking/poc05_abstractmethod_runtime_behaviour/poc.py|\
+    #                   python/type_checking/poc08_interface3_using_metaclass_to_define_an_interface/library.py|\
+    #                   python/type_checking/poc09_interface4_using_abcmeta/library.py\
+    #           "
     - repo: https://github.com/shellcheck-py/shellcheck-py
       rev: v0.7.2.1
       hooks:
