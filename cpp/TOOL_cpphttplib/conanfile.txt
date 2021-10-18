@@ -1,0 +1,11 @@
+[requires]
+# see :
+#   https://github.com/yhirose/cpp-httplib
+#   https://conan.io/center/cpp-httplib
+# note : this is a BLOCKING server -> do NOT use in anything remotely close to production
+cpp-httplib/0.7.15
+
+rapidjson/1.1.0
+
+[generators]
+cmake
