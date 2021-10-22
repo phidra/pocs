@@ -8,8 +8,8 @@ def get_normalized(x: Union[str, Dict[str, str]]) -> Optional[str]:
         return x.lower()
 
     # case 2 = x is a dict[str, str], we normalize its 'value' field :
-    if 'value' in x:
-        return x['value'].lower()
+    if "value" in x:
+        return x["value"].lower()
 
     # if dict has no 'value' field, we return None :
     return None
@@ -36,8 +36,8 @@ def get_normalized_OVERLOADED(x: Union[str, Dict[str, str]]) -> Optional[str]:
         return x.lower()
 
     # case 2 = x is a dict[str, str], we normalize its 'value' field :
-    if 'value' in x:
-        return x['value'].lower()
+    if "value" in x:
+        return x["value"].lower()
 
     # if dict has no 'value' field, we return None :
     return None

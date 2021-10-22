@@ -4,7 +4,8 @@ from lib import get_normalized, get_normalized_OVERLOADED
 
 
 if __name__ == "__main__":
-    print("""
+    print(
+        """
     The intent of the POC is to illustrate the purpose of 'typing.overload' decorator :
         https://docs.python.org/3/library/typing.html#typing.overload
 
@@ -32,7 +33,8 @@ if __name__ == "__main__":
          ...the latter is used at runtime but should be ignored by a type checker
     - even if it was type-checked, nothing enforces what the overload describes ?!
       (i.e. nothing — and particularly not mypy — detects if 'get_normalized' returns None when given a string)
-    """)
+    """
+    )
 
     # this part is just here to illustrate how 'get_normalized' works :
     #   - either directly on a string
@@ -53,7 +55,7 @@ if __name__ == "__main__":
 
     # the interest of the POC is here : to show that the non-overloaded call trigs a mypy error :
     SUFFIX = ".txt"
-    full_name_str1 = get_normalized("POUET1") + SUFFIX  # a mypy error is expected here...
-    full_name_str2 = get_normalized_OVERLOADED("POUET2") + SUFFIX  # ... but not here
-    print(f"Full name is : '{full_name_str1}'")
-    print(f"Full name is : '{full_name_str2}'")
+    suffixed_str1 = get_normalized("POUET1") + SUFFIX  # a mypy error is expected here...
+    suffixed_str2 = get_normalized_OVERLOADED("POUET2") + SUFFIX  # ... but not here
+    print(f"Suffixed string is : '{suffixed_str1}'")
+    print(f"Suffixed string is : '{suffixed_str2}'")
