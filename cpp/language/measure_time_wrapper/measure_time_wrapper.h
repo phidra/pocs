@@ -38,7 +38,7 @@ std::tuple<std::result_of_t<Callable && (Arg &&)>, int> measure_time_3(Callable 
     auto ret = f(std::forward<Arg>(arg));
     std::chrono::steady_clock::time_point after = std::chrono::steady_clock::now();
     auto measured = std::chrono::duration_cast<TimeGranularity>(after - before).count();
-    return std::make_tuple(move(ret), measured);
+    return std::make_tuple(std::move(ret), measured);
 }
 
 // measure_time_4 = same as measure_time_3, but uses variadic template to accept several args :
@@ -48,5 +48,5 @@ std::tuple<std::result_of_t<Callable && (Args && ...)>, int> measure_time_4(Call
     auto ret = f(std::forward<Args>(args)...);
     std::chrono::steady_clock::time_point after = std::chrono::steady_clock::now();
     auto measured = std::chrono::duration_cast<TimeGranularity>(after - before).count();
-    return std::make_tuple(move(ret), measured);
+    return std::make_tuple(std::move(ret), measured);
 }
