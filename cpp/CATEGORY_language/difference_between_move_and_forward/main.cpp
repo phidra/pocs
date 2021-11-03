@@ -68,6 +68,8 @@ What happens, CONCEPTUALLY :
 
 REFERENCE ARTICLE : http://bajamircea.github.io/coding/cpp/2016/04/07/move-forward.html
 
+ANOTHER INTERESTING ARTICLE : https://www.foonathan.net/2020/09/move-forward/
+
 )DELIM";
 
     vector<int> items{1, 3, 5, 7, 42};
