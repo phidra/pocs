@@ -72,7 +72,9 @@ Still, the rule-of-thumb remains : use std::move to pass a parameter by rvalue-r
 
 INTERESTING ARTICLE = https://www.foonathan.net/2020/09/move-forward/
 
-Quote : "Inside the function, the rvalue arguments create rvalue reference parameters, which are themselves lvalues as they are named!"
+Quote 1 : "Inside the function, the rvalue arguments create rvalue reference parameters, which are themselves lvalues as they are named!"
+Quote 2 : "However, now the returned rvalue reference [returned from std::forward] doesn’t have a name which makes it an rvalue!
+
 
 )DELIM";
 
