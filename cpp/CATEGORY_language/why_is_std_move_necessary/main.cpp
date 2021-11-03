@@ -70,6 +70,10 @@ My guess, is that decltype uses the passed parameter, and not the actual paramet
 
 Still, the rule-of-thumb remains : use std::move to pass a parameter by rvalue-ref (and don't use the object anymore).
 
+INTERESTING ARTICLE = https://www.foonathan.net/2020/09/move-forward/
+
+Quote : "Inside the function, the rvalue arguments create rvalue reference parameters, which are themselves lvalues as they are named!"
+
 )DELIM";
 
     vector<int> items{1, 3, 5, 7, 42};
