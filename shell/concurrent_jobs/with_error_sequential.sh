@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 this_script_parent="$(realpath "$(dirname "$0")" )"
-# shellcheck source=shell/lib.sh
+# shellcheck source=shell/concurrent_jobs/lib.sh
 source "${this_script_parent}/lib.sh"
 
 trap 'on_error' ERR
