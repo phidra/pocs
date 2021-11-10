@@ -2,7 +2,7 @@ from typing import Optional, Union, Dict, overload
 
 
 def get_normalized(x: Union[str, Dict[str, str]]) -> Optional[str]:
-    """ This is the 'not-overloaded' function. """
+    """This is the 'not-overloaded' function."""
     # case 1 = x is a string :
     if isinstance(x, str):
         return x.lower()
