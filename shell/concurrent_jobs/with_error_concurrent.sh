@@ -39,6 +39,12 @@ done
 # we want for 'wait' to return an error when a background job failed
 # cf. man bash 'the return status is the exit status of the last process or job waited for'
 # thus, waiting for each job individually allows for 'wait' to return an error when a job failed
+# EDIT : this is actually far from ideal, as we wait for jobs in order.
+# consider this situation :
+#   the first job will be successfull but very long to execute
+#   the second job will fail as soon as started
+# then, as we will 'wait' for the first job, we will detect the second job failure only AFTER the first job has returned...
+# this could probably be better handled by 'wait -n' but it doesn't really seem to work with zsh...
 for pid in "${background_jobs[@]}"; do
   wait "$pid"  # this will trig the trap if a background job failed
 done

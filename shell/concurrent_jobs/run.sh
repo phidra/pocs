@@ -24,8 +24,9 @@ With error management, the goal is for the main script to fail if one of the bac
     concurrent : it's more complicated, involving individual 'wait' + one global wait, see the POC, and :
 		https://gist.github.com/mjambon/79adfc5cf6b11252e78b75df50793f24
 
-As the concurrent error management is quite complicated, it may not always work, e.g. may cause deadlocks,
-or fail to handle the situation where a job has already returned when we call its individual 'wait'
+The concurrent error management is far from ideal...
+Notably, it will probably raise an error if the job has already returned when we call its individual 'wait'...
+Moreover, it is dependent on the order of 'wait' calls...
 
 A further refinement (not tested in this POC) would be to limit the number of jobs, e.g. to the number of cores :
     https://stackoverflow.com/questions/38160/parallelize-bash-script-with-maximum-number-of-processes/881392#881392
