@@ -3,7 +3,7 @@ title: POC = faire des slides avec pandoc
 author: Philippe DRABCZUK
 theme: Frankfurt
 colortheme: seahorse
-date: 24 décembre2021
+date: 24 décembre 2021
 urlcolor: blue
 fonttheme: professionalfonts
 linkstyle: bold
