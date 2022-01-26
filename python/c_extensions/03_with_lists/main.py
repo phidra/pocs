@@ -4,7 +4,7 @@ import pouet
 def main() -> None:
     print(
         """
-In this POC, the function implemented in C expects a list of ints, and doubles its elements.
+In this POC, the function implemented in C expects a list of ints, and returns a new list with doubled elements.
 Nominal case is tested, along with various pathological cases (empty list, wrong arguments, etc.)
 
 Various thoughts after this POC :
