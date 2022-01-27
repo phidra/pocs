@@ -6,13 +6,6 @@ set -o pipefail
 
 this_script_parent="$(realpath "$(dirname "$0")" )"
 
-
-echo """
-This POC shows a basic C++ extension module for python, that uses lists.
-"""
-
-
-
 # cleaning :
 rm -rf "${this_script_parent}/build/"
 

@@ -4,6 +4,8 @@ import pouet
 def main() -> None:
     print(
         """
+This POC shows a basic C++ extension module for python, that uses dicts.
+
 In this POC, the function implemented in C expects a dict, and mutates it to delete/edit/add keys.
 Nominal case is tested, along with empty input string.
 

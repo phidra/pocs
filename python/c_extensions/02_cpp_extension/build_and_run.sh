@@ -6,21 +6,6 @@ set -o pipefail
 
 this_script_parent="$(realpath "$(dirname "$0")" )"
 
-
-echo """
-This POC shows a basic C++ extension module for python.
-
-It is the implementation of the example given in this doc, but in C++ :
-
-https://docs.python.org/3/extending/extending.html
-
-Compared to the previous POC, the only change is the extension of the file, and its use of C++.
-(setup.py properly use a C++ compiler when module ends with .cpp)
-
-"""
-
-
-
 # cleaning :
 rm -rf "${this_script_parent}/build/"
 
@@ -49,4 +34,4 @@ export PYTHONPATH="${build_dir}"
 echo ""
 echo "=== after building the module, execution is ok :"
 python3 main.py
-echo "EXPECTED RESULT = OK"
+echo "EXPECTED RESULT = a bunch of 'OK' :-)"
