@@ -16,13 +16,13 @@ Moreover, it defines a custom exception and raises it.
         pouet.fail_with_ValueError()
     except ValueError as e:
         assert str(e) == "I am a dreadful ValueError, fear me !"
-        print("OK, we got precisely the expected ValueError")
+        print("OK, we got precisely the expected error")
 
     try:
         pouet.fail_with_PouetError()
     except TeuopError as e:
         assert str(e) == "I am a not less dreadful custom error !"
-        print("OK, we got precisely the expected TeuopError")
+        print("OK, we got precisely the expected error")
 
 
 if __name__ == "__main__":

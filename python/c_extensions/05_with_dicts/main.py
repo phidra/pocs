@@ -35,20 +35,23 @@ Another functions creates a dict.
     # ERROR CASE 1 = key 'luke_age' is missing :
     try:
         pouet.edit_the_dict({"luke_sister": "leia"})
-    except ValueError:
-        print("OK, we got a ValueError (expected = Missing key 'luke_age')")
+    except ValueError as e:
+        assert str(e) == "Missing key 'luke_age'"
+        print("OK, we got precisely the expected error")
 
     # ERROR CASE 2 = key 'luke_sister' is missing :
     try:
         pouet.edit_the_dict({"luke_age": 42})
-    except KeyError:
-        print("OK, we got a KeyError (expected = 'luke_sister')")
+    except KeyError as e:
+        assert str(e) == "'luke_sister'"
+        print("OK, we got precisely the expected error")
 
     # ERROR CASE 3 = key 'luke_age' contains a string instead of an int :
     try:
         pouet.edit_the_dict({"luke_age": "coucou", "luke_sister": "leia"})
-    except TypeError:
-        print("OK, we got a TypeError (expected = an integer is required (got type str))")
+    except TypeError as e:
+        assert str(e) == "an integer is required (got type str)"
+        print("OK, we got precisely the expected error")
 
     created = pouet.create_a_dict()
     assert created == {"star": "wars", "eleven squared": 121}

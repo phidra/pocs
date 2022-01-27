@@ -30,26 +30,30 @@ Various thoughts after this POC :
     # ERROR CASE 1 = passing more arguments than needed :
     try:
         pouet.double_the_ints(input_ints, "coucou", 42)
-    except TypeError:
-        print("OK, we got a TypeError (expected = 'function takes exactly 1 argument (3 given)')")
+    except TypeError as e:
+        assert str(e) == "function takes exactly 1 argument (3 given)"
+        print("OK, we got precisely the expected error")
 
     # ERROR CASE 2 = passing proper number of argument, but with wrong type :
     try:
         pouet.double_the_ints("coucou")
-    except TypeError:
-        print("OK, we got a TypeError (expected = 'argument 1 must be list, not str')")
+    except TypeError as e:
+        assert str(e) == "argument 1 must be list, not str"
+        print("OK, we got precisely the expected error")
 
     # ERROR CASE 3 = properly passing a list, but of list of wrong elements :
     try:
         pouet.double_the_ints(["a", "b", "c"])
-    except TypeError:
-        print("OK, we got a TypeError (expected = 'an integer is required (got type str)')")
+    except TypeError as e:
+        assert str(e) == "an integer is required (got type str)"
+        print("OK, we got precisely the expected error")
 
     # ERROR CASE 3 = properly passing a list, and some of them are wrong :
     try:
         pouet.double_the_ints([42, 43, "a"])
-    except TypeError:
-        print("OK, we got a TypeError (expected = 'an integer is required (got type str)')")
+    except TypeError as e:
+        assert str(e) == "an integer is required (got type str)"
+        print("OK, we got precisely the expected error")
 
 
 if __name__ == "__main__":
