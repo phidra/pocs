@@ -18,7 +18,7 @@ static PyObject* pouet_upper_the_string(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef PouetMethods[] = {
-    {"upper_the_string", pouet_upper_the_string, METH_VARARGS, "Double ints in a list"},
+    {"upper_the_string", pouet_upper_the_string, METH_VARARGS, "Turns string into upper"},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
