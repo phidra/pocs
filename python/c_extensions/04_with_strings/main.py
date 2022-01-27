@@ -4,6 +4,8 @@ import pouet
 def main() -> None:
     print(
         """
+This POC shows a basic C++ extension module for python, that uses strings.
+
 In this POC, the function implemented in C expects a string, and returns a new string with upper text.
 Nominal case is tested, along with empty input string.
 
