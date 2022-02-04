@@ -42,13 +42,12 @@ def main() -> None:  # main is annotated to allow mypy to run
         - we confirm that all handlers (including MyCustomHandler) are seen by mypy as subtypes of HandlerProtocol
         - it's IMPLICIT : MyCustomHandler implements the HandlerProtocol, even if it does not know anything about it !
         - (as 'runtime_checkable' was used, we can also use issubclass to check if MyCustomHandler is a HandlerProtocol)
-        - mypy is able to properly use this 'interface' (yay !), notably all desired behaviour is ipmlemented :
+        - mypy is able to properly use this 'interface' (yay !), notably all desired behaviour is implemented :
             problem 1 = in library.py, mypy properly detects that the 'handler' arg implements the required methods
             problem 2 = in poc.py, mypy detects that the handlers ARE 'subtypes' of HandlerProtocol
         - moreover, if we fail to properly define a method (e.g. a typo on 'on_iteration_finish`), the typo will be
           properly "detected" by mypy
         - similarly, if we wrongly define a method (e.g. wrong argument type), mypy also detects it, very yay !
-        - the only drawback : MyCustomHandler (and other handlers) must EXPLICITLY inherit from HandlerProtocol
 
     CONCLUSION :
         - this is my favorite way to define an interface :-)
