@@ -34,7 +34,7 @@ def main() -> None:  # main is annotated to allow mypy to run
     In the present POC, we :
         - define an 'interface' (actually, a HandlerProtocol) that will "represent" all the possible handlers
         - we use typing.Protocol for this
-        - type-annotate 'check_url' so that it expects a HandlerProtocol
+        - type-annotate 'check_urls' so that it expects a HandlerProtocol
         - no handler is EXPLICITLY related to HandlerProtocol, we could define MyCustomHandler without knowing of it...
         - ...but all handlers are still IMPLICITLY recognized as valid HandlerProtocol implementations :-)
 
