@@ -19,6 +19,7 @@ core
 jinja2/index.html
 # logging :
 logging/activity.log
+*.egg-info
 
 # specific patterns to ignore :
 *GITIGNORE*
