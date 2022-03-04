@@ -13,11 +13,23 @@ def main() -> None:
         """
 This POC is a working usage of pygind11.
 Source = https://www.blopig.com/blog/2021/03/c-python-bindings-in-5-minutes/
+NOTE : pybind11 is needed to BUILD the extension, but once built, pybind11 is not needed anymore to EXECUTE the code.
 
 To run POC :
     pip install pybind11
     pip install -e .
     python main.py
+
+WHAT THIS POC DOES :
+    C++ code    = defines a regular 'fibinacci' function
+    C++ code    = uses the PYBIND11_MODULE macro to make it usable by python under the name 'fibinacci_cpp'
+    setup.py    =
+        defines a PyBind11 C++ extension, named 'pybind_11_example' : this is a python module, coded in C++
+        in this definition, all that is needed for compilation is passed : includes, sources, compiler flags
+        ext_modules and cmdclass are defined in the setup(...) call to use the module and pybind11's build_ext
+    python main = imports the module 'pybind_11_example' and uses its function 'fibinacci_cpp'
+
+
 
 TYPICAL OUTPUT :
     python main.py
