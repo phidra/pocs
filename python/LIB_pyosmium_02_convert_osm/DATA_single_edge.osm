@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- DESCRIPTION> this data contains a single edge between two nodes (but with a non-trivial geometry) -->
+<!-- The edge corresponds to this way : https://www.openstreetmap.org/way/4224972  -->
+
+<osm version="0.6" generator="osmium/1.11.1">
+  <way id="4224972" version="10" timestamp="2017-06-28T07:36:25Z">
+    <nd ref="25177418"/>
+    <nd ref="4939779378"/>
+    <nd ref="4939779381"/>
+    <nd ref="4939779386"/>
+    <nd ref="25177397"/>
+    <tag k="name" v="Avenue des Papalins"/>
+    <tag k="oneway" v="yes"/>
+    <tag k="highway" v="residential"/>
+  </way>
+  <node id="25177418" version="5" timestamp="2017-06-28T07:36:23Z" lat="43.7296303" lon="7.4174924"/>
+  <node id="4939779378" version="1" timestamp="2017-06-28T07:36:21Z" lat="43.7296727" lon="7.4174638"/>
+  <node id="4939779381" version="1" timestamp="2017-06-28T07:36:21Z" lat="43.7297138" lon="7.4174191"/>
+  <node id="4939779386" version="2" timestamp="2018-05-05T09:34:34Z" lat="43.7297725" lon="7.4173286">
+    <tag k="highway" v="crossing"/>
+    <tag k="crossing" v="zebra"/>
+    <tag k="crossing_ref" v="zebra"/>
+  </node>
+  <node id="25177397" version="4" timestamp="2017-06-28T07:36:23Z" lat="43.7298528" lon="7.4172044"/>
+</osm>
