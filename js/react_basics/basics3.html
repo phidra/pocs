@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+
+  <title>Mon super test react</title>
+
+  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+
+</head>
+
+<body>
+    <h1> REACT basics 3</h1>
+    <p>Même POC que basics1, mais utilise JSX</p>
+    <div id="like_button_container"></div>
+
+  <!-- Chargement de react -->
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin=""></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin=""></script>
+  <!-- Chargement de babel, pour pouvoir utiliser JSX -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+	<!-- Mon composant React. Malheureusement, si j'essaye de sortir le code dans un fichier séparé, j'ai un problème CORS... -->
+	<!-- Cette page explique pourquoi : https://stackoverflow.com/a/53042492 -->
+	<!-- TL;DR : le browser ne sait pas charger un script de type "text/babel" -->
+	<!-- C'est babel qui, quand il voit une balise script de type "text/babel", charge lui-même le script via XMLHttpRequest -->
+	<!-- Du coup, comme ce n'est pas le browser qui loade mon script, mais un autre script, on a une erreur CORS. -->
+	<!-- A priori, ce n'est pas contournable, et si je veux éviter ça, il faut servir les fichiers avec un serveur. -->
+
+	<script type="text/babel">
+		'use strict';
+
+		class LikeButton extends React.Component {
+		  constructor(props) {
+			super(props);
+			this.state = { liked: false };
+		  }
+
+		  render() {
+			if (this.state.liked) {
+			  return 'You liked this.';
+			}
+
+			return (
+			  <button onClick={() => this.setState({ liked: true })}>
+				Like
+			  </button>
+			);
+		  }
+		}
+
+		const domContainer = document.querySelector('#like_button_container');
+		ReactDOM.render(React.createElement(LikeButton), domContainer);
+	</script>
+
+
+</body></html>
