@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>File(s) size</title>
+</head>
+
+<body>
+  <h1>Sélection de fichier(s) et affichage de leur taille totale</h1>
+  <p> NOTE : les fichiers ne sont uploadés nulle part, l'input est juste un input de <b>sélection</b> de fichiers.</p>
+  <p> Néanmoins, le client web a accès aux fichiers même s'il ne les uploade pas (c'est assez logique, pour les uploader, il faut bien y avoir accès)</p>
+  <form name="uploadForm">
+    <div>
+      <input id="uploadInput" type="file" name="myFiles" multiple>
+      selected files: <span id="fileNum">0</span>;
+      total size: <span id="fileSize">0</span>
+    </div>
+  </form>
+ 
+  <script type="text/javascript" src="page.js"> </script>
+</body>
+</html>

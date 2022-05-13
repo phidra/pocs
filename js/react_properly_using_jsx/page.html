@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+
+  <title>Mon super test react</title>
+
+</head>
+
+<body>
+    <h1> REACT using JSX</h1>
+    <p>Même POC que basics3, mais le JSX est dans un fichier séparé (ce qui implique que les fichiers soient servis par un webserver)</p>
+    <p>ATTENTION : cette page ne doit pas être chargée avec <code>file://</code>, mais plutôt servie par un serveur, et chargée (par exemple) sur : <a href="http://localhost:8000/page.html">http://localhost:8000/page.html</a> </p>
+    <div id="like_button_container"><b>OUTCH : le script react n'est pas (encore ?) chargé...</b></div>
+
+  <!-- Chargement de react -->
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin=""></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin=""></script>
+  <!-- Chargement de babel, pour pouvoir utiliser JSX -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+	<!-- Mon composant React. -->
+	<script type="text/babel" src="react_component_using_jsx.js"> </script>
+
+
+</body></html>
