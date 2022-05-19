@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <p>
+      Ce que fait cette POC = un tictactoe avec vue.js :
+      <ul>
+        <li>un module <code>engine.js</code> qui gère un board tictactoe et ses fonctions utilitaires (qui gagnerait à être une classe d'ailleurs)</li>
+        <li>un composant vue parent <code>App</code>, qui n'est qu'un wrapper autour d'un composant <code>Tictactoe</code> (lui-même utilisant un sous-composant <code>Cell</code> )</li>
+        <li>le composant <code>Tictactoe</code> est une IHM pour utiliser <code>engine.js</code> pour faire des parties </li>
+        <li>l'app indique le gagnant (via une <a href="https://vuejs.org/guide/essentials/computed.html#writable-computed">computed property</a> réagissant aux modifications du board), et on peut reset vers une nouvelle partie à tout moment</li>
+        <li><b>utilisé :</b> les principes généraux vue.js (composants, sous-composants, template, utilisant de modules js indépendants de vue, events, props, etc.), modules js, classes js, ...  </li>
+      </ul>
+    </p>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
