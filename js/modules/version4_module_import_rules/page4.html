@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POC modules javascript</title>
+    <style>code {background: lightgrey;} </style>
+  </head>
+  <body>
+    <h1>Dans cette page coexistent plusieurs scripts non-modules et plusieurs scripts module</h1>
+    <p>
+      <ul>
+        <li>(avec script classique 1) L'âge du capitaine est précisément de : <b><span id="age1">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(avec script module 1) L'âge du capitaine est précisément de : <b><span id="age2">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(avec script module 2) L'âge du capitaine est précisément de : <b><span id="age3">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(avec script module 3, qui échoue, c'est normal) L'âge du capitaine est précisément de : <b><span id="age4">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN (et c'est normal)</span></b></li>
+        <li>(avec script classique 2) L'âge du capitaine est précisément de : <b><span id="age5">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+      </ul>
+    </p>
+    <p>
+      <a href="../index.html">back to TOC</a>
+    </p>
+    <script type="text/javascript">
+      document.getElementById("age1").textContent = "quarante-deux ans (ici, on ne peut pas utiliser get_age() vu qu'on est dans un script classique)";
+    </script>
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./other.js"></script>
+    <script type="text/javascript" src="./failing_because_not_module.js" defer></script>
+    <script type="text/javascript" src="./classic.js"></script>
+
+    <p> Cette petite page démontre plusieurs points : </p>
+    <ul>
+      <li>On peut tout à fait faire coexister sur une même page des scripts classiques (non-modules) et des modules. </li>
+      <li>On peut tout à fait faire coexister sur une même page plusieurs scripts de type module. </li>
+      <li>Si un script js <code>main.js</code> utilise un import du genre de  <code>import {pouet} from "./telmodule.js";</code>, alors <b>main.js DOIT avoir été chargé en tant que module</b> <code>&lt;script type="module" src="./main.js"&gt;&lt;/script&gt;</code>
+        (sinon on se mange une erreur <code>Uncaught SyntaxError: import declarations may only appear at top level of a module</code>)
+      </li>
+    </ul>
+    </p>
+
+  </body>
+</html>
+
+
+
