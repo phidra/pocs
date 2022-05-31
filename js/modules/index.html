@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POC modules javascript</title>
+    <style>code {background: lightgrey;} </style>
+  </head>
+  <body>
+    <p>
+      Ce que fait cette POC = montrer brièvement <a href="https://developer.mozilla.org/fr/docs/Web/JavaScript/Guide/Modules">les modules js</a>, et ce qui diffère quand on les utilise.
+    </p>
+
+    <p>
+      <ul>
+        <li><a href="./version1_in_html/page1.html">version1 = javascript inliné dans le HTML</a></li>
+        <li><a href="./version2_in_independent_js_without_modules/page2.html">version2 = javascript dans un fichier indépendant, mais chargé à l'ancienne (sans utiliser les modules)</a></li>
+        <li><a href="./version3_in_independent_js_with_modules/page3.html">version3 = javascript dans un fichier indépendant, chargé en tant que module</a></li>
+        <li><a href="./version4_module_import_rules/page4.html">version4 = coexistence de scripts modules et non-modules</a></li>
+        <li><a href="./version5_playing_with_import_export/page5.html">version5 = les différentes façons d'utiliser export et import</a></li>
+      </ul>
+    </p>
+
+    <h2> Notes à l'utilisation des modules : </h2>
+    <ul>
+
+  <li>En réponse à quel problème ? Pour splitter le code en morceaux qui s'importent les uns les autres (avant la standardisation des modules, plusieurs solutions existaient — CommonJS, RequireJS, webpack, ... — mais maintenant, la feature existe nativement dans le standard ECMAScript)</li>
+  <li><b>ATTENTION : </b> un serveur est obligatoire pour servir les modules (à cause de CORS), on ne peut donc plus charger le fichier <code>index.html</code> localement sous firefox comme on le faisait avec des POCs plus simples.</li>
+  <li><b>ATTENTION : </b> si un script js importe un module (il utilise <code>import</code>), alors il <b>DOIT</b> avoir été chargé avec <code>type="module"</code> (sinon, on se tape : <code>Uncaught SyntaxError: import declarations may only appear at top level of a module</code>)</li>
+    </ul>
+
+  <p>La syntaxe la plus simple est <code>import {myfunction, myvariable} from "./mymodule.js";</code> :
+        <ul>
+          <li>chemin explicite (relatif ou absolu) obligatoire</li>
+          <li>nom de fichier à ne pas stripper de son extension (à la différence de <code>require</code>)</li>
+          <li>la liste de ce qu'on importe est explicite, entre crochets (cf. le cinquième lien ci-dessus pour plus de détails sur <code>import/export</code>)</li>
+        </ul>
+      </p>
+
+  <p> Quelques détails :
+    <ul>
+        <li>Les modules utilisent le mode strict automatiquement (inutiles d'utiliser <code>"use strict";</code>).</li>
+        <li>Le chargement du module est automatiquement différé (inutile d'utiliser <code>defer</code>).</li>
+        <li>Les variables importées restent mutables par moi (et peuvent être mutées derrière mon dos par quelqu'un d'autre, d'ailleurs), mais ne peuvent pas être réassignées.</li>
+        <li>Import dynamique = au lieu d'importer statiquement en début de fichier, on peut importer dynamiquement au milieu d'une fonction (e.g. au milieu d'une réaction à un click).</li>
+        <li>L'extension <code>.mjs</code> est parfois utilisée pour distinguer les modules js des scripts classiques.</li>
+      </ul>
+    </p>
+    </p>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POC modules javascript</title>
+    <style>code {background: lightgrey;} </style>
+  </head>
+  <body>
+    <h1>Illustration des différentes façons d'utiliser <code>export</code> et <code>import</code></h1>
+    <p>
+      <ul>
+        <li>(exportés individuellement) Le jedi s'appelle <b><span id="nameA">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b> et il a <b><span id="ageA">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(exportés en bloc en fin de fichier) Le jedi s'appelle <b><span id="nameB">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b> et il a <b><span id="ageB">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(export par défaut) Le jedi s'appelle <b>LEÏA (défini statiquement)</b> et elle a également <b><span id="ageC">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+        <li>(imports regroupés) Le jedi s'appelle <b><span id="nameD">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b> et il a <b><span id="ageD">ERREUR = SI VOUS VOYEZ CECI C'EST QUE LE JS N'A PAS RÉUSSI À REMPLIR LE SPAN</span></b></li>
+      </ul>
+    </p>
+    <p>
+      <a href="../index.html">back to TOC</a>
+    </p>
+    <script type="module">
+      // exportés indivudellement, importés normalement :
+      import { get_age1, name1 } from './module1_individual_exports.js';
+      document.getElementById("nameA").textContent = name1;
+      document.getElementById("ageA").textContent = get_age1();
+
+      // exportés en bloc en fin de fichier :
+      import { get_age2, name2 } from './module2_grouped_exports.js';
+      document.getElementById("nameB").textContent = name2;
+      document.getElementById("ageB").textContent = get_age2();
+
+      // export par défaut :
+      import get_age3 from './module3_default_export.js';
+      document.getElementById("ageC").textContent = get_age3();
+
+      // exportés indivudellement, imports regroupés sous un top-object "mymodule" :
+      import * as mymodule from './module1_individual_exports.js';
+      document.getElementById("nameD").textContent = mymodule.name1;
+      document.getElementById("ageD").textContent = mymodule.get_age1();
+    </script>
+
+  </body>
+</html>
+
+
+
