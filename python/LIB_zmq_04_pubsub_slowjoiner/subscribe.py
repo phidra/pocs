@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import datetime
 
 import zmq
 
@@ -24,23 +23,14 @@ def main() -> None:
 
     context = zmq.Context().instance()
     zmq_socket = context.socket(zmq.SUB)
-    zmq_socket.setsockopt(zmq.SUBSCRIBE, b"")
+    zmq_socket.setsockopt(zmq.SUBSCRIBE, b"")  # subscribe to all topics
     zmq_socket.connect(socket_address)
 
-    log("About to recv in an infinite loop and displaying time elapsed since last recv")
-    last_recv_datetime = None
+    log("About to recv in an infinite loop")
     while True:
         received_bytes = zmq_socket.recv()
         received_str = received_bytes.decode("utf-8")
-
-        # time elapsed since last recv :
-        if last_recv_datetime is None:
-            elapsed = 0
-        else:
-            elapsed = (datetime.datetime.now() - last_recv_datetime).total_seconds()
-
-        last_recv_datetime = datetime.datetime.now()
-        log(f"RECEIVED> (after {elapsed:.1f} seconds) {received_str}")
+        log(f"RECEIVED> {received_str}")
 
 
 if __name__ == "__main__":
