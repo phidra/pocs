@@ -59,6 +59,20 @@ def super_actually_calls_grandparent():
     child.f()
 
 
+def invalid_class_hierarchy_because_of_inconsistent_MRO():
+    class A:
+        pass
+
+    class B:
+        pass
+
+    class C(A, B):  # in the MRO, C < A < B
+        pass
+
+    class D(A, C):  # in the MRO, D < A < C
+        pass
+
+
 def main() -> None:
     print("")
     print("====== Nominal case :")
@@ -71,6 +85,16 @@ def main() -> None:
     print("")
     print("====== Super actually calls grand parent :")
     super_actually_calls_grandparent()
+
+    print("")
+    print("====== Invalid class hierachy because of inconsistent MRO :")
+    try:
+        invalid_class_hierarchy_because_of_inconsistent_MRO()
+    except TypeError as e:
+        print("As expected, we got this TypeError :")
+        print(f"{type(e).__name__}: {e}")
+        # TypeError: Cannot create a consistent method resolution
+        # order (MRO) for bases A, C
 
 
 if __name__ == "__main__":
