@@ -73,6 +73,35 @@ def invalid_class_hierarchy_because_of_inconsistent_MRO():
         pass
 
 
+def display_mro_then_explicitly_calling_super():
+    class Root:
+        pass
+
+    class Left(Root):
+        pass
+
+    class Right(Root):
+        pass
+
+    class Leaf(Left, Right):
+        pass
+
+    leaf = Leaf()
+
+    def mro_of(klass):
+        return " ".join(x.__name__ for x in klass.__mro__)
+
+    print(f"MRO of Leaf = {mro_of(Leaf)}")
+    print(f"MRO of Left = {mro_of(Left)}")
+    print(f"MRO of Right = {mro_of(Right)}")
+    print(f"MRO of Root = {mro_of(Root)}")
+    print("")
+    print(f"super(Leaf, leaf) = {super(Leaf, leaf)}")
+    print(f"super(Left, leaf) = {super(Left, leaf)}")
+    print(f"super(Right, leaf) = {super(Right, leaf)}")
+    print(f"super(Root, leaf) = {super(Root, leaf)}")
+
+
 def main() -> None:
     print("")
     print("====== Nominal case :")
@@ -95,6 +124,10 @@ def main() -> None:
         print(f"{type(e).__name__}: {e}")
         # TypeError: Cannot create a consistent method resolution
         # order (MRO) for bases A, C
+
+    print("")
+    print("====== Display MRO, then explicitly calling super :")
+    display_mro_then_explicitly_calling_super()
 
 
 if __name__ == "__main__":
