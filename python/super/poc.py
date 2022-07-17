@@ -75,16 +75,20 @@ def invalid_class_hierarchy_because_of_inconsistent_MRO():
 
 def display_mro_then_explicitly_calling_super():
     class Root:
-        pass
+        def who_am_I(self):
+            return "Root"
 
     class Left(Root):
-        pass
+        def who_am_I(self):
+            return "Left"
 
     class Right(Root):
-        pass
+        def who_am_I(self):
+            return "Right"
 
     class Leaf(Left, Right):
-        pass
+        def who_am_I(self):
+            return "Leaf"
 
     leaf = Leaf()
 
@@ -96,10 +100,9 @@ def display_mro_then_explicitly_calling_super():
     print(f"MRO of Right = {mro_of(Right)}")
     print(f"MRO of Root = {mro_of(Root)}")
     print("")
-    print(f"super(Leaf, leaf) = {super(Leaf, leaf)}")
-    print(f"super(Left, leaf) = {super(Left, leaf)}")
-    print(f"super(Right, leaf) = {super(Right, leaf)}")
-    print(f"super(Root, leaf) = {super(Root, leaf)}")
+    print(f"super(Leaf, leaf).who_am_I() = {super(Leaf, leaf).who_am_I()}")
+    print(f"super(Left, leaf).who_am_I() = {super(Left, leaf).who_am_I()}")
+    print(f"super(Right, leaf).who_am_I() = {super(Right, leaf).who_am_I()}")
 
 
 def main() -> None:
