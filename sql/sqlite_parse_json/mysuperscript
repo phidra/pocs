@@ -1,0 +1,22 @@
+-- extensions actives 
+.mode column
+.headers on
+SELECT('');
+SELECT('=== EXTENSIONS (the one interesting is JSON1) :');
+PRAGMA compile_options;
+
+-- affichage du contenu :
+SELECT('');
+SELECT('=== CONTENU DU FICHIER');
+SELECT readfile('data.json');
+
+-- itération sur les lignes de l'objet 'colors' :
+SELECT('');
+SELECT('=== NOMS DES COULEURS :');
+SELECT json_extract(value, "$.color") FROM json_each(readfile('data.json'), '$.colors');
+
+-- filtrage (+ common-table expression) :
+SELECT('');
+SELECT('=== COULEURS PRIMAIRES :');
+WITH color_table AS (SELECT * FROM json_each(readfile('data.json'), '$.colors') )
+SELECT json_extract(value, "$.color") AS color_name FROM color_table WHERE json_extract(value, "$.type") = 'primary';

@@ -1,0 +1,16 @@
+.separator ","
+.mode column
+.headers on
+-- .import FILE TABLE
+.import oscars.csv winners
+.schema
+
+-- recent oscars  :
+SELECT "";
+SELECT "=== RECENT OSCARS :";
+SELECT * FROM winners WHERE year >= 2010;
+
+-- winners of two or more oscars
+SELECT "";
+SELECT "=== WINNERS OF MORE THAN ONE OSCAR :";
+SELECT Name, COUNT(*) AS nb_oscars FROM winners GROUP BY Name HAVING nb_oscars >= 2 ORDER BY nb_oscars DESC;
