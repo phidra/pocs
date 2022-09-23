@@ -1,0 +1,5 @@
+if (DEFINED ENV{YUM})
+    message(STATUS "The envvar 'YUM' is defined, to '$ENV{YUM}'")
+else()
+    message(STATUS "The envvar 'YUM' is NOT defined !")
+endif()

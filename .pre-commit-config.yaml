@@ -18,6 +18,7 @@ repos:
       rev: v4.3.0
       hooks:
           - id: check-symlinks
+            exclude: 'cpp/TOOL_cmake/cmake_14_compile_commands_json/with_compile_commands/compile_commands.json'
           - id: check-ast
           - id: check-merge-conflict
           - id: debug-statements
