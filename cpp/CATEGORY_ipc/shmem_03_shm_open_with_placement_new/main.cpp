@@ -257,12 +257,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
             list_directory("/dev/shm/");
             list_directory("/dev/mqueue/");
 
-            // À ce stade, on peut cleaner la MQ et la shared-mem :
-            std::cout << "\n---\n--- STEP 7 = libération des ressources (manuelle pour mq, via le destructeur "
-                         "~SharedMem pour la shmem)"
-                      << std::endl;
+            std::cout << "\n---\n--- STEP 7 = libération des ressources" << std::endl;
+            // À ce stade, le process parent détruit manuellement la MQ :
             mq_close(queue_descriptor);
             mq_unlink(mq_name.c_str());
+
+            // Par ailleurs, comme on s'apprête à sortir du scope, le destructeur ~SharedMem va être appelé.
+            // Comme cette SharedMem est owner, elle appellera (manuellement !) le destructeur ~Payload sur la
+            // zone mémoire de la shared-memory.
+            // De plus, elle appellera shm_unlink.
         }
     }
 }
