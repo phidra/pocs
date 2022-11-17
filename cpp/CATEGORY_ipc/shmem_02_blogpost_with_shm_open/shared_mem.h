@@ -77,6 +77,10 @@ class SharedMem {
         if (name) {
             std::cout << "Remove shared mem instance " << name << std::endl;
             shm_unlink(name);
+            // À noter qu'on peut shm_unlink plus tôt : dès qu'on a mmappé le segment en mémoire.
+            // Si on shm_unlink comme ceci, ça se contente de détruire le nom (et le chemin dans le tmpfs).
+            // Mais shm_unlink ne détruit pas la mémoire, juste le nom.
+            // cf. https://stackoverflow.com/questions/65860154/behaviour-of-shm-unlink/65860605#65860605
         }
     }
 
