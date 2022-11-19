@@ -21,11 +21,13 @@ echo ""
 echo "=== RUNNING"
 # first receiver in background (Ctrl+C needed to kill it) :
 background_jobs=()  # this array stores the pids of the background jobs
-"$myvenv"/bin/python "${this_script_parent}/receive.py" &
+"$myvenv"/bin/python "${this_script_parent}/rpc_receive.py" &
 background_jobs+=($!)
 
-# then sender :
-"$myvenv"/bin/python "${this_script_parent}/send.py"
+# then sender, multiple times :
+"$myvenv"/bin/python "${this_script_parent}/rpc_send.py" 25
+"$myvenv"/bin/python "${this_script_parent}/rpc_send.py" 28
+"$myvenv"/bin/python "${this_script_parent}/rpc_send.py" 30
 
 
 # killing background job :
