@@ -7,6 +7,17 @@
 void print_poc_description() {
     std::cout << R"DELIM(
 CE QUE MONTRE CETTE POC = un autre exemple (meilleur que le premier) de deux process qui communiquent par mémoire partagée.
+    il va y avoir deux process :
+        un producer (qui écrit sur la shared-mem)
+        un consumer (qui lit la shared-mem)
+    les deux process se synchronisent avec deux flags :
+        quand le producer écrit, le consumer est bloqué
+        ça n'est que quand le producer a fini d'écrire qu'il débloque le consumer
+        quand le consumer lit, le producer est bloqué
+        ça n'est que quand le consumer a fini de lire qu'il débloque le producer
+    (c'est la POC qui forke le deuxième process, inutile de lancer le binaire deux fois)
+
+Par rapport à la POC1, la shared-mem est faite avec shm_open (plutôt que open) donc pas de fichier sur disque.
 
 Cette POC est un poil (vraiment pas beaucoup) adaptée de ce post :
     https://subscription.packtpub.com/book/iot-&-hardware/9781838821043/7/ch07lvl1sec58/using-atomic-variables-in-shared-memory
@@ -29,18 +40,6 @@ Le point que je trouve le plus discutable concerne la façon dont on utilise le 
         le Payload (un int + deux atomic_bool) est tel qu'un layout mémoire rempli de zéro correspond à un Payload valide
 Ça marche, mais ce n'est pas très générique comme façon de faire ! (je vais tenter une POC dérivée qui utilise placement-new)
 
-
-Ce que fait la POC :
-    la shared-mem est faite avec shm_open (plutôt que open) donc pas de fichier sur disque
-    il va y avoir deux process :
-        un producer (qui écrit sur la shared-mem)
-        un consumer (qui lit la shared-mem)
-    les deux process se synchronisent avec deux flags :
-        quand le producer écrit, le consumer est bloqué
-        ça n'est que quand le producer a fini d'écrire qu'il débloque le consumer
-        quand le consumer lit, le producer est bloqué
-        ça n'est que quand le consumer a fini de lire qu'il débloque le producer
-    (c'est la POC qui forke le deuxième process, inutile de lancer le binaire deux fois)
 
 
 Reste une question : comment la synchronisation des atomic a-t-elle lieu, sachant que la structure n'occupe qu'un seul byte ?

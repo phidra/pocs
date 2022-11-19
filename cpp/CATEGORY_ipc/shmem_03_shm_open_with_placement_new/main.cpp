@@ -12,26 +12,46 @@
 void print_poc_description() {
     std::cout << R"DELIM(
 CE QUE MONTRE CETTE POC = c'est un dérivé de la POC 2, mais en construisant l'objet dans la shared-mem avec placement-new.
+    il va y avoir trois process :
+        un process parent qui forke le producer et le consumer (responsable de construire puis détruire le payload)
+        un producer (qui écrit sur la shared-mem)
+        un consumer (qui lit la shared-mem)
+    les sous-process se synchronisent avec des flags :
+        quand le producer écrit, le consumer est bloqué
+        ça n'est que quand le producer a fini d'écrire qu'il débloque le consumer
+        quand le consumer lit, le producer est bloqué
+        ça n'est que quand le consumer a fini de lire qu'il débloque le producer
+    comment s'assure-t-on que les sous-process n'utilisent pas la shared-mem/le Payload avant qu'il soit construit ?
+        car le parent ne forke les sous-process qu'après avoir créé la shared-mem et utilisé placement-new dessus
+    comment s'assure-t-on que le parent ne détruit le Payload/la shared-mem que lorsque plus personne ne l'utilise ?
+        les sous-process signalent qu'ils en ont fini avec le Payload avec une message-queue POSIX
+    (c'est la POC qui forke les sous-process, inutile de lancer le binaire plusieurs fois)
 
-Au lieu de se reposer sur le caractère trivialement copyiable du Payload, on construit explicitement celui-ci dans la shared-mem.
-Du coup, elle fonctionne avec n'importe quel Payload (alors que la deuxième était réservée aux Payload trivialement coopyiable)
+cf. les commentaires détaillés avec des réponses à mes questions dans le code.
 
-Avec la construction/destrcution d'un objet dans la shared-mem, apparaissent des questions imporantes :
+Par rapport à la POC2, au lieu de se reposer sur le caractère trivialement copyiable du Payload, on construit
+explicitement celui-ci dans la shared-mem. Du coup, elle fonctionne avec n'importe quel Payload (alors que la deuxième
+était réservée aux Payload trivialement coopyiable)
+
+Avec la construction/destruction d'un objet dans la shared-mem, apparaissent des questions importantes :
 - quand et par qui est créée la shared-mem ?
 - comment s'assurer que la shared-mem est crée et initialisée (le Payload est construit) au moment où on l'utilise ?
 - quand et par qui est détruite la shared-mem ?
-- comment s'assurer que la shared-mem n'est plus utilisée par personne au moment où on la détruit ?
+- comment s'assurer que le Payload n'est plus utilisée par personne au moment où son destructeur est appelé ?
 
-Pour cette POC, j'ai utilisé une mq POSIX :
+Pour répondre à ces questions dans la présente POC, j'ai utilisé une mq POSIX :
     on n'a plus deux process mais trois :
         le consumer, forké
         le producer, forké
         le process parent, qui, une fois les deux autres forkés, attend leur signalements pour libérer les ressources
     AVANT de forker les process fils, on crée une shared-memory, et on crée également la MQ qui synchronisera
+    AVANT de forker les process fils, on construit le Payload dans la shared-mem
+        (il n'y a donc pas de risque que les sous-process utilisent la shared-mem avant que le Payload ne soit construit)
     au moment de forker le consumer et le producer, ils prennent la shared_mem et la MQ en paramètre
     après avoir terminé leur boulot, le consumer et le producer envoient chacun un message sur la MQ
     après avoir forké les consumer+producer, le process parent attends deux messages sur la MQ
     une fois que le parent a reçu les messages, c'est que les fils ont fini de bosser -> il libère la MQ et la shared-mem
+        (il n'y a donc pas de risque que le parent détruise le Payload alors que les sous-process l'utilisent encore)
 
 En réalité, l'utilisation d'une MQ est inutilement compliquée...
 En effet, il est safe de mmapper la shared-memory avant le fork (elle sera partagée par les processus-fils)

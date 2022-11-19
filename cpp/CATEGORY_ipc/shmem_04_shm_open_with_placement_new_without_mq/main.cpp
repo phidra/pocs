@@ -10,12 +10,27 @@
 void print_poc_description() {
     std::cout << R"DELIM(
 CE QUE MONTRE CETTE POC = POC complète de shared-memory pour IPC, avec placement-new pour construire le payload.
+    il va y avoir trois process :
+        un process parent qui forke le producer et le consumer (responsable de construire puis détruire le payload)
+        un producer (qui écrit sur la shared-mem)
+        un consumer (qui lit la shared-mem)
+    les sous-process se synchronisent avec des flags :
+        quand le producer écrit, le consumer est bloqué
+        ça n'est que quand le producer a fini d'écrire qu'il débloque le consumer
+        quand le consumer lit, le producer est bloqué
+        ça n'est que quand le consumer a fini de lire qu'il débloque le producer
+    comment s'assure-t-on que les sous-process n'utilisent pas la shared-mem/le Payload avant qu'il soit construit ?
+        car le parent ne forke les sous-process qu'après avoir créé la shared-mem et utilisé placement-new dessus
+    comment s'assure-t-on que le parent ne détruit le Payload/la shared-mem que lorsque plus personne ne l'utilise ?
+        les sous-process signalent qu'ils en ont fini avec le Payload avec des flags dans le payload
+    (c'est la POC qui forke les sous-process, inutile de lancer le binaire plusieurs fois)
 
 C'est la même POC que la POC 3, mais sans les MQ POSIX, donc beaucoup plus simple !
 Dans la POC 3, on utilisait des MQ POSIX pour éviter que le process parent ne détruise le Payload (et appelle shm_unlink)
 alors que le payload était encore utilisé par les process enfants.
-
-Dans la présente POC, on utilise plutôt directement un flag du payload pour ça.
+Dans la présente POC, on utilise plutôt directement des flags dans le payload pour ça.
+(et le payload était construit dans la shared-mem par le process parent AVANT qu'il ne forke les sous-process,
+donc il n'y a pas de risque que les sous-process utilisent la shared-mem avant que le Payload ne soit construit)
 
 )DELIM";
     std::cout << std::endl;
