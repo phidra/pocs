@@ -1,7 +1,11 @@
-#include <atomic>
 #include <iostream>
+#include <chrono>
+#include <thread>
+using namespace std::chrono_literals;
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/sync/named_condition.hpp>
+#include <boost/interprocess/ipc/message_queue.hpp>
 
 void print_poc_description() {
     std::cout << R"DELIM(
@@ -30,74 +34,146 @@ Je vais faire une autre POC où chaque process fait son propre mapping.
     std::cout << std::endl;
 }
 
+static const char* CONSUMER_MUST_WORK_MUTEX = "consumer_must_work_mutex";
+static const char* CONSUMER_MUST_WORK_CV = "consumer_must_work_cv";
+
 struct Payload {
-    std::atomic_bool consumer_has_work_to_do;
-    std::atomic_bool producer_has_work_to_do;
-    std::atomic_bool consumer_is_still_using_the_payload;
-    std::atomic_bool producer_is_still_using_the_payload;
     char shared_data;
+    bool producer_must_work_bool;
+    bool consumer_must_work_bool;
 
     Payload()
-        : consumer_has_work_to_do{false},
-          producer_has_work_to_do{false},
-          consumer_is_still_using_the_payload{true},
-          producer_is_still_using_the_payload{true} {
+        :  // le Payload commence avec un état déterminé = le shared_data est un caractère nul
+          shared_data{'\0'},
+          producer_must_work_bool{false},
+          consumer_must_work_bool{false} {
         std::cout << "CONSTRUCTOR CALLED !" << std::endl;
     }
 
     ~Payload() { std::cout << "DESTRUCTOR CALLED !" << std::endl; }
 };
 
-void producer(boost::interprocess::mapped_region& region) {
-    Payload& payload = *(static_cast<Payload*>(region.get_address()));
+void producer() {
+    using namespace boost::interprocess;
 
-    if (!payload.consumer_has_work_to_do.is_lock_free()) {
-        throw std::runtime_error("Flag is not lock-free");
+    // in order for the consumer not to do anything until the producer has properly constructed the Payload,
+    // we use a message-queue to signal that the producer has constructed the payload :
+    struct mq_remove {
+        ~mq_remove() { message_queue::remove("payload_is_constructed"); }
+    } mq_remover;
+
+    struct shm_remove {
+        shm_remove() { shared_memory_object::remove("my_payload"); }
+        ~shm_remove() { shared_memory_object::remove("my_payload"); }
+    } shm_remover;
+
+    constexpr const std::size_t max_num_msg = 1;   // we need only 1 message for our synchronization
+    constexpr const std::size_t max_msg_size = 0;  // an empty message is enough for our synchronization
+    message_queue mq(open_or_create, "payload_is_constructed", max_num_msg, max_msg_size);
+
+    if (mq.get_num_msg() != 0) {
+        std::cout << "PROBLEME ICI TODO" << std::endl;
+        std::cout << "PROBLEME ICI TODO" << std::endl;
+        std::cout << "PROBLEME ICI TODO" << std::endl;
+        std::cout << "PROBLEME ICI TODO" << std::endl;
     }
+
+    // construct payload :
+    shared_memory_object shm_obj(create_only, "my_payload", read_write);
+    shm_obj.truncate(sizeof(Payload));
+    mapped_region region(shm_obj, read_write);
+    Payload* ptr = new (region.get_address()) Payload{};
+    Payload& payload = *ptr;
+    std::cout << payload.shared_data << std::endl;
+
+    // here, payload is properly constructed, we can signal the consumer, and remove queue :
+    constexpr const unsigned int priority = 0;
+    std::cout << "PRODUCER> sending on mq" << std::endl;
+    std::this_thread::sleep_for(1s);
+    mq.send(nullptr, 0, priority);  // sending an empty message in the queue
+    std::cout << "PRODUCER> sent on mq" << std::endl;
+
+    named_mutex consumer_must_work_mutex(open_or_create, CONSUMER_MUST_WORK_MUTEX);
+    named_condition consumer_must_work_cv(open_or_create, CONSUMER_MUST_WORK_CV);
 
     char data_to_send[] = "SKYWALKER";  // EOF signals the end of transmission
     std::cout << "PRODUCER will send this message : " << data_to_send << "\n" << std::endl;
-    for (size_t i = 0; i < strlen(data_to_send); i++) {
-        payload.shared_data = data_to_send[i];
-        payload.consumer_has_work_to_do.store(true);
 
-        payload.producer_has_work_to_do.store(false);
-        while (!payload.producer_has_work_to_do.load()) {
-        }
+    {
+        std::cout << "PRODUCER> about to lock" << std::endl;
+        scoped_lock<named_mutex> lock(consumer_must_work_mutex);
+        payload.shared_data = data_to_send[0];
+        std::cout << "PRODUCER> sent : '" << payload.shared_data << "'" << std::endl;
+        std::this_thread::sleep_for(1s);
+        payload.consumer_must_work_bool = true;
+        std::cout << "PRODUCER> before notifying consumer, 'consumer_must_work_bool' is " << std::boolalpha
+                  << payload.consumer_must_work_bool << std::endl;
+        consumer_must_work_cv.notify_one();
+        std::cout << "PRODUCER> after  notifying consumer, 'consumer_must_work_bool' is " << std::boolalpha
+                  << payload.consumer_must_work_bool << std::endl;
     }
 
-    std::cout << "=== End of emission, PRODUCER will now close ===" << std::endl;
-
-    // Ici, le producer n'a plus rien à faire, il prévient le process parent qu'il n'a plus l'usage du payload :
-    payload.producer_is_still_using_the_payload.store(false);
+    // Ici, le consumer nous a rendu la main, on quitte
+    std::this_thread::sleep_for(1s);
+    std::cout << "PRODUCER> quitting here" << std::endl;
 }
 
-void consumer(boost::interprocess::mapped_region& region) {
-    Payload& payload = *(static_cast<Payload*>(region.get_address()));
+void consumer() {
+    using namespace boost::interprocess;
 
-    if (!payload.consumer_has_work_to_do.is_lock_free()) {
-        throw std::runtime_error("Flag is not lock-free");
-    }
+    // in order for the consumer not to do anything until the producer has properly constructed the Payload,
+    // we use a message-queue to signal that the producer has constructed the payload :
+    struct mq_remove {
+        ~mq_remove() { message_queue::remove("payload_is_constructed"); }
+    } mq_remover;
 
-    char received_char;
+    struct shm_remove {
+        shm_remove() { shared_memory_object::remove("my_payload"); }
+        ~shm_remove() { shared_memory_object::remove("my_payload"); }
+    } shm_remover;
 
-    do {
-        while (!payload.consumer_has_work_to_do.load()) {
+    constexpr const std::size_t max_num_msg = 1;   // we need only 1 message for our synchronization
+    constexpr const std::size_t max_msg_size = 0;  // an empty message is enough for our synchronization
+    message_queue mq(open_or_create, "payload_is_constructed", max_num_msg, max_msg_size);
+    unsigned int priority = 0;
+    std::size_t received_size = 0;
+    std::cout << "CONSUMER> receiving on mq" << std::endl;
+    mq.receive(nullptr, 0, received_size, priority);
+    std::cout << "CONSUMER> received on mq" << std::endl;
+
+    // here, we received the signal from the producer, so we are sure that payload is properly constructed :
+    shared_memory_object shm_obj(open_only, "my_payload", read_write);
+    mapped_region region(shm_obj, read_write);
+    Payload* ptr = static_cast<Payload*>(region.get_address());
+    Payload& payload = *ptr;
+
+    named_mutex consumer_must_work_mutex(open_or_create, CONSUMER_MUST_WORK_MUTEX);
+    named_condition consumer_must_work_cv(open_or_create, CONSUMER_MUST_WORK_CV);
+    {
+        std::cout << "CONSUMER> about to lock" << std::endl;
+        scoped_lock<named_mutex> lock(consumer_must_work_mutex);
+        std::cout << "CONSUMER> after lock" << std::endl;
+        while (!payload.consumer_must_work_bool) {
+            std::cout << "CONSUMER> waiting notification bc 'consumer_must_work_bool' is " << std::boolalpha
+                      << payload.consumer_must_work_bool << std::endl;
+            consumer_must_work_cv.wait(lock);
+            std::cout << "CONSUMER> wake up ! Maybe spurious ? For now, we don't know" << std::endl;
         }
-        payload.consumer_has_work_to_do.store(false);
+        std::cout << "CONSUMER> notified ! (not a spurious one)" << std::endl;
 
-        received_char = payload.shared_data;
+        // on est débloqués ; on lit le message (pendant ce temps, l'autre thread se contente de lire) :
+        char received_char = payload.shared_data;
         if (received_char == '') {
             std::cout << "=== End of reception, CONSUMER will now close ===" << std::endl;
         } else {
-            std::cout << "CONSUMER got new data : " << payload.shared_data << std::endl;
+            std::cout << "CONSUMER got new data : '" << payload.shared_data << "'" << std::endl;
         }
+    }
 
-        payload.producer_has_work_to_do.store(true);
-    } while (received_char != '');
+    std::cout << "CONSUMER> quitting here" << std::endl;
 
-    // Ici, le consumer n'a plus rien à faire, il prévient le process parent qu'il n'a plus l'usage du payload :
-    payload.consumer_is_still_using_the_payload.store(false);
+    // TODO = il faudra mieux gérer la destruction. Pour le moment je peux me contenter d'ici :
+    ptr->~Payload();
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
@@ -105,45 +181,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
     using namespace boost::interprocess;
 
-    std::cout << "\n---\n--- STEP 2 = creating shared-memory (before fork -> all child processes will share the same "
-                 "fd and the same mmapped region)"
-              << std::endl;
-
-    // Create a shared memory object.
-    shared_memory_object shm_obj(create_only, "my_super_shared_memory", read_write);
-
-    // Set size
-    shm_obj.truncate(sizeof(Payload));
-
-    // Map the whole shared memory in this process
-    mapped_region region(shm_obj, read_write);
-
-    // construct object in mmapped memory :
-    Payload* ptr = new (region.get_address()) Payload{};
-
+    // C'est le seul truc que le parent a besoin de faire = s'assurer qu'on n'utilise pas une queue déjà existante
+    message_queue::remove("payload_is_constructed");
+    named_mutex::remove("my_super_mutex");
     if (fork() == 0) {
         // CHILD 1 :
-        std::cout << "\n---\n--- STEP 3 = lancement du CONSUMER dans un subprocess" << std::endl;
-        consumer(region);
+        consumer();
     } else {
-        if (fork() == 0) {
-            // CHILD 2 :
-            std::cout << "\n---\n--- STEP 4 = lancement du PRODUCER dans un subprocess" << std::endl;
-            producer(region);
-        } else {
-            // PARENT :
-            std::cout << "\n---\n--- STEP 5 = le process PARENT attend l'aval des deux sous-process pour libérer les "
-                         "ressources"
-                      << std::endl;
-
-            // Pour être bien sûr que plus personne ne se sert du Payload, on attend de recevoir les signaux des process
-            Payload& payload = *ptr;
-            while (payload.consumer_is_still_using_the_payload.load() ||
-                   payload.producer_is_still_using_the_payload.load()) {
-                // attente bloquante... on pourrait pousser plus loin en utilisant une condition-variable pthread pour
-                // réveiller le process parent lorsqu'il peut détruire la shared-mem, mais je préfère rester simple.
-            }
-            shared_memory_object::remove("my_super_shared_memory");
-        }
+        producer();
     }
 }
