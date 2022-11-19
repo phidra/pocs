@@ -3,7 +3,26 @@
 #include <sstream>
 #include <iostream>
 
+void print_poc_description() {
+    std::cout << R"DELIM(
+CE QUE MONTRE CETTE POC = POC montrant une utilisation simple de boost::interprocess::managed_shared_memory
+
+C'est l'exemple donné par le quick-guide de boost IPC :
+    https://www.boost.org/doc/libs/1_80_0/doc/html/interprocess/quick_guide.html
+
+
+Le process parent créée une managed_shared_memory, alloue 1 kilobyte, et remplit les 5 premiers byte.
+Il appelle de façon synchrone alors un process enfant en lui transmettant le handle de sa shared-memory.
+Le process enfant affiche le contenu del a mémoire, puis la désalloue, et rend la main au process parent.
+Quand il récupère la main, le process parent vérifie que la mémoire a bien été désallouée.
+
+)DELIM";
+    std::cout << std::endl;
+}
+
 int main(int argc, char* argv[]) {
+    print_poc_description();
+
     using namespace boost::interprocess;
     if (argc == 1) {  // Parent process
         // Remove shared memory on construction and destruction
