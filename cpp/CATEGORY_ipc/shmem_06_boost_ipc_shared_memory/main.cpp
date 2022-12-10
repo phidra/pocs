@@ -9,26 +9,68 @@ using namespace std::chrono_literals;
 
 void print_poc_description() {
     std::cout << R"DELIM(
-CE QUE MONTRE CETTE POC = équivalent strict de la POC 04 utilisant boost::interprocess:shared_memory_object
-    il va y avoir trois process :
-        un process parent qui forke le producer et le consumer (responsable de construire puis détruire le payload)
-        un producer (qui écrit sur la shared-mem)
-        un consumer (qui lit la shared-mem)
-    les sous-process se synchronisent avec des flags :
-        quand le producer écrit, le consumer est bloqué
-        ça n'est que quand le producer a fini d'écrire qu'il débloque le consumer
-        quand le consumer lit, le producer est bloqué
-        ça n'est que quand le consumer a fini de lire qu'il débloque le producer
-    comment s'assure-t-on que les sous-process n'utilisent pas la shared-mem/le Payload avant qu'il soit construit ?
-        car le parent ne forke les sous-process qu'après avoir créé la shared-mem et utilisé placement-new dessus
-    comment s'assure-t-on que le parent ne détruit le Payload/la shared-mem que lorsque plus personne ne l'utilise ?
-        les sous-process signalent qu'ils en ont fini avec le Payload avec des flags dans le payload
-    (c'est la POC qui forke les sous-process, inutile de lancer le binaire plusieurs fois)
+CE QUE MONTRE CETTE POC = équivalent de la POC 04 mais en utilisant boost::interprocess
 
-La différence avec la POC 04, c'est qu'au lieu d'utiliser shm_open/shm_unlink/mmap, on utilise boost::ipc
+Le principe reste d'avoir un producer (qui écrit des lettres sur la shared-mem) et un consumer (qui lit les lettres).
 
-Ici, je "triche" un peu car les process sont forkés *après* mmapping (et se partagent donc le mapping déjà créé).
-Je vais faire une autre POC où chaque process fait son propre mapping.
+Ce qui change :
+    pas de process parent qui construit/détruit le payload
+        remplacé par le fait que le producer soit en charge de construire le payload...
+        ... et le consumer attende que le producer ait construit le payload
+        la synchro entre les deux se fait via une message-queue boost::interprocess
+    utilisation d'un boost::interprocess::shared_memory_object comme mémoire partagée (plutôt que shm_open/mmap)
+    utilisation de deux triplets {condition-variable + mutex + bool} pour synchroniser le producer et le consumer (plutôt que des attentes actives sur un atomic-bool)
+
+Fonctionnement de la POC au final :
+    En préambule, le process "parent" (i.e. avant fork) fait le ménage en appelant 'remove' sur toutes les structures interprocess.
+    On forke en un couple {producer + consumer}
+    Le consumer attend le signal du producer (message sur une message-queue boost::interprocess) avant de commencer à travailler.
+    La shared-mem contenant le payload est create_only côté producer (d'où la précondition sur le fait qu'elle n'existe pas + les remove en préambule)
+    La shared-mem contenant le payload est open_only côté consumer (d'où l'utilisation d'une MQ pour prévenir le consumer que la shared-mem est crée + le payload y a été construit)
+    Le paylod est construit (appel au constructeur) côté producer, et détruit (appel au destructeur) côté consumer.
+    Une fois le payload construit, le producer y publie les lettres une par une, et le consumer les lit.
+    Le consumer attend d'être notifié par le producer par une CV (ou plus exactement un triplet {CV+mutex+bool})
+    Une fois une lettre publiée, le producer attend d'être notifié par le consumer avec une autre CV (un autre triplet)
+    Quand le producer n'a plus rien à publier, il envoie le caractère '' (= EOF) puis le process quitte.
+    Quand le consumer reçoit le caractère '', il cleane tout (destructeur du payload + remove des structures interprocess), puis quitte.
+
+À noter que ça n'est PAS la façon intelligente de faire communiquer un producer et un consumer (la bonne façon est une queue)...
+... mais cette POC reste très utile pour me familiariser avec boost::ipc et les problématiques de communication interprocess.
+
+
+J'ai lutté pour tout faire fonctionner, et j'ai appris plein de trucs :
+    c'est *très* facile de faire foirer le système (notable exemple = je n'avais pas 'remove' en début de programme, or certains named-mutex avaient survécu, lockés)
+    quand quelque chose se passe mal, c'est pas toujours reproductible, et pas toujours débuggable facilement
+    avant d'utiliser un CV pour synchroniser deux process, ils doivent partager un flag commun
+        on a donc une obligation de synchro pour partager ce flag commun avec les process AVANT de pouvoir utiliser des CV
+    pour qu'un process appelle "nofity" sur une CV, il est inutile qu'il attende que l'autre process ait appelé "wait"
+    les structures boost::interprocess existent dans /dev/shm (sur mon poste Linux) :
+        la shared_memory, mais également le mutex (sous forme de sémaphore), et même les CV !
+        seule la message-queue est gérée ailleurs, on peut la trouver sous /dev/mqueue, après sudo mount -t mqueue none /dev/mqueue
+    les structures interprocess (named-mutex, notamment) survivent aux crash et autres terminaisons de process !
+        pour repartir d'un état propre, on a donc une obligation de remove en début de POC
+        identifier le "début de POC" nécessite de la synchro (e.g. pour éviter de remove la queue sur laquelle le producer vient de signaler qu'il avait construit le payload)
+        dans cette POC, j'ai choisi que le process "parent" (i.e. le process juste avant le fork) fasse les remove préliminaires
+    la question de qui supprime les ressources inter-process est importante, et quand :
+        (je parle de la MQ, de la destruction du payload, de la libération des shared-mem, mutex, CV, etc.)
+        d'une façon générale, si on cherche à cleaner les structures interprocess (pour laisser un état propre en s'éteignant), la question touchy est "quand s'assurer que plus personne n'utilise les structures"
+        dans le cadre de ma POC, j'ai la chance de pouvoir les supprimer facilement en début de POC
+        de plus, je m'arrange pour que le dernier à bosser soit le consumer, du coup pas de question à me poser, le consumer peut tout cleaner
+        mais dans un cas un peu plus complexe, quand cleaner sera sans doute un sujet chevelu
+        (il y a sans doute des trucs smart à faire à base de registering de process, mais clairement c'est hors-scope de ces notes d'en discuter)
+    sur ce sujet, j'ai appris un truc intéressant sur shm_unlink (qui sous-tend sans doute les shared-memory boost) :
+        (tout ce qui suit confond volontairement la shared-memory et shm_unlink, car je suppose que c'est bien ce qu'utilise boost en sous-jacent)
+        on peut remove une shared-memory alors que quelqu'un est encore en train de s'en servir !
+        en fait on peut shm_unlink tôt, même si qqun s'en sert, cf. man shm_unlink
+            The operation of shm_unlink() is analogous to unlink(2):
+            it removes a shared memory object name, and, once all processes have unmapped the object, de-allocates and destroys the contents of the associated memory region.
+            After a successful shm_unlink(), attempts to shm_open() an object  with  the  same name fail (unless O_CREAT was specified, in which case a new, distinct object is created)
+        c'est bien *après que tous les process ont unmappé la shared-memory* qu'elle est effectivement supprimée
+        Du coup en réalité : on peut unlink autant que souhaité : la shared-memory restera utilisable par les process qui l'avaient déjà mmappée
+        (par contre, dès le shm_unlink, on ne peut plus mapper la shared-memory dans un NOUVEAU process)
+        (dans mon cas, ça fonctionne bien, car les process échangent préalablement par CV : au moment du remove de la shared-memory par le consumer, on sait que le producer avait déjà mmappé la shared-memory)
+
+Je prévois de faire une autre POC plus simple, utilisant moins de ressources interprocess (e.g. utiliser payload.shared_data comme flag des CV)
 
 )DELIM";
     std::cout << std::endl;
