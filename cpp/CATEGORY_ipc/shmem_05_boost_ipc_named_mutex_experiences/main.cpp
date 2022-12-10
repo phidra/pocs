@@ -31,7 +31,7 @@ Constaté :
     on se retrouve alors dans un état où le named_mutex existe et est locké (!) alors même qu'aucun process ne l'utilise
     (d'où la nécessité de partir d'un état propre, ce qu'on peut faire a priori facilement grâce au comportement de sem_unlink, qui n'invalide pas les sémaphores existants, tout en permettant de réutiliser le nom pour un nouveau sémaphore)
 
-Implémentation :
+Implémentation des named-mutex :
     sur Linux, les mutex IPC semblent implémentés avec les sémaphores POSIX
     du coup, un named_mutex qui existe apparaîtra dans :
         /dev/shm/sem.my_super_mutex
@@ -48,8 +48,12 @@ Implémentation :
             et les anciens process qui utilisaient encore l'ancien sémaphore peuvent également continuer de le faire de façon safe
         The sem_unlink() call shall not block until all references have been destroyed; it shall return immediately.
             dans tous les cas, sem_unlink ne bloque pas : il se contente éventuellement de retarder la suppression effective du mutex
+    À noter que même si la POC ne le montre pas, j'ai également vérifié que les condition-variables vivaient également sous /dev/shm
+        (et obviously, c'est le cas aussi pour les shared-memory)
+    En revanche, les queues vivent sous /dev/mqueue, consultables avec :
+        sudo mount -t mqueue none /dev/mqueue
 
-À partir de là, quelles bonnes pratiques je suis :
+À partir de là, quelles bonnes pratiques j'essaye de suivre :
     Sous ces hypothèses, je peux bien attaquer toute nouvelle POC avec un 'remove' préliminaire :
         il n'aura pas d'impact si le mutex n'existe pas (il se contentera de renvoyer false)
         si le mutex existe et n'est utilisé par personne, il remets les choses au clair
