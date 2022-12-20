@@ -56,6 +56,20 @@ Petite note complémentaire apportée par la libc :
                 Note that actual writing may take place at any time.
 
 
+EDIT : notes vrac complémentaires sur ce que je comprends de flock :
+    c'est plutôt un truc BSD (la libc ne parle que de fcntl)
+    https://github.com/torvalds/linux/blob/8f71a2b3f435f29b787537d1abedaa7d8ebe6647/Documentation/filesystems/locks.rst
+        The solution I have chosen, after much experimentation and discussion, is to make flock() and fcntl() locks oblivious to each other. Both can exists, and neither will have any effect on the other.
+        ----------------------------------------
+        les deux sont incompatibles et indépendants
+    NE PAS CONFONDRE :
+        la FONCTION flock décrite ci-dessus (pas hyper-claire qui la pourvoit du coup, si c'est pas le kernel linux ni la libc ?)
+        la STRUCTURE flock de la libc
+    https://www.gnu.org/software/libc/manual/2.36/html_node/File-Locks.html
+        TODO = prendre des notes (en gros, le lock est acquis par un process avec fcntl)
+    https://www.gnu.org/software/libc/manual/2.36/html_node/Control-Operations.html
+        les opérations qu'on peut faire avec fcntl
+
 )DELIM";
     cout << endl;
 }

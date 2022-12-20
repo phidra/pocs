@@ -72,6 +72,25 @@ J'ai lutté pour tout faire fonctionner, et j'ai appris plein de trucs :
 
 Je prévois de faire une autre POC plus simple, utilisant moins de ressources interprocess (e.g. utiliser payload.shared_data comme flag des CV)
 
+
+EDIT : notes vrac complémentaires sur les message-queues :
+    (en préambule : il y a DEUX types de mqueue : les mqueues posix et les mqueues boost)
+
+    https://www.boost.org/doc/libs/1_80_0/doc/html/boost/interprocess/message_queue_t.html
+        ~message_queue_t();
+            Destroys *this and indicates that the calling process is finished using the resource. All opened message queues are still valid after destruction. The destructor function will deallocate any system resources allocated by the system for use by this process for this resource. The resource can still be opened again calling the open constructor overload. To erase the message queue from the system use remove(). 
+        static bool remove(const char * name);
+            Removes the message queue from the system. Returns false on error. Never throws
+
+    man mq_overview :
+        On Linux, message queues are created in a virtual filesystem. (...) This filesystem can be mounted (by the superuser) using the following commands:
+            mkdir /dev/mqueue
+            mount -t mqueue none /dev/mqueue
+    ça me permet de lister les queues POSIX, et même de les supprimer !
+
+    sauf que les MQ de boost IPC n'utilisent pas les MQ posix, apparemment :
+        https://stackoverflow.com/a/63305924
+
 )DELIM";
     std::cout << std::endl;
 }

@@ -5,11 +5,29 @@ using namespace std::chrono_literals;
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/sync/named_condition.hpp>
-#include <boost/interprocess/ipc/message_queue.hpp>
 
 void print_poc_description() {
     std::cout << R"DELIM(
 CE QUE MONTRE CETTE POC = équivalent de la POC 06 en essayant de simplifier la POC pour utiliser moins de ressources interprocess :
+
+Le principe reste d'avoir un producer (qui écrit des lettres sur la shared-mem) et un consumer (qui lit les lettres).
+
+Ce qui change :
+    la création de la shared-memory + construction du payload peut être faite indifféremment par le producer ou le consumer (le plus rapide des deux s'en occupera)
+    l'utilisation un mutex s'assure que si on crée la shared-memory, alors on construit le payload dedans
+    dit autrement : si la shared-memory est accessible, alors le payload a été correctement construit dedans
+    pour détecter si la shared-memory est construite, on essaye de la créer en catchant l'éventuelle exception à sa création)
+    (ça permet de supprimer le recours à une message-queue, et le fait de forcer à ce que ce soit le producer qui créée la shared-mem)
+    producer et consumer utilisent la même CV pour synchroniser leurs actions
+    ce qui joue le rôle de flag pour la CV, c'est le payload lui-même
+
+La destruction des ressources IPC + du payload reste "simple", i.e. je contourne la question
+    (en effet, je sais que le consumer est le dernier à les utiliser -> il peut se charger du nettoyage)
+
+Au final, la POC est beaucoup plus simple, les seules structures interprocess nécessaires sont :
+    la shared-memory (duh, l'objectif de la POC est de partager des trucs via shared-memory)
+    la CV
+    le mutex (qui sert à deux choses indépendantes : initialiser le couple {shared-memory+payload}, puis synchroniser la CV)
 
 
 )DELIM";
@@ -20,8 +38,7 @@ namespace bipc = boost::interprocess;
 
 static const char* MUTEX_NAME = "shared_mutex";
 static const char* CV_NAME = "shared_cv";
-static const char* SYNCHRONIZATION_QUEUE = "synchronization_queue";
-static const char* PAYLOAD = "my_payload";
+static const char* PAYLOAD_NAME = "my_payload";
 
 struct Payload {
     char shared_data;
@@ -29,37 +46,45 @@ struct Payload {
     Payload()
         :  // le Payload commence avec un état déterminé = le shared_data est un caractère nul
           shared_data{'\0'} {
-        std::cout << "CONSTRUCTOR CALLED !" << std::endl;
+        std::cout << "PAYLOAD CONSTRUCTOR CALLED !" << std::endl;
     }
 
-    ~Payload() { std::cout << "DESTRUCTOR CALLED !" << std::endl; }
+    ~Payload() { std::cout << "PAYLOAD DESTRUCTOR CALLED !" << std::endl; }
 };
 
-void producer() {
-    // construct payload :
-    bipc::shared_memory_object shm_obj(bipc::create_only, PAYLOAD, bipc::read_write);
-    shm_obj.truncate(sizeof(Payload));
-    bipc::mapped_region region(shm_obj, bipc::read_write);
-    Payload* ptr = new (region.get_address()) Payload{};
-    Payload& payload = *ptr;
+std::tuple<Payload*, bipc::mapped_region> get_or_create_payload(std::string process_name) {
+    // NOTE : je renvoie également la mapped_region pour la conserver vivante.
+    // en effet, je suppose qu'à la destruction de la mapped_region, la shared-memory peut être unmappée du VAS du
+    // process courant.
+    bipc::named_mutex the_mutex(bipc::open_or_create, MUTEX_NAME);
+    bipc::scoped_lock<bipc::named_mutex> lock(the_mutex);
 
-    // in order for the consumer not to do anything until the producer has properly constructed the Payload,
-    // we use a message-queue to signal that the producer has constructed the payload :
-    {
-        constexpr const std::size_t max_num_msg = 1;   // we need only 1 message for our synchronization
-        constexpr const std::size_t max_msg_size = 0;  // an empty message is enough for our synchronization
-        bipc::message_queue mq(bipc::open_or_create, SYNCHRONIZATION_QUEUE, max_num_msg, max_msg_size);
-        constexpr const unsigned int priority = 0;
-        std::cout << "PRODUCER> sending on mq" << std::endl;
-        mq.send(nullptr, 0, priority);  // sending an empty message in the queue
-        std::cout << "PRODUCER> sent on mq" << std::endl;
-
-        // ATTENTION : ici il ne faut pas remove la MQ !
-        // (sans quoi on prend le risque de le faire AVANT que le consumer ne l'ait dépilée)
-        // En revanche, on peut laisser détruire la bipc::message_queue, car le producer n'en a plus besoin.
-        // (cette destruction de la bipc::message_queue locale ne supprime pas la ressource IPC partagée : elle se
-        // contente d'indiquer que le process courant ne l'utilise plus)
+    try {
+        bipc::shared_memory_object shm_obj(bipc::create_only, PAYLOAD_NAME, bipc::read_write);
+        std::cout << "SHARED-MEM+PAYLOAD are created by '" << process_name << "'" << std::endl;
+        // if we get here, creation of shared-memory has succeeded
+        // this means that the current process was the first to acquire the creation mutex
+        // we can construct the payload in the shared-memory
+        // (for simplifcity, we assumer that the following lines can't throw interprocess_exception)
+        shm_obj.truncate(sizeof(Payload));
+        bipc::mapped_region region(shm_obj, bipc::read_write);
+        Payload* ptr = new (region.get_address()) Payload{};
+        return {ptr, std::move(region)};
+    } catch (bipc::interprocess_exception& e) {
+        std::cout << "SHARED-MEM+PAYLOAD are merely used (but not created) by '" << process_name << "'" << std::endl;
+        // if we get here, creation of shared-memory has failed : the shared-memory was already created
+        // this means that the Payload is alread constructed
+        bipc::shared_memory_object shm_obj(bipc::open_only, PAYLOAD_NAME, bipc::read_write);
+        bipc::mapped_region region(shm_obj, bipc::read_write);
+        // pas de placement-new côté consumer : le Payload a DÉJÀ été construit par le producer :
+        Payload* ptr = static_cast<Payload*>(region.get_address());
+        return {ptr, std::move(region)};
     }
+}
+
+void producer() {
+    auto result = get_or_create_payload("producer");
+    Payload& payload = *(std::get<0>(result));
 
     bipc::named_mutex the_mutex(bipc::open_or_create, MUTEX_NAME);
     bipc::named_condition the_cv(bipc::open_or_create, CV_NAME);
@@ -97,38 +122,16 @@ void producer() {
 }
 
 void consumer() {
-    // in order for the consumer not to do anything until the producer has properly constructed the Payload,
-    // we use a message-queue to signal that the producer has constructed the payload :
-    {
-        struct mq_remove {
-            // la MQ a joué son rôle de synchro, elle peut être remove dès la sortie du présent scope
-            // (par le consumer uniquement, car si le producer la remove, il risque de le faire avant que le consumer
-            // ait eu le temps de la dépiler)
-            ~mq_remove() { bipc::message_queue::remove(SYNCHRONIZATION_QUEUE); }
-        } mq_remover;
-        constexpr const std::size_t max_num_msg = 1;   // we need only 1 message for our synchronization
-        constexpr const std::size_t max_msg_size = 0;  // an empty message is enough for our synchronization
-        // on crée la MQ en open_or_create pour le cas où le consumer s'exécute avant le producer :
-        bipc::message_queue mq(bipc::open_or_create, SYNCHRONIZATION_QUEUE, max_num_msg, max_msg_size);
-        unsigned int priority = 0;
-        std::size_t received_size = 0;
-        std::cout << "CONSUMER> receiving on mq" << std::endl;
-        mq.receive(nullptr, 0, received_size, priority);
-        std::cout << "CONSUMER> received on mq" << std::endl;
-    }
+    auto result = get_or_create_payload("consumer");
+    Payload* payload_ptr = std::get<0>(result);
+    Payload& payload = *payload_ptr;
 
-    // la shared-mem est créée en open_only, car on SAIT que le producer a pu la créer (grâce à la queue de synchro) :
-    bipc::shared_memory_object shm_obj(bipc::open_only, PAYLOAD, bipc::read_write);
-    bipc::mapped_region region(shm_obj, bipc::read_write);
-    // pas de placement-new côté consumer : le Payload a DÉJÀ été construit par le producer :
-    Payload* ptr = static_cast<Payload*>(region.get_address());
-    Payload& payload = *ptr;
     // en revanche, on détruit le Payload côté consumer (qui est le dernier à s'en servir) :
     struct payload_destruction {
         payload_destruction(Payload* ptr_) : ptr{ptr_} {}
         ~payload_destruction() { ptr->~Payload(); }
         Payload* ptr;
-    } payload_destructor{ptr};
+    } payload_destructor{payload_ptr};
 
     bipc::named_mutex the_mutex(bipc::open_or_create, MUTEX_NAME);
     bipc::named_condition the_cv(bipc::open_or_create, CV_NAME);
@@ -171,10 +174,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     print_poc_description();
 
     // C'est le seul truc que le parent a besoin de faire = faire un clean préalable :
-    bipc::message_queue::remove(SYNCHRONIZATION_QUEUE);
-    bipc::shared_memory_object::remove(PAYLOAD);
-    bipc::named_mutex::remove(MUTEX_NAME);
-    bipc::named_condition::remove(CV_NAME);
+    bipc::shared_memory_object::remove(PAYLOAD_NAME);
     bipc::named_mutex::remove(MUTEX_NAME);
     bipc::named_condition::remove(CV_NAME);
 
@@ -189,9 +189,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         // utilise plus. (éventuellement, si le producer n'a pas encore quitté, et que les destructeurs sont encore en
         // train de s'exécuter, on bénéficiera du mécanisme décrit dans shm_unlink = la destruction de la ressource sera
         // effective quand le producer aura terminé de détruire ses objets locaux l'utilisant).
-        bipc::shared_memory_object::remove(PAYLOAD);
-        bipc::named_mutex::remove(MUTEX_NAME);
-        bipc::named_condition::remove(CV_NAME);
+        bipc::shared_memory_object::remove(PAYLOAD_NAME);
         bipc::named_mutex::remove(MUTEX_NAME);
         bipc::named_condition::remove(CV_NAME);
     } else {  // this is the child process from the fork (but this is irrelevant here)
