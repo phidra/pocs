@@ -14,6 +14,7 @@ echo "Le moyen le plus simple est de passer par le runner vue.js qui permet de l
 echo "    npm run dev"
 echo ""
 echo "En alternative, on peut builder le site, et le servir avec un serveur python classique :"
+echo "    npm install"
 echo "    npm run build"
 echo "    python3 -m http.server --directory='${this_script_parent}/dist/' 8787"
 echo ""
