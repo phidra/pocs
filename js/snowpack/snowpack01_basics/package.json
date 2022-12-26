@@ -1,0 +1,15 @@
+{
+  "name": "testsnowpack",
+  "version": "0.0.0",
+  "source": "src/index.html",
+  "scripts": {
+    "dev": "snowpack dev",
+    "build": "snowpack build"
+  },
+  "devDependencies": {
+    "snowpack": "^3.8.8"
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}
