@@ -5,19 +5,19 @@
       :zoomAnimation="true"
       :center="[47.41322, -1.219482]"
       @move="log('move')"
-    >
+      >
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      ></l-tile-layer>
+        ></l-tile-layer>
       <l-control-layers />
       <l-marker :lat-lng="[47.41322, -1.219482]" draggable @moveend="log('moveend')">
         <l-icon :icon-url="iconUrl" :icon-size="iconSize" />
       </l-marker>
       <l-control position="bottomleft" >
-<button @click="clickHandler">
-Click me to change kitten !
-</button>
-</l-control>
+        <button @click="clickHandler">
+          Click me to change kitten !
+        </button>
+      </l-control>
     </l-map>
   </div>
 </template>
