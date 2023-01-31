@@ -50,19 +50,21 @@ export default {
       <div>
         <div class="status">{{status_line}}</div>
         <div class="board-row">
-          <Cell id=0 :value="board.cells[0]" @filled="on_notified" />
-          <Cell id=1 :value="board.cells[1]" @filled="on_notified" />
-          <Cell id=2 :value="board.cells[2]" @filled="on_notified" />
+          <!-- Even though the id is static, we need v-bind to tell Vue that this is a JavaScript expression rather than a string. -->
+          <!-- cf. https://vuejs.org/guide/components/props.html#prop-passing-details -->
+          <Cell :id="0" :value="board.cells[0]" @filled="on_notified" />
+          <Cell :id="1" :value="board.cells[1]" @filled="on_notified" />
+          <Cell :id="2" :value="board.cells[2]" @filled="on_notified" />
         </div>
         <div class="board-row">
-          <Cell id=3 :value="board.cells[3]" @filled="on_notified" />
-          <Cell id=4 :value="board.cells[4]" @filled="on_notified" />
-          <Cell id=5 :value="board.cells[5]" @filled="on_notified" />
+          <Cell :id="3" :value="board.cells[3]" @filled="on_notified" />
+          <Cell :id="4" :value="board.cells[4]" @filled="on_notified" />
+          <Cell :id="5" :value="board.cells[5]" @filled="on_notified" />
         </div>
         <div class="board-row">
-          <Cell id=6 :value="board.cells[6]" @filled="on_notified" />
-          <Cell id=7 :value="board.cells[7]" @filled="on_notified" />
-          <Cell id=8 :value="board.cells[8]" @filled="on_notified" />
+          <Cell :id="6" :value="board.cells[6]" @filled="on_notified" />
+          <Cell :id="7" :value="board.cells[7]" @filled="on_notified" />
+          <Cell :id="8" :value="board.cells[8]" @filled="on_notified" />
         </div>
       </div>
     </div>
