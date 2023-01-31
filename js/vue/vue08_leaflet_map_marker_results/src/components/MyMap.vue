@@ -1,6 +1,6 @@
 <template>
   <div id="mapContainer"></div>
-  <MyMarker :is-map-created="is_map_created" :leaflet-map="leaflet_map"/>
+  <MyMarker :is-map-created="is_map_created" :leaflet-map="leaflet_map" @marker-moved="on_marker_moved"/>
 </template>
 
 <script>
@@ -17,18 +17,13 @@ export default {
       leaflet_map: null,
     };
   },
+  emits: ["marker-moved"],
   mounted() {
-    const DEFAULT_CENTER = [48.8495, 2.3568];  // PARIS
-    const DEFAULT_ZOOM = 12;
-    let [center, zoom, markerpos] = [DEFAULT_CENTER, DEFAULT_ZOOM, DEFAULT_CENTER];
-    console.log(`using map zoom ${zoom}`);
-    console.log(`using map center ${center}`);
-    console.log(`using makerpos ${markerpos}`);
-
+    const center = [48.8495, 2.3568];  // PARIS
+    const zoom = 12;
     this.leaflet_map = L.map("mapContainer");
     this.leaflet_map.setView(center, zoom);
     this.is_map_created = true;
-    console.log("map created");
 
 
     L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -38,7 +33,13 @@ export default {
   },
   components: {
     MyMarker,
-  }
+  },
+  methods: {
+    on_marker_moved(latlng) {
+      console.log("MyMap : marker is moved to : ", latlng);
+      this.$emit("marker-moved", latlng);
+    },
+  },
 };
 </script>
 

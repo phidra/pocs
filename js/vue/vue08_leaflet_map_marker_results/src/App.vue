@@ -1,18 +1,27 @@
 <script setup>
-import MyMap from './components/MyMap.vue'
-import MyResults from './components/MyResults.vue'
+import MyContainer from './components/MyContainer.vue'
 </script>
 
 <template>
   <main>
     <h1>Ma super map</h1>
-      <MyResults />
-      <MyMap />
+    <MyContainer />
   </main>
 </template>
 
 <style>
-@import './assets/base.css';
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+code {
+    background-color: lightgrey;
+}
+
+ol, ul {
+  padding-left: 30px;
+}
 
 #app {
   margin: 0 auto;

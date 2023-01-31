@@ -11,11 +11,11 @@
     <b>HOWTO RUN THIS POC : </b> il faut obligatoirement servir la POC avec un serveur (car module js à loader) → le plus simple est de <code>npm run dev</code> (cf. <code>./build_and_run.sh</code>).
   </p>
     <p>
-      Ce que fait cette POC :
       <ul>
-        <li>TODO</li>
-        <li>TODO</li>
-        <li>TODO</li>
+        <li>Utilisation d'une map et un marqueur via vue.js (sans <b>vue-leaflet</b>) ; quand on bouge le marqueur, ses coordonnées affichées sont mises à jour dans les résultats </li>
+        <li>La hiérarchie de composants est : <code>Map &gt; MyContainer &gt; { MyMap&gt;MyMarker + MyResults }</code></li>
+        <li>Premier point notable = <code>MyMarker</code> attend que la map leaflet soit créée pour finir son initialisation (vu qu'il a besoin de s'<code>addTo</code> à la map)</li>
+        <li>Second point notable = la façon dont <code>MyMarker</code> communique sa position, pour que celle-ci soit affichée par <code>MyResult</code> (façon assez horrible à mes yeux)</li>
       </ul>
     </p>
     <div id="app"></div>

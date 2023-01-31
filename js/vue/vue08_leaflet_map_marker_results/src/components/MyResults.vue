@@ -1,14 +1,13 @@
 <script>
 export default {
   name: "MyPosition",
-  data() {
-    return {
-      position: [0, 0],
-    }
+  props: {
+    marker_lat: {type: Number, default: -1},
+    marker_lng: {type: Number, default: -1},
   },
 }
 </script>
 
 <template>
-  <p> Position = {{ position }} </p>
+  <p> <b>RESULTS = </b> marker is at lat={{ marker_lat }} ; lng={{ marker_lng }} </p>
 </template>
