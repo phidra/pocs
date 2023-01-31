@@ -5,6 +5,7 @@ export default {
     return {
     }
   },
+  emits: ["filled"],
   props: {
     id: Number,
     value: String,
