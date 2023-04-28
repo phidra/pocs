@@ -1,0 +1,15 @@
+{
+  "name": "async_http_requests",
+  "version": "0.0.0",
+  "scripts": {
+    "compile": "tsc --outDir NOGIT_build --module commonjs",
+    "poc1": "npm run compile && node NOGIT_build/main1_with_callbacks.js",
+    "poc2": "npm run compile && node NOGIT_build/main2_with_callbacks_and_errors.js",
+    "poc3": "npm run compile && node NOGIT_build/main3_with_promise.js",
+    "poc4": "npm run compile && node NOGIT_build/main4_with_promise_and_errors.js"
+  },
+  "dependencies": {
+    "@types/node": "^18.16.2",
+    "typescript": "^5.0.4"
+  }
+}
