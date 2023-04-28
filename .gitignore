@@ -40,3 +40,9 @@ tags
 
 # jupyter notebook :
 .ipynb_checkpoints
+
+# node projects :
+node_modules
+dist
+package-lock.json
+

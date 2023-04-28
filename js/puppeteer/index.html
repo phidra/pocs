@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=">
+    <title>puppeteer POC</title>
+
+  </head>
+  <body>
+    <p>Cette page HTML sert à démontrer quelques utilisations basiques de puppeteer.</p>
+    <p>Elle contient un bouton qui change la valeur d'un texte quand il est cliqué.</p>
+    <p>L'objectif du test puppeteer sera de vérifier ce comportement.</p>
+    <hr/>
+    <p style="font-weight: bold;">Aujourd'hui, nous sommes <span id="day">LUNDI</span></p>
+
+    <!-- when button is clicked, wait for one second, then change the day -->
+    <button id="button" onclick="
+      document.getElementById('description1').style.display = 'block';
+      setTimeout(() => {
+            document.getElementById('day').textContent = 'MARDI';
+            document.getElementById('description2').style.display = 'block';
+        }, 2000)
+      ">
+      CHANGE THE DAY
+    </button>
+
+    <p id="description1" style="display: none;">
+      You just clicked on the button : the day is about to change !
+    </p>
+    <p id="description2" style="display: none;">
+      Look, the day just changed !
+    </p>
+  </body>
+</html>

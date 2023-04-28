@@ -1,0 +1,15 @@
+{
+  "name": "POC_puppeteer",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "compile": "tsc --noEmit",
+    "test": "tsc --outDir NOGIT_build --module commonjs && node NOGIT_build/test.js http://localhost:5173"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.2",
+    "puppeteer": "^19.5.2",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4"
+  }
+}
