@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package tutorial;  // semble correspondre au namespace du projet
+
+// https://developers.google.com/protocol-buffers/docs/pythontutorial
+// each data structure to (un)serialize must be defined here as a "message"
+//     > A message is just an aggregate containing a set of typed fields
+// a message can use other messages (as is below : AddressBook uses Person)
+
+// each field uses a "unique tag" (' = 1' following the fields), that identifies it, and ensures backward/forward compatibility
+// each field is either : optional / repeated / required
+//      optional : if missing, then a default value WILL be used
+//      repeated : stores the order of the content (and can be "repeated" zero times, thus empty)
+//      required : WARNING, "required is forever" ('required' is even deprecated in proto3)
+
+// doc of proto files : https://developers.google.com/protocol-buffers/docs/proto
+// sudo apt  install protobuf-compiler
+
+// there is a special doc on rules to follow to ensure backward-compatibility :
+// https://developers.google.com/protocol-buffers/docs/pythontutorial#extending-a-protocol-buffer
+
+message Person {
+  optional string name = 1;
+  optional int32 id = 2;
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  // we can define a message in a message :
+  message PhoneNumber {
+    optional string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  repeated PhoneNumber phones = 4;
+}
+
+message AddressBook {
+  repeated Person people = 1;
+}

@@ -1,0 +1,4 @@
+Liste des courses :
+    pommes
+    poires
+    bananes

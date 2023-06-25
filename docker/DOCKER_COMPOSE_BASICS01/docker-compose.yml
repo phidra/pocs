@@ -1,0 +1,24 @@
+version: "0.1"
+
+services:
+    server1:
+        image: httpd:2.4
+        hostname: server1
+        ports:
+            - 8881:80
+        volumes:
+            - ${SERVED_DIR1}:/usr/local/apache2/htdocs/:ro
+    server2:
+        image: httpd:2.4
+        hostname: server2
+        ports:
+            - 8882:80
+        volumes:
+            - ${SERVED_DIR2}:/usr/local/apache2/htdocs/:ro
+    server3:
+        image: httpd:2.4
+        hostname: server3
+        ports:
+            - 8883:80
+        volumes:
+            - ${SERVED_DIR3}:/usr/local/apache2/htdocs/:ro

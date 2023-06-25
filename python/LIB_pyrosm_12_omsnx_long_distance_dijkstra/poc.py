@@ -118,7 +118,7 @@ def main():
         if idx > 8:
             break
     print("\t...")
-    assert manual_path == reference_path
+    assert(manual_path == reference_path)
     print("An assert ensures that the manual path is the expected path :-)")
     print("")
 

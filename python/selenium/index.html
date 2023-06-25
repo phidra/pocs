@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script type="text/javascript"  src="libcase.js"></script>
+</head>
+
+<body>
+
+<h3>Cette POC montre plusieurs choses :</h3>
+<ul>
+    <li>l'utilisation de selenium hors django</li>
+    <li>l'exécution de script javascript custom par selenium : <code>driver.execute_script()</code></li>
+    <li>le fait que <code>driver.execute_script()</code> a accès au code javascript de la page</li>
+    <li>l'astuce permettant de mémoriser une variable d'un <code>driver.execute_script()</code> à un autre</li>
+</ul>
+
+
+<script>
+    function process()
+    {
+        var value = $("#value").html();
+        $("#value").html(invert_case(value));
+    }
+</script>
+
+<p style="margin: 5px; background-color: #DDD;">
+    <button id="process-button" onclick="process()">Invert case</button>
+    <code style="background-color: #BBB;" id="value">SkyWalker</code>
+</p>
+
+</body>
+</html>

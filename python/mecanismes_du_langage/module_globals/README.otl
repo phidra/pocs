@@ -1,0 +1,61 @@
+POSITION DU PROBLÈME :
+	Cette POC montre un comportement curieux concernant la modification des variables d'un module.
+	Le principe est d'utiliser un setter sur un module pour modifier une variable globale d'un module.
+	QUESTION : la modification est-elle alors visible là où le module est utilisé par ailleurs ?
+
+PRINCIPE DE LA POC :
+	on va faire le test avec une variable globale d'un module, et une fonction la modifiant dans 3 cas :
+		cas 1 = avec un module direct
+		cas 2 = avec un module d'un package, DIRECTEMENT défini dans le __init__ du package
+		cas 3 = avec un module d'un package, défini dans un sous-module, auquel le __init__ du package fait référence
+	le main de la POC importe le module, affiche, puis modifie la variable, cette modification est-elle prise en compte ?
+		cas 1 = OUI
+		cas 2 = OUI
+		cas 3 = NON
+	RÉPONSE : Pour les types immutables, pas si c'est par le biais d'un __init__ qu'on accède aux variables !
+	(contournement : après modification, faire un "reload" pour reéxécuter le __init__...)
+	(et pour les modifications de types mutables, oui, c'est pris en compte)
+	
+COMMENT LANCER LA POC :
+	Ce qu'il faut taper :
+		case1_mutable_type/main.py 
+		case2_immutable_type/main.py 
+	Ce qu'il faut regarder :
+		Regarder particulièrement le cas 3 (celui où on est dans myindirectpackage).
+		Voir l'état initial de la variable.
+		Voir l'état après appel du setter (mais avant le reload)
+		Voir l'état après appel du setter (après le reload)
+
+EXPLICATIONS :
+	Après m'être arraché les cheveux sur ce comportement (pkoi diable mes modifications de variables ne sont-elles pas prise en compte ?), j'ai enfin compris.
+	Le problème vient effectivement du passage par un __init__ qui ajoute une indirection sur les variables, ici le code du __init__ :
+		from . import hiddenmodule
+		myvariable3 = hiddenmodule.myvariable3
+	À ce stade, __init__.myvariable3 (qui est effectivement utilisé dans le main) et hiddenmodule.myvariable3 pointent bien vers la même variable.
+	MAIS il faut bien comprendre que ce sont deux références différentes vers la même variable !
+	Ainsi, lorsque le setter modifie la variable, le type étant immutable, on se retrouve avec deux références pointant vers des variables DIFFÉRENTES !
+	Pour faire simple, dans le cas des types immutables, c'est un peu comme si on faisait :
+		initialisation :
+			ref1 = 42
+			ref2 = ref1
+			# à ce stade, les références pointent bien vers la même variable
+			assert(ref1 == ref2)
+			assert(id(ref1) == id(ref2))
+		modification :
+			ref1 = 43
+			# à ce stade, les références pointent vers des variables DIFFÉRENTES !
+			assert(ref1 != ref2)
+			assert(id(ref1) != id(ref2))
+	Ainsi, tout se passe comme si on ne "voyait" pas ma modification de variable, car la référence qu'on utilise dans le main n'a pas été modifiée, elle.
+	Pourquoi le problème ne se pose pas avec un type mutable ? Car on n'assigne pas de nouvelle valeur, on se contente de la modifier :
+		initialisation :
+			ref1 = [42]
+			ref2 = ref1
+			# à ce stade, les références pointent bien vers la même variable
+			assert(ref1 == ref2)
+			assert(id(ref1) == id(ref2))
+		modification :
+			ref1[0] = 43
+			# à ce stade, les références pointent toujours vers les mêmes variables : on n'a pas réassigné la référence !
+			assert(ref1 == ref2)
+			assert(id(ref1) == id(ref2))

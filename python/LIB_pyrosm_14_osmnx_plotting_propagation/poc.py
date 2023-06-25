@@ -147,7 +147,7 @@ def main():
 
     output_dir = Path(sys.argv[1])
     print("Using output_dir = {}".format(output_dir))
-    assert output_dir.is_dir()
+    assert(output_dir.is_dir())
 
     G = step1_get_graph()
 
@@ -180,7 +180,7 @@ def main():
         if idx > 8:
             break
     print("\t...")
-    assert path == reference_path
+    assert(path == reference_path)
     print("An assert ensures that the manual path is the expected path :-)")
     print("")
 

@@ -1,0 +1,23 @@
+# see https://pspdfkit.com/blog/2018/how-to-use-docker-compose-to-run-multiple-instances-of-a-service-in-development/
+
+version: "3"
+
+services:
+    # There is only ONE server service defined in the docker-compose file, that will be run multiple times :
+    mysuperserver:
+        image: httpd:2.4
+        volumes:
+            - ${SERVED_DIR}:/usr/local/apache2/htdocs/:ro
+        expose:
+            # exposing server on an 'ephemeral' port :
+            - "80"
+            # note : it is hardcoded in the dockerfile that inside container, httpd listens to port 80
+            # (this is a difference with the article above, where pdspdfkit listens to 5000)
+    nginx:
+        image: nginx:1.21.1
+        ports:
+            - 7777:80
+        volumes:
+            - ./nginx_load_balancer.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - mysuperserver

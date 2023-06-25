@@ -1,0 +1,25 @@
+OBJET :
+	L'objectif de cette POC est de comprendre comment fonctionne l'asynchrone avec tornado.
+	En gros, on simule 9 ressources lentes sur les ports 8081 à 8089, et on les requête toutes en mêmes temps.
+	(ici, 1 ressource lente = 1 serveur bottle, qui renvoie le port sur lequel il écoute après avoir dormi 3 secondes)
+	L'idée est de montrer qu'en synchrone, on va mettre 27 secondes à répondre (9 x 3 secondes) alors qu'en asynchrone on ne mettre que 3 secondes.
+
+
+COMMENT LANCER LA POC :
+	TERMINAL 1 = lancer les 9 serveurs bottle :
+		workon venv_that_has_bottle
+		for i in {1..9}; do ./server$i.py & done
+		# plus tard, lorsqu'on souhaite arrêter la POC :
+		jobs -p | xargs kill
+	TERMINAL 2 :
+		workon venv_that_has_tornado
+		./tornadoserver.py
+	TERMINAL 3 :
+		curl http://localhost:8888/fast  # -> on met 3  secondes pour faire les 9 requêtes
+		curl http://localhost:8888/slow  # -> on met 27 secondes pour faire les 9 requêtes
+
+
+RÉSULTATS :
+	Je prouve l'intérêt de l'asynchrone en constatant qu'on arrive au même résultat 9 fois plus vite.
+	Je comprends mieux comment fonctionne l'asynchrone : on ne peut asynchroniser que ce qui est prévu pour (ici AsyncHTTPClient).
+	Je teste et comprends la syntaxe des coroutines avec tornado.

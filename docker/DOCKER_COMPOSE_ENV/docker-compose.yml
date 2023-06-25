@@ -1,0 +1,14 @@
+version: "0.1"
+
+# This docker-compose will never be run.
+# The important point is that it uses environment-variables.
+
+services:
+    server1:
+        image: httpd:2.4
+        ports:
+            - ${PORT1}:80
+    server2:
+        image: httpd:2.4
+        ports:
+            - ${PORT2}:80

@@ -46,3 +46,5 @@ node_modules
 dist
 package-lock.json
 
+
+compile_commands.json

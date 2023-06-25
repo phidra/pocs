@@ -1,0 +1,12 @@
+OBJET DE LA POC :
+	Gérer les situations où on a plusieurs tags qui correspondent à un nom.
+
+DÉROULEMENT :
+	Si nécessaire, générer les tags (generate_tags.sh)
+	Les deux librairies (hairybeings.py et animals.py) ont toutes deux une classe "Dog".
+	jump direct :
+		Ouvrir main.py, et essayer de jumper sur le tag "Dog" (Ctrl+])
+		L'un des tags s'ouvre.
+	multijump :
+		Ouvrir main.py, et afficher la liste des tags de "Dog" (g + Ctrl+])
+		La liste des tags s'ouvre, on peut choisir celui qui nous intéresse.

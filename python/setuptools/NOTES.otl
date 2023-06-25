@@ -1,0 +1,30 @@
+Principe global :
+	en gros, tu définis un fichier setup.py qui utilise la fonction "setup" de setuptools
+	ça te donne accès à des commandes :
+		python setup.py --help
+		python setup.py --name
+			nom du projet
+
+https://setuptools.readthedocs.io/en/latest/setuptools.html#developer-s-guide
+
+https://docs.python.org/2/distutils/setupscript.html
+
+Commandes utiles :
+	Référence :
+		https://setuptools.readthedocs.io/en/latest/setuptools.html#command-reference
+	python setup.py --help
+	python setup.py --help-commands
+	python setup.py --name
+		pour vérifier que tout va bien
+
+
+POCs à faire :
+	à partir d'un fichier simple, produire un package auto-porteur pour l'installer
+	idem à partir d'un module complexe (mais toujours sans dépendaces)
+	idem, mais avec des dépendances dans PyPI
+	idem, mais avec des fichiers de données à installer
+	jouer avec les entry_points
+
+
+VRAC :
+	attention, le packaging laisse pas mal d'artefacts

@@ -1,0 +1,38 @@
+REPRISE :
+	cf. les notes en tête de CALCUL03
+
+STILL TO DO :
+	utiliser une lib de simplification de fraction approchée (pour avoir par exemple 19 parties sur 20 plutôt que 1 partie sur 1.1)
+
+CE QUE JE VEUX :
+	NOTES :
+		78 cartes
+		15 dans chaque main (pour 5 joueurs) + 3 cartes au chien
+		14 cartes par couleur + 22 atouts
+	Stats qui m'intéressent :
+		[_] pourcentage chance avoir une coupe franche ? DEUX coupes franches ?
+		[_] pourcentage chance que QQUN autour de la table ait une coupe franche ?
+		[_] pourcentage chance que TOUTES les couleurs soient coupées franches ?
+		[_] qu'il y ait une deuxième coupe franche :
+			[_] sachant que je n'ai pas de coupe franche
+			[_] sachant que j'ai une coupe franche
+		[X] pourcentage chance avoir les 3 bouts ? 2 bouts ? 1 bout ? NE PAS avoir de bouts ?
+		[X] pourcentage chance avoir les 3 bouts au chien ? 2 bouts ? 1 bout ?
+		[_] pourcentage chance avoir 1 roi au chien ?
+		[_] pourcentage chance avoir le roi appelé au chien ?
+		[_] pourcentage chance que ton partenaire ait un bout :
+			[_] quand tu en as 0
+			[_] quand tu en as 1
+			[_] quand tu en as 2
+		[_] pourcentage de chance que tous les adversaires aient au moins 1 carte à la couleur ? Et 2 ?
+			pour savoir quand ton petit peut passer au premier/second tour
+		[_] Déveine :
+			[_] N mains consécutives sans aucun bouts.
+			[_] N mains consécutives avec moins de M mains sans bouts.
+			[_] N mains consécutives avec 0 ou 1 bouts.
+			[_] N mains consécutives avec moins de M mains avec 0 ou 1 bouts.
+		[_] stat David = possibilité d'avoir un bout dans le chien (idem avec les rois ?)
+		[_] stat Vincent = possibilité de parasiter (tomber sur une personne qui a au moins 2 bouts alors que tu n'en as pas)
+
+	VERIF1 = faire les calculs pour le tarot à 4 -> les stats sont trouvables sur internet.
+	VERIF2 = faire un simulateur sur 10000 mains pour vérifier mes calculs.

@@ -1,0 +1,119 @@
+TL;DR : cette POC est une POC "manuelle", montrant le fonctionnement des volumes implicites docker, et leur réutilisation pour des containers différents.
+
+STEP 1 = montrer qu'on peut arrêter puis redémarrer un container, et pourtant y retrouver ses données :
+	TL;DR : les données survivent à l'arrêt du container (explication : les container qui ne montent pas EXPLICITEMENT de volume peuvent utiliser un volume IMPLICITE)
+	----------------------------------------
+	je pars d'un état propre :
+		docker volume prune
+		docker container prune
+		docker volume list  ----> vide
+		docker ps -a        ----> vide
+	créer un container potgis, et le laisser tourner :
+		docker run --name step1 --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 mdillon/postgis:9.5
+	à partir d'un client externe, créer des données dans le container postgis :
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c 'CREATE TABLE pouet (age INT, name TEXT);' -e
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c "INSERT INTO pouet VALUES (44, 'leia');" -e
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c "INSERT INTO pouet VALUES (42, 'luke');" -e
+	je vérfie que le container contient bien mes données :
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c "SELECT * FROM pouet;" -e
+			:SELECT * FROM pouet;
+			: age | name
+			:-----+------
+			:  44 | leia
+			:  42 | luke
+	arrêter le container :
+		Ctrl+C  (ou bien : docker stop step1)
+		docker volume list me montre bien le voume de mon container (je n'ai pas encore réussi à lui donner un nom, donc je ne vois que son id)
+		docker ps ne montre plus rien
+		docker ps -a montre un container arrêté
+	redémarrer le container arrêté :
+		docker start step1
+		docker attach step1
+		----------------------------------------
+		docker ps -a / docker volume : je vérifie que ça ne modifie pas les containers / volumes existants
+		je vérifie avec un SELECT que je peux bien utiliser le container, ET QUE JE RETROUVE MES DONNÉES
+
+
+STEP 2 = idem, mais au lieu de redémarrer le container existant avec "start", j'en créée un autre avec "run" :
+	TL;DR : dans ce cas, le nouveau container ne contient pas les données du premier (explication : il utilise un volume implicite différent)
+	----------------------------------------
+	on repart de l'état obtenu à la fin de la step 1, on arrête le premier container :
+		docker stop step1
+	on créée un nouveau container :
+		docker run --name step2 --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 mdillon/postgis:9.5
+	effet :
+		docker ps -a         -----> comme attendu, ça créée un deuxième container (le seul qui tourne)
+		docker volume list   -----> je constate que ça crée un nouveau volume
+	tentative d'accéder aux données avec un SELECT :
+		comme attendu, je constate que ce container n'a pas connaissance des données de l'autre (normal, car il utilise un autre volume)
+	cleanup : je supprime ce deuxième container et son volume pour retrouver l'état en fin de step1 où j'ai un seul container qui tourne avec son volume
+
+
+STEP 3 = détruire un container, et pourtant conserver ses données, et les réutiliser dans un autre container :
+	destruction du container (mais pas de son volume) puis recréation avec run :
+		docker container rm step1
+		docker volume list   <---- je confirme que le volume qui était associé au container "step1" est toujours là
+			l'id du volume contenant les données de step1 est 82644231459b690fbdaec320105b17a7cf444f6effc56068a2dc02a0f8ec93a2
+	ce qui ne marche pas :
+		docker run --name step3_ko --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 mdillon/postgis:9.5
+		ça ne marche pas car ça recrée encore un nouveau container, qui est associé à un nouveau volume (implicite) vide
+		je vérifie avec un SELECT que comme attendu, ce nouveau volume ne contient pas les données de step1
+	ce qui marche = création d'un container qui utilise explicitement un volume déjà existant :
+		docker run --name step3_ok --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 -v 82644231459b690fbdaec320105b17a7cf444f6effc56068a2dc02a0f8ec93a2:/var/lib/postgresql/data mdillon/postgis:9.5
+	et je confirme bien avec un SELECT que ce NOUVEAU container contient les données de step1 \o/
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c "SELECT * FROM pouet;" -e
+			:SELECT * FROM pouet;
+			: age |  name
+			:-----+--------
+			:  44 | leia
+			:  42 | luke
+			:(2 rows)
+
+STEP 4 = idem, mais avec un volume nommé :
+	l'id 82644231459b690fbdaec320105b17a7cf444f6effc56068a2dc02a0f8ec93a2 n'étant pas pratique, on va essayer de démarrer un container en nommant le volume
+	comme l'utilisation du volume est implicite, il faut savoir où il est monté dans le container :
+		https://docs.docker.com/engine/reference/builder/#volume
+		docker history mdillon/postgis:9.5
+		docker history --no-trunc mdillon/postgis:9.5|grep VOLUME
+			[...]  VOLUME [/var/lib/postgresql/data] 
+		je vois que le chemin de montage du volume implicite contenant les données est :
+			/var/lib/postgresql/data
+	à partir de ce chemin, je peux créer le container en précisant le nom du volume :
+		https://docs.docker.com/storage/volumes/#start-a-container-with-a-volume
+		docker run --name namedvolume --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 -v starwars:/var/lib/postgresql/data mdillon/postgis:9.5
+	NOTE IMPORTANTE :
+		j'ai beau nommer le container "starwars", ce nom de volume n'existe pas encore
+		le comportement reste le même que précédemment (où docker créait le volume implicite en créant le container)
+		c'est juste que le volume créé implicitement a maintenant un nom au lieu d'un id
+	je peux le remplir avec des données comme précédemment (psql + CREATE TABLE, INSERT INTO, etc.)
+	derrière, comme précédemment, si je supprime le container, le volume survit :
+		docker container rm namedvolume
+		docker ps -a         <---- il n'y a plus de container, arrêté ou démarré
+		docker volume list   <---- en revanche, on a bien le volume :
+			DRIVER              VOLUME NAME
+			local               starwars
+	du coup, je peux recréer un container différent vierge, mais utilisant le volume avec les données :
+		docker run --name anotheron --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 -v starwars:/var/lib/postgresql/data mdillon/postgis:9.5
+	POINT UN PEU BIZARRE :
+		de façon un peu curieuse, la même commande de montage ( -v starwars:/path/to/data) a deux effets différents selon que le le volume "starwars" existe ou non :
+			si le volume "starwars" n'existe pas : docker crée un volume avec ce nom, et l'utilise pour y placer les données de postgres
+			si le volume "starwars" existe : docker utilise le volume, sans écraser les données qui y existaient
+		c'est pas clair si cette différence de comportement, et notamment le non-écrasement de données existantes est propre à docker ou à postgres
+
+STEP 5 = idem, mais avec un volume montant un chemin de mon filesystem :
+	les étapes précédentes utilisaient les volumes docker
+		volume docker = les données sont effectivement dans /var/lib/docker/volumes/MONSUPERVOLUME/_data
+	on va faire la même chose avec un volume représentant un chemin de mon filesystem = /tmp/startrek
+		création d'un container avec montage d'un volume depuis mon filesystem :
+			docker run --name encoreun --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 -v /tmp/startrek:/var/lib/postgresql/data mdillon/postgis:9.5
+		je vérifie (en root) que le répertoire contient bien les infos du container :
+			sudo ls -lh /tmp/startrek/
+		je vérifie qu'il n'y a PAS de volume docker créé :
+			docker volum list  <---- RIEN !
+	comme précédemment, je peux remplir ce volume dedonnées (psql + CREATE TABLE, INSERT INTO, etc.), puis arrêter le container :
+		docker container rm encoreun
+		docker ps -a         <---- il n'y a plus de container, arrêté ou démarré
+	comme précédemment, je peux créer un tout nouveau container utilisant le même volume :
+		docker run --name dernierpromis --env POSTGRES_USER=me --env POSTGRES_PASSWORD=me --env POSTGRES_DB=mypoc --publish 6432:5432 -v /tmp/startrek:/var/lib/postgresql/data mdillon/postgis:9.5
+	et je vérifie qu'il a bien mes données \o/
+		PGPASSWORD=me  psql -h localhost -p 6432 -d mypoc -U me -c "SELECT * FROM pouet;" -e

@@ -1,0 +1,9 @@
+Ceci est un fichier de texte.
+Malheureusement, ce fichier comporte des mots interdits.
+Vous les reconnaîtrez facilement, ce sont les mots qui commencent par "rhodo", et qui finissent par "dendron".
+(Non, je n'ai pas dit rhododendron, puisque c'est interdit !)
+
+L'enjeu de cette poc est donc de supprimer toute ligne comportant les mots interdits.
+En effet, qui voudrait voir des RHODODENDRONS dans ses fichiers de textes ?
+À moins d'être un mordu de rhododendron, personne !
+Bref...

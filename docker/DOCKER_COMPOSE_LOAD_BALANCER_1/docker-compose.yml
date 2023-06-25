@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+    server1:
+        image: httpd:2.4
+        volumes:
+            - ${SERVED_DIR1}:/usr/local/apache2/htdocs/:ro
+    server2:
+        image: httpd:2.4
+        volumes:
+            - ${SERVED_DIR2}:/usr/local/apache2/htdocs/:ro
+    server3:
+        image: httpd:2.4
+        volumes:
+            - ${SERVED_DIR3}:/usr/local/apache2/htdocs/:ro
+    nginx:
+        image: nginx:1.21.1
+        ports:
+            - 7777:80
+        volumes:
+            - ./nginx_load_balancer.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - server1
+            - server2
+            - server3

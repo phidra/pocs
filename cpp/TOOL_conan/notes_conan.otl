@@ -1,0 +1,17 @@
+VRAC :
+	installation (dans un venv) :
+		pip install conan
+	conanfile.txt est un peu l'équivalent de requirements.txt
+	les packages sont téléchargés dans ~/.conan/ (et utilisiés depuis là-bas) plutôt que dans le projet
+	conan s'utilise un peu comme cmake, avec un build_dir
+	HOWTO : lister les packages dans le cache local :
+		conan search "*"
+	HOWTO : lister les packages dans un remote donné :
+		conan search "*" --remote=conan-center  # attention, long...
+	HOWTO : lister les dépendances de mon projet :
+		conan info /path/to/conanfile.txt  # e.g. conan info ..
+
+TODO :
+	tester le lancement d'un serveur conan local
+		https://docs.conan.io/en/latest/uploading_packages/running_your_server.html#running-your-server
+	tester l'upload d'un package de source

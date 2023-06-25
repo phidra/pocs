@@ -1,0 +1,31 @@
+RÉFÉRENCES :
+	https://github.com/LucHermitte/local_vimrc
+	https://github.com/LucHermitte/lh-vim-lib
+
+POSITION DU PROBLÈME :
+	Certaines configurations doivent être définies par projet (ex: le nom du fichier de tags, ou le répertoire racine des recherches grep).
+	L'objectif est de me permettre de changer de configuration vim en fonction du projet.
+	Le plugin local_vimrc est fait pour ça.
+
+POC RÉALISÉE POUR DÉMONTRER L'UTILISATION :
+	J'ai deux projets (project1 et project2), chacun contenant du code python (un main.py, et une librairie).
+	L'objectif est de pouvoir utiliser les tags depuis le main.py (avec Ctrl+clic-gauche sur un nom importé) pour consulter à la librairie du projet.
+	Pour cela, la POC offre deux états possibles, chargeable par des scripts :
+		desactivate_localrc.sh :
+			les fichiers de tags sont supprimés
+			les fichiers locaux sont supprimés
+			on vérifie qu'on ne peut pas accéder à la librairie depuis le main.py (en Ctrl+clic-gauche sur un nom importé).
+		activate_localrc.sh
+			les fichiers de tags sont créés
+			les fichiers locaux sont créés
+			on vérifie qu'on peut accéder à la librairie depuis le main.py (en Ctrl+clic-gauche sur un nom importé).
+
+Voir le contenu des scripts de gestion de la POC pour la mécanique interne.
+
+STILL TO DO :
+	Permettre que le localrc serve à définir son répertoire parent comme répertoire racine du projet :
+		répertoire racine du NERDTree
+		répertoire racine de grep
+		etC.
+	L'idée est qu'au lieu d'avoir à définir en absolu le nom du répertoire, il soit calculé automatiquement à partir du chemin de _local_vimrc.vim
+		cf. http://learnvimscriptthehardway.stevelosh.com/chapters/40.html

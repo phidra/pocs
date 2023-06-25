@@ -1,0 +1,15 @@
+// dot -Tsvg mygraph.dot -o mygraph.svg
+digraph G {
+    rankdir="LR"
+    edge [style=solid,dir=none,arrowtype=none]
+    A -> B [label=" 5"]
+    A -> C [label=" 10"]
+    A -> D [label=" 1"]
+    B -> C [label=" 8"]
+    B -> E [label=" 3"]
+    C -> F [label=" 5"]
+    D -> E [label=" 9"]
+    E -> G [label=" 5"]
+    F -> H [label=" 2"]
+    G -> H [label=" 3"]
+}

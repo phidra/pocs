@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <script type="text/javascript"  src="https://code.jquery.com/jquery-{{ cookiecutter.jquery_version }}.js"></script>
+    <link rel="stylesheet"         href="https://maxcdn.bootstrapcdn.com/bootstrap/{{ cookiecutter.bootstrap_version }}/css/bootstrap.min.css">
+    <script type="text/javascript"  src="https://maxcdn.bootstrapcdn.com/bootstrap/{{ cookiecutter.bootstrap_version }}/js/bootstrap.min.js"></script>
+
+    <!-- <script type="text/javascript" src=""></script> -->
+    <!-- <link rel="stylesheet" href=""> -->
+
+</head>
+
+<body>
+<div class="container">
+
+
+<!-- ======================================== Explications de la POC ======================================== -->
+<div class="row">
+    <h3>
+        {% if cookiecutter.ticket_number %}
+            ticket:{{ cookiecutter.ticket_number }}
+        {% endif %}
+
+        Cette POC montre l'utilisation de
+
+        {% if cookiecutter.library_name %}
+            {% if cookiecutter.library_url %}
+                <a href="{{ cookiecutter.library_url }}">{{ cookiecutter.library_name }}</a>
+            {% else %}
+                {{ cookiecutter.library_name }}
+            {% endif %}
+        pour
+        {% endif %}
+
+        QUELQUE CHOSE
+    </h3>
+
+    <div class="col-md-12">
+        <ul style="font-size: small;">
+            <li>Ici, expliquer ce que fait la POC et ce qu'elle apporte.</li>
+            <li>TODO</li>
+            <li>TODO</li>
+            <li>Que vaut dabool ? {% if cookiecutter.dabool %}TRUE{% else %}FALSE{% endif %}</li>
+            <li>TODO</li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- ======================================== Contenu de la POC ======================================== -->
+<div class="row">
+
+    <h3> Boutons de commandes : </h3>
+
+    <div class="col-md-12">
+
+        <div id="btn1" class="col-md-4">
+            <button class="btn btn-default">Bouton 1</button>
+        </div>
+
+        <div id="btn2" class="col-md-4">
+            <button class="btn btn-default">Bouton 2</button>
+        </div>
+
+        <div id="btn3" class="col-md-4">
+            <button class="btn btn-default">Bouton 3</button>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ======================================== Scripts de la POC ======================================== -->
+<script>
+$(document).ready(function()
+{
+    alert("BEGINNING");
+
+    // BOUTON 1 :
+    $("#btn1").click(function()
+    {
+        alert("CLICK btn1");
+    });
+
+    // BOUTON 2 :
+    $("#btn2").click(function()
+    {
+        alert("CLICK btn2");
+    });
+
+    // BOUTON 3 :
+    $("#btn3").click(function()
+    {
+        alert("CLICK btn3");
+    });
+
+});
+</script>
+
+
+
+</div> <!-- container -->
+</body>
+</html>
+
+
+
+
+
+
+
