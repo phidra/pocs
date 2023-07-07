@@ -24,9 +24,9 @@ fn main() {
 
     let args: Vec<String> = env::args().collect();
 
-    let arg0 = args.get(1);  // Option
+    let first_arg = args.get(1);  // Option
     const DEFAULT_N : i32 = 15;
-    let n = match arg0 {
+    let n = match first_arg {
         None => { println!("INFO : no argument provided, using default = {}", DEFAULT_N); DEFAULT_N},
         Some(s) => match s.parse::<i32>() {  // Result
             Ok(x) => x,
@@ -56,6 +56,7 @@ mod tests {
         assert_eq!(result, 610);
     }
 
+    // this test will fail, this is desired for the POC, to illustrate :
     #[test]
     fn it_does_not_work_15() {
         let result = fibo_if(15);
