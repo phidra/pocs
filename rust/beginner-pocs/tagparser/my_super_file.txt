@@ -1,0 +1,6 @@
+This is not a tag line
+- **tags** = language>agnostic ; topic>network ; level>beginner
+This is not a tag line either
+- **tags** = language>agnostic ; topic>productivity ; level>beginner
+- **tags** = language>agnostic ; topic>architecture ; level>intermediate
+- **tags** = language>agnostic ; MalformedTag ; pouet>youpi
