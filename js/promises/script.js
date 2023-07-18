@@ -2,9 +2,46 @@ async function main() {
 
   const poc_description = `
 
-Cette POC a pour objectif de mieux comprendre les Promises.
+Cette POC a pour objectif de mieux comprendre les Promises ; sources :
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
+    https://julesblom.com/writing/running-promises-in-parallel
 
-Je vois beaucoup de choses avec cette POC, et notamment :
+- C'est quoi une Promise, ça répond à quel problème :
+    les promises wrappent un traitement asynchrone (i.e. dont on n'aura pas forcément le résultat tout de suite)
+    javascript a une IO-loop builtin : les tâches asynchrone s'exécutent en background sans bloquer le thread principal
+    si je veux fourir une fonction qui fait un traitement asynchrone, je fais comment ? Par exemple :
+        + setTimeout = le client veut exécuter du code après un certain temps
+        + fetch = le client veut requêter une ressource HTTP et faire quelque chose avec la réponse
+- ancienne façon de faire = je demande au client de passer la callback qu'il souhaite appeler sur la réponse asynchrone quand elle arrive :
+    exemples :
+        + setTimeout(delay, callback)
+        + fetch(url, callback)
+    ça n'est pas très pratique, et ça conduit au callback-hell = la difficulté à chaîner des appels asynchrones
+    par exemple, si je veux enchaîner 3 appels HTTP à fetch (chacun dépendant de la réponse précédente) :
+        fetch(url1, (response1) => {
+            fetch(response1.url2), (response2) => {
+                fetch(response2.url3, (response3) => {
+                    console.log("final msg is ", response3.final_msg);
+                }
+            }
+        });
+- a contrario, les promises sont un moyen simple (avec then et catch) d'attacher des handlers à un traitement asynchrone, et à son futur résultat :
+    fetch(url1).then(
+        (response1) => { fetch(response1.url2); }).then (
+        (response2) => { fetch(response2.url3); }).then (
+        (response3) => { console.log("final msg is ", response3.final_msg); }
+    );
+    (je mets "simple" entre guillemets, car je trouve ça beaucoup moins intuitif que async/await)
+- du coup, toute fonction moderne qui fait un traitement asynchrone renvoie une Promise wrappant son résultat
+- il n'est presque jamais nécessaire de construire une Promise soi-même :
+    ça ne sert qu'à wrapper une fonction asynchrone un peu ancienne, qui n'a pas d'API utilisant une Promise, et qui attend une callback à la place
+    c'est ce que j'ai fait avec mon sleep autour de setTimeout
+        In an ideal world, all asynchronous functions would already return promises.
+        Unfortunately, some APIs still expect success and/or failure callbacks to be passed in the old way.
+
+
+Je comprends beaucoup de choses avec cette POC, et notamment :
 
 - les fonctions async sont un sucre syntaxique pour renvoyer des Promises (qui resolve, ou reject en cas d'exception)
     du coup, elles ne throwent jamais
@@ -17,11 +54,12 @@ Je vois beaucoup de choses avec cette POC, et notamment :
     (et si la fonction throw au lieu d'appeler reject, c'est à peu près pareil = https://stackoverflow.com/questions/33445415/javascript-promises-reject-vs-throw )
 - on dirait qu'il n'est pas du tout pratique de connaître le status actuel d'une promise :
     https://dev.to/xnimorz/101-series-promises-2-how-to-get-current-promise-status-and-build-your-own-promise-queue-18j8
-- quand on a plusieurs Promise, on peut récupérer une Promise "résumant" l'état des autres, selon deux axes orthogonaux :
-    doit-on failfast dès qu'une Promise échoue ?
-    renvoie-t-on un unique résultat (= celui de la première Promise qui réussit), ou un array des résultats des Promises ?
-    les 4 cas possibles sont traités par : .all / .allSettled / .race / .any
-    cf. https://julesblom.com/writing/running-promises-in-parallel
+- l'intérêt des fonctions asynchrones, c'est de possiblement de faire plusieurs traitements "en parallèle" :
+    pour cela, on utilise des fonctions de composition de Promises i.e. de composition de traitement asynchrone
+    ces fonctions renvoient une Promise "résumant" l'état de plusieurs autres Promise, selon deux axes orthogonaux :
+        doit-on failfast dès qu'une Promise échoue ?
+        renvoie-t-on un unique résultat (= celui de la première Promise qui réussit), ou un array des résultats des Promises ?
+    les 4 cas possibles pour ces 2 axes sont traités par : .all / .allSettled / .race / .any
 
 Je ressors de tout ceci avec une meilleure compréhension des Promises.
   `;
