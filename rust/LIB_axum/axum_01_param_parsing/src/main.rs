@@ -7,6 +7,14 @@ use axum::{
 };
 use std::collections::HashMap;
 
+const POC_DESCRIPTION: &str = "
+
+POC sur le parsing de paramètres des requêtes GET par axum.
+
+La POC lance un server → le requête avec un browser (chaque page indique les URLs utiles)
+
+";
+
 const FOOTER: &str = "
 <hr/>
 <p> You may want to check those URLs :
@@ -77,6 +85,8 @@ async fn two_path_params_handler(Path((param1, param2)): Path<(String, String)>,
 
 #[tokio::main]
 async fn main() {
+    println!("{POC_DESCRIPTION}");
+
     // build our application with a single route
     let app = Router::new()
         .route("/", get(root_handler))

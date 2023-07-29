@@ -8,6 +8,14 @@ use axum::{
     http::StatusCode,
 };
 
+const POC_DESCRIPTION: &str = "
+
+POC sur la gestion des status HTTP en retour de requête GET avec axum.
+
+La POC lance un server → le requête avec un browser (chaque page indique les URLs utiles)
+
+";
+
 const FOOTER: &str = "
 <hr/>
 <p> You may want to check those URLs :
@@ -151,6 +159,8 @@ async fn generic_404_handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+    println!("{POC_DESCRIPTION}");
+
     // build our application with a single route
     let app = Router::new()
         .route("/", get(root_handler))

@@ -1,5 +1,5 @@
 [package]
-name = "axum_03_returning_json_data"
+name = "poc-axum"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,5 +1,5 @@
 [package]
-name = "axum_01_param_parsing"
+name = "poc-axum"
 version = "0.1.0"
 edition = "2021"
 
