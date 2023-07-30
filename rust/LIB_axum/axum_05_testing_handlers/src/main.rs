@@ -77,7 +77,7 @@ async fn persons_handler(State(state): State<AppState>, Path((first_name, age)):
     let found = state.persons.get(&(first_name.clone(), age.clone()));
     match found {
         None => (StatusCode::NOT_FOUND, format!("person '{first_name} {age}' is unknown !")).into_response(),
-        Some(person) => (StatusCode::OK, Json(person.clone())).into_response(),
+        Some(person) => (StatusCode::OK, Json(person)).into_response(),
     }
 }
 
@@ -131,10 +131,7 @@ impl AppState {
     }
 }
 
-#[tokio::main]
-async fn main() {
-    println!("{POC_DESCRIPTION}");
-
+fn app() -> Router {
     let state = AppState::new();
 
     // build our application with a single route
@@ -147,10 +144,48 @@ async fn main() {
     // adding a generic 404 handler :
     let app = app.fallback(fallback_404_handler);
 
+    app
+}
+
+#[tokio::main]
+async fn main() {
+    println!("{POC_DESCRIPTION}");
+
+    let app = app();
+
     let url = "0.0.0.0:3000";
     println!("\nListening to requests on http://{url}");
     axum::Server::bind(&url.parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode},
+    };
+    use tower::ServiceExt; // for `oneshot` and `ready`
+
+    #[tokio::test]
+    async fn hello_world() {
+        let app = app();
+
+        let response = app
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
+        println!("BODY");
+        println!("{:?}", body);
+        assert_eq!(1, 2);
+    }
 }
