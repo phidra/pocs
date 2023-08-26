@@ -31,7 +31,6 @@ impl<'a, T> Node<'a, T> {
     }
 }
 
-
 pub fn poc() {
     println!("{STEP_DESCRIPTION}");
     #[allow(unused_mut)]
