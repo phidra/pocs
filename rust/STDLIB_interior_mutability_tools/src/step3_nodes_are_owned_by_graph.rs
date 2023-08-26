@@ -8,7 +8,7 @@ Cette step3 montre les défauts du design de la step3 :
 - en effet, il faut à la fois avoir :
     - un mutable borrow (sur le node qu'on veut muter pour lui ajouter des voisins)
     - un immutable borrow (sur le node qui sera le voisin)
-- et comme tous ces nodes appartiennent au graphe, ça revient à nécessiter
+- et comme tous ces nodes appartiennent au même field du graphe, ça revient à nécessiter
   à la fois un borrow mutable et immutable, ce que le borrow-checker interdit.
 
 
