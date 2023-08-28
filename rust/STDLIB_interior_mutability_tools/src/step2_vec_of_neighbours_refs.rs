@@ -1,5 +1,4 @@
 const STEP_DESCRIPTION: &str = r#"
-
 Cette step2 montre qu'un vector de références vers les nodes ne marche pas beaucoup mieux.
 
 Cette implémentation corrige un souci de la step1 (= on ne perd pas les nodes quand on
@@ -47,7 +46,7 @@ pub fn poc() {
     println!("{:?}", n1);
 
     // Mais une fois qu'un node est un voisin, il est irrémédiablement immutable :
-    // Si on décommente la ligne suivante, ça ne compile plus :
+    // Si on décommente ce qui suit, ça ne compile plus :
     // n1.add_neighbour(&n2);
 
     println!("{:?}", n1);

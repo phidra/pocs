@@ -1,5 +1,4 @@
 const STEP_DESCRIPTION: &str = r#"
-
 Pour cette step 1, on implémente le graphe naïvement :
 
 - un node est une simple paire (value, neighbours)
@@ -45,6 +44,6 @@ pub fn poc() {
     println!("{:?}", n3);
 
     // BOUM : le Node n1 n'existe plus en tant que tel : il a été moved dans n3.neighbours
-    // Si on décommente la ligne suivante, ça ne compile plus :
+    // Si on décommente ce qui suit, ça ne compile plus :
     // println!("{:?}", n1);
 }

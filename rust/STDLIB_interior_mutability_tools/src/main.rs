@@ -22,8 +22,16 @@ use step4_vec_of_neighbours_rc as step4;
 
 fn main() {
     println!("{POC_DESCRIPTION}");
+
+    println!("\n======== STEP 1 ========");
     step1::poc();
+
+    println!("\n======== STEP 2 ========");
     step2::poc();
+
+    println!("\n======== STEP 3 ========");
     step3::poc();
+
+    println!("\n======== STEP 4 ========");
     step4::poc();
 }

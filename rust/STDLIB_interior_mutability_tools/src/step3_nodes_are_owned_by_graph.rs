@@ -1,5 +1,4 @@
 const STEP_DESCRIPTION: &str = r#"
-
 Cette step3 montre les défauts du design de la step3 :
 
 - ici, j'essaye de stocker les nodes dans un graphe
@@ -74,7 +73,7 @@ pub fn poc() {
     println!("{:?}", n1);
     println!("{:?}", n2);
 
-    // Si on décommente la ligne suivante, ça ne compile plus :
+    // Si on décommente ce qui suit, ça ne compile plus :
     // let n3 = g.get_mut_node(2).unwrap();
     // n3.add_neighbour(n2);
 }
