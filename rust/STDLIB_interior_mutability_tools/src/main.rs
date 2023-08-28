@@ -20,6 +20,9 @@ use step3_nodes_are_owned_by_graph as step3;
 mod step4_vec_of_neighbours_rc;
 use step4_vec_of_neighbours_rc as step4;
 
+mod step5_vec_of_neighbours_refcell_rc;
+use step5_vec_of_neighbours_refcell_rc as step5;
+
 fn main() {
     println!("{POC_DESCRIPTION}");
 
@@ -34,4 +37,7 @@ fn main() {
 
     println!("\n======== STEP 4 ========");
     step4::poc();
+
+    println!("\n======== STEP 5 ========");
+    step5::poc();
 }
