@@ -38,6 +38,9 @@ tags
 # clang index :
 .clangd
 
+# clang cache :
+.cache
+
 # jupyter notebook :
 .ipynb_checkpoints
 
