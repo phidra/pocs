@@ -1,3 +1,4 @@
 # meson artifacts :
 */.cache
 */build
+*/subprojects
