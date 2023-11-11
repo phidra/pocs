@@ -22,7 +22,7 @@ Je les ai découpées en plusieurs morceaux pour illustrer les concepts progress
 - dans l'esprit, les tests de l'API publique pourraient même vivre en dehors du composant
 - note : pour que l'inclusion d'un header public se fasse en préfixant par le nom du composant, on complique artificiellement le chemin :
     ```
-    my_component/public/my_component/my_header.h
+    mylib/public/mylib/my_header.h
     ```
 
 
