@@ -1,6 +1,6 @@
 CONTEXTE = fin 2023, par ces POCs, je veux montrer une structure "canonique" pour un projet C++.
 
-Je les ai découpées en trois pour illustrer progressivement.
+Je les ai découpées en plusieurs morceaux pour illustrer les concepts progressivement.
 
 (NOTE : les considérations liées à l'archi hexagonale ont été laissées de côté ; elles sont plutôt à exprimer en terme de dépendances des composants les uns envers les autres)
 
