@@ -8,10 +8,13 @@ Je les ai découpées en plusieurs morceaux pour illustrer les concepts progress
 
 - coder l'essentiel de son projet sous la forme d'une lib, et le main est un "simple utilisateur" de la lib
 - organiser sa lib en 4 répertoires :
-    - `public/`  = l'API publique
-    - `impl/`    = l'implémentation privée
-    - `tests/`   = les tests
-    - `mains/`   = les mains du composant
+    ```
+    myproject/mylib
+    ├── impl    = l'implémentation privée
+    ├── mains   = les mains du composant
+    ├── public  = l'API publique
+    └── tests   = les tests
+    ```
 - les utilisateurs de la lib n'ont accès qu'à `public` (et notamment, ils n'ont pas accès à `impl`)
 - on distingue deux types de tests :
     - tests de l'API publique = le test un main qui est "simple utilisateur" de la lib
