@@ -1,0 +1,4 @@
+# meson artifacts :
+.cache
+_build_dir
+subprojects
