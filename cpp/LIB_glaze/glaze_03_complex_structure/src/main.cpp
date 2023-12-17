@@ -7,18 +7,12 @@ using namespace std;
 
 namespace example {
 
-// ce que je veux :
-//      des sous-structures
-//      des vectors
-//      des unordered_map indexées par des entiers et des strings
-//      des optional
-//      self referencing
-
 struct City {
     string country;
     float density;
 };
 
+// pour cette structure, on définit nous-même la façon dont elle sera encodée :
 struct Location {
     uint32_t number;
     string street;
@@ -38,6 +32,17 @@ struct Person {
 
 }  // namespace example
 
+// défintion "manuelle" (i.e. sans utiliser la reflection) de comment on serialize Location :
+// ATTENTION : ces template-specialiations semblent devoir être dans le namespace global :
+template <>
+struct glz::meta<example::Location> {
+    using T = example::Location;
+    static constexpr auto value = object("address without number",  // rename field
+                                         &T::street,
+                                         "city",
+                                         &T::city);
+};
+
 void print_poc_description() {
     cout << R"DELIM(
 CE QUE MONTRE CETTE POC = un exemple de serialization json d'un objet plus complexe :
@@ -47,15 +52,24 @@ CE QUE MONTRE CETTE POC = un exemple de serialization json d'un objet plus compl
 - unordered_map
 - optional
 
-
-Notamment : on n'a pas besoin d'écrire du code supplémentaire pour serializer une structure existante : par défaut la lib est capable d'inspecter les structures.
+Notamment : la lib est capable d'inspecter les structures : par défaut, on n'a pas besoin d'écrire du code
+supplémentaire pour serializer une structure existante.
 
 On peut pretty-printer une string json.
 
-Deux petits loups :
+QUELQUES NOTES ET LOUPS :
 
 - serialization des optional = lève un warning de compilation dans le code de glaze
 - serialization d'une structure auto-référencée : casse la reflection par défaut
+- si la lib fait des choses bizarres (et affiche p.ex. des structures vides), essayer de définir les métadonnées
+  manuelles plutôt que se reposer sur la reflection.
+- au final, seuls les cas simplistes permettent de profiter de la réflection (mais d'un autre côté, les métadonnées
+  manuelles sont faciles à écrire)
+- limtation : les métadonnées doivent être définies dans le namespace global...
+- à cause du langage (ou d'une limitation de glaze ?), les métadonnées ne peuvent pas être définies dans une fonction
+- si je veux profiter de la reflection et ne pas avoir à créer une structure supplémentaire, les structures ne doivent
+  pas avoir de constructeur (je ne comprends pas bien pourquoi)
+
 
 )DELIM";
     cout << endl;
