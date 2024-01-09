@@ -1,0 +1,7 @@
+# meson artifacts :
+.cache
+_build_dir
+
+# normalement, on voudra plutôt ignorer tout subprojects/ SAUF subproject/*.wrap
+# (mais ici, créer le fichier .wrap avec 'meson wrap install' fait partie de la POC)
+subprojects/
