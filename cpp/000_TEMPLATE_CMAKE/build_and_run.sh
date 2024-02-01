@@ -4,7 +4,11 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
-# build with conan + cmake :
+this_script_parent="$(realpath "$(dirname "$0")" )"
+echo "parent = $this_script_parent" > /dev/null
+
+
+# build with cmake :
 BUILD_DIR="NOGIT_build"
 mkdir -p "${BUILD_DIR}"
 cmake -B "${BUILD_DIR}" .
