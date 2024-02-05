@@ -1,0 +1,1 @@
+option('compile_with_opentelemetry', type : 'boolean', value : 'false', description : 'Build with OpenTelemetry')

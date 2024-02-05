@@ -20,13 +20,16 @@ cat << EOF
 
 Cette POC montre qu'on peut découpler l'instrumentation d'une app avec l'API OpenTelemetry et l'export des telemetry-data.
 
-Ici, notre app NE DÉPEND PAS du SDK opentelemetry-cpp, elle ne dépend que de l'API header-only.
-Elle est utilisée au sein d'un main QUI DÉPEND du SDK (via une sous-lib), et qui peut ou non initialiser un tracer.
+Ici, notre app est une librairie statique qui NE DÉPEND PAS du SDK opentelemetry-cpp, elle ne dépend que de l'API header-only.
+
+Une deuxième librairie statique DÉPEND DU SDK, et est responsable d'initialiser un "vrai" tracer (plutôt que le stub).
+
+Ces deux librairies sont utilisées par le main, qui ne dépend donc directement ni de l'API ni du SDK.
 
 Selon que le tracer ait été initialisé ou non, les mêmes appels à l'API d'instrumentation dans l'app produiront des résultats différents :
     - si le tracer a été initialisé : ils enregistreront des spans, affichées sur stdout
     - sinon : ils ne feront rien, les appels sont des noop
 
-Le choix d'initialiser le tracer ou non est fait au runtime (selon qu'on passe un argument ou non au main)
+Le choix d'initialiser un vrai tracer avec le SDK, ou de garder le stub noop de l'API est fait au runtime (selon qu'on passe un argument ou non au main)
 
 EOF

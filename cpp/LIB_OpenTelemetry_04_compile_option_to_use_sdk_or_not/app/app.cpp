@@ -2,6 +2,7 @@
 
 // Notre app utilise l'API OpenTelemetry pour instrumenter le code, mais n'utilise pas le SDK.
 // (si OpenTelemetry n'a pas été initialisé, l'utilisation de cette API sera des noop)
+// À noter que la dépendance de notre app à l'API OpenTelemetry n'est pas optionnelle (à la différence du SDK)
 #include "opentelemetry/trace/provider.h"
 
 std::string prefix(std::string const& in) {
