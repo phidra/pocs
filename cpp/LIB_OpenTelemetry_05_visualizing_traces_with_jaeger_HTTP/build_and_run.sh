@@ -14,7 +14,7 @@ CXX=clang++-14 meson compile -C NOGIT_build_dir/
 
 cat << EOF
 
-Cette POC démontre la visualisation de traces OTel avec jaeger.
+Cette POC démontre la visualisation de traces OTel avec jaeger en exportant en HTTP.
 
 Par rapport aux POCS précédentes :
 
