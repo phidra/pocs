@@ -16,8 +16,6 @@ namespace sdktrace = opentelemetry::sdk::trace;
 namespace otlp = opentelemetry::exporter::otlp;
 
 void init_telemetry() {
-    std::cout << "INITIALIZING A REAL SDK TRACER THAT EXPORTS TO JAEGER" << std::endl;
-
     // export OTLP HTTP :
     otlp::OtlpHttpExporterOptions opts;
     opts.url = "http://localhost:4318/v1/traces";
