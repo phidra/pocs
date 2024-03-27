@@ -5,39 +5,38 @@
 #include <vector>
 #include <algorithm>
 
-namespace RoutingKit{
+namespace RoutingKit {
 
-class GeoPositionToNode{
-public:
-	GeoPositionToNode(){};
+class GeoPositionToNode {
+   public:
+    GeoPositionToNode(){};
 
-	GeoPositionToNode(const std::vector<float>&latitude, const std::vector<float>&longitude);
+    GeoPositionToNode(const std::vector<float>& latitude, const std::vector<float>& longitude);
 
-	unsigned point_count() const {
-		return point_position.size();
-	}
+    unsigned point_count() const { return point_position.size(); }
 
-	struct NearestNeighborhoodQueryResult{
-		unsigned id;
-		float distance;
-		
-	};
+    struct NearestNeighborhoodQueryResult {
+        unsigned id;
+        float distance;
+    };
 
-	// query_radius is in meter
-	NearestNeighborhoodQueryResult find_nearest_neighbor_within_radius(float query_latitude, float query_longitude, float query_radius)const;
-	std::vector<GeoPositionToNode::NearestNeighborhoodQueryResult>find_all_nodes_within_radius(float query_latitude, float query_longitude, float query_radius)const;
+    // query_radius is in meter
+    NearestNeighborhoodQueryResult find_nearest_neighbor_within_radius(float query_latitude,
+                                                                       float query_longitude,
+                                                                       float query_radius) const;
+    std::vector<GeoPositionToNode::NearestNeighborhoodQueryResult>
+    find_all_nodes_within_radius(float query_latitude, float query_longitude, float query_radius) const;
 
-// private:
-	struct PointPosition{
-		float latitude;
-		float longitude;
-	};
+    // private:
+    struct PointPosition {
+        float latitude;
+        float longitude;
+    };
 
-	std::vector<PointPosition>point_position;
-	std::vector<unsigned>point_id;
-
+    std::vector<PointPosition> point_position;
+    std::vector<unsigned> point_id;
 };
 
-} // RoutingKit
+}  // namespace RoutingKit
 
 #endif

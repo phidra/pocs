@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-int __attribute__ ((noinline)) parse(char* arg) {
+int __attribute__((noinline)) parse(char* arg) {
     return atoi(arg);
 }
 

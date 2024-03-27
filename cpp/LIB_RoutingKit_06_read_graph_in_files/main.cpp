@@ -2,9 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-
 using namespace std;
-
 
 void usage(string prog_name) {
     cerr << "USAGE:" << endl;
@@ -23,7 +21,6 @@ void usage(string prog_name) {
     cerr << "This program also writes human-useful information on stderr." << endl;
     cerr << endl;
 }
-
 
 int get_int(string int_arg, string prog_name) {
     int value = -1;
@@ -47,10 +44,10 @@ vector<unsigned> get_vector(string filename, string prog_name) {
     string line;
     int value;
     vector<unsigned> to_return;
-    while(getline(stream, line).good()) {
+    while (getline(stream, line).good()) {
         value = stoi(line);
         if (value < 0) {
-            cerr << "ERROR : bad parsed value (" << value << ") from file : " << filename << endl; 
+            cerr << "ERROR : bad parsed value (" << value << ") from file : " << filename << endl;
             cerr << "\n";
             exit(3);
         }
@@ -59,18 +56,15 @@ vector<unsigned> get_vector(string filename, string prog_name) {
     return to_return;
 }
 
-RoutingKit::ContractionHierarchy build_ch(vector<unsigned> const& tails, vector<unsigned> const& heads, vector<unsigned> const& weights, int num_nodes) {
-    auto ch = RoutingKit::ContractionHierarchy::build(
-        num_nodes,
-        tails,
-        heads,
-        weights
-    );
+RoutingKit::ContractionHierarchy build_ch(vector<unsigned> const& tails,
+                                          vector<unsigned> const& heads,
+                                          vector<unsigned> const& weights,
+                                          int num_nodes) {
+    auto ch = RoutingKit::ContractionHierarchy::build(num_nodes, tails, heads, weights);
     return ch;
 }
 
-int main(int argc, char* argv[]){
-
+int main(int argc, char* argv[]) {
     string prog_name = argv[0];
 
     if (argc != 7) {
@@ -98,7 +92,6 @@ int main(int argc, char* argv[]){
     auto heads = get_vector(heads_file, prog_name);
     auto weights = get_vector(weights_file, prog_name);
 
-
     cerr << "Building CH" << endl;
     auto ch = build_ch(tails, heads, weights, NUM_NODES);
     cerr << "Computing shortest path between " << SOURCE << " and " << TARGET << endl;
@@ -108,12 +101,13 @@ int main(int argc, char* argv[]){
     auto distance = ch_query.get_distance();
     auto path_as_nodes = ch_query.get_node_path();
 
-    cerr << "To get from "<< SOURCE << " to "<< TARGET << " one needs " << distance << " meters." << endl;  // for humans
+    cerr << "To get from " << SOURCE << " to " << TARGET << " one needs " << distance << " meters."
+         << endl;              // for humans
     cout << distance << endl;  // for automatic parsing
     cerr << "The path is";
-    for(auto n: path_as_nodes) {
+    for (auto n : path_as_nodes) {
         cerr << " " << n << " ";  // for humans
-        cout << n << endl;  // for automatic parsing
+        cout << n << endl;        // for automatic parsing
     }
     cerr << endl;
 }

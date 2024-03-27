@@ -16,41 +16,37 @@ namespace gtfs {
 
 template <typename T>
 class ContContainer {
- public:
-  ContContainer() : _final(false){};
-  T* add(const T& obj);
-  bool remove(const std::string& id);
-  const T* get(const std::string& id) const;
-  T* get(const std::string& id);
-  const T* getRef(const std::string& id) const;
-  T* getRef(const std::string& id);
-  size_t size() const;
+   public:
+    ContContainer() : _final(false){};
+    T* add(const T& obj);
+    bool remove(const std::string& id);
+    const T* get(const std::string& id) const;
+    T* get(const std::string& id);
+    const T* getRef(const std::string& id) const;
+    T* getRef(const std::string& id);
+    size_t size() const;
 
-  void finalize();
+    void finalize();
 
-  typename std::vector<T>::const_iterator begin() const;
-  typename std::vector<T>::iterator begin();
+    typename std::vector<T>::const_iterator begin() const;
+    typename std::vector<T>::iterator begin();
 
-  typename std::vector<T>::const_iterator end() const;
-  typename std::vector<T>::iterator end();
+    typename std::vector<T>::const_iterator end() const;
+    typename std::vector<T>::iterator end();
 
- private:
-  std::vector<T> _vec;
-  bool _final;
+   private:
+    std::vector<T> _vec;
+    bool _final;
 };
 
 template <typename T>
 struct ContCompCmp {
-  bool operator()(const T& lh, const T& rh) const {
-    return lh.getId() < rh.getId();
-  }
+    bool operator()(const T& lh, const T& rh) const { return lh.getId() < rh.getId(); }
 };
 
 template <typename T>
 struct ContCompCmp2 {
-  bool operator()(const T& lh, const std::string& rh) const {
-    return lh.getId() < rh;
-  }
+    bool operator()(const T& lh, const std::string& rh) const { return lh.getId() < rh; }
 };
 
 #include "ContContainer.tpp"

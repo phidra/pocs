@@ -4,7 +4,6 @@
 #include "addressbook.pb.h"
 #include <google/protobuf/util/json_util.h>
 
-
 using namespace std;
 
 void add_empty_person(tutorial::AddressBook& book) {
@@ -16,7 +15,6 @@ void add_stub_person(tutorial::AddressBook& book) {
     new_person_ptr->set_id(42);
     *new_person_ptr->mutable_name() = "Luke Skywalker";
     new_person_ptr->set_email("luke@etoilenoire.com");
-
 
     tutorial::Person::PhoneNumber* phone1 = new_person_ptr->add_phones();
     phone1->set_number("01.23.45.67.89");
@@ -43,4 +41,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-

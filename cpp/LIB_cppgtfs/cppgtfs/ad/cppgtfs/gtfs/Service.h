@@ -22,48 +22,47 @@ namespace gtfs {
 typedef flat::ServiceDate ServiceDate;
 
 class Service {
- public:
-  typedef Service* Ref;
-  static std::string getId(Ref r) { return r->getId(); }
+   public:
+    typedef Service* Ref;
+    static std::string getId(Ref r) { return r->getId(); }
 
-  typedef flat::Calendar::SERVICE_DAY SERVICE_DAY;
-  typedef flat::CalendarDate::EXCEPTION_TYPE EXCEPTION_TYPE;
+    typedef flat::Calendar::SERVICE_DAY SERVICE_DAY;
+    typedef flat::CalendarDate::EXCEPTION_TYPE EXCEPTION_TYPE;
 
-  explicit Service(const string& id);
-  Service(const string& id, uint8_t serviceDays, ServiceDate start,
-          ServiceDate end);
+    explicit Service(const string& id);
+    Service(const string& id, uint8_t serviceDays, ServiceDate start, ServiceDate end);
 
-  const std::string& getId() const;
-  const std::map<ServiceDate, Service::EXCEPTION_TYPE>& getExceptions() const;
+    const std::string& getId() const;
+    const std::map<ServiceDate, Service::EXCEPTION_TYPE>& getExceptions() const;
 
-  void addException(const ServiceDate& d, EXCEPTION_TYPE t);
+    void addException(const ServiceDate& d, EXCEPTION_TYPE t);
 
-  bool isActiveOn(const ServiceDate& d) const;
+    bool isActiveOn(const ServiceDate& d) const;
 
-  static SERVICE_DAY getServiceDay(const ServiceDate& d);
-  uint8_t getServiceDates() const;
+    static SERVICE_DAY getServiceDay(const ServiceDate& d);
+    uint8_t getServiceDates() const;
 
-  EXCEPTION_TYPE getExceptionOn(const ServiceDate& d) const;
+    EXCEPTION_TYPE getExceptionOn(const ServiceDate& d) const;
 
-  const ServiceDate& getBeginDate() const;
-  const ServiceDate& getEndDate() const;
+    const ServiceDate& getBeginDate() const;
+    const ServiceDate& getEndDate() const;
 
-  bool hasServiceDays() const;
+    bool hasServiceDays() const;
 
-  flat::Calendar getFlat() const {
-    flat::Calendar c;
-    c.id = _id;
-    c.serviceDays = _serviceDays;
-    c.begin = _begin;
-    c.end = _end;
-    return c;
-  }
+    flat::Calendar getFlat() const {
+        flat::Calendar c;
+        c.id = _id;
+        c.serviceDays = _serviceDays;
+        c.begin = _begin;
+        c.end = _end;
+        return c;
+    }
 
- private:
-  string _id;
-  uint8_t _serviceDays;
-  std::map<ServiceDate, Service::EXCEPTION_TYPE> _exceptions;
-  ServiceDate _begin, _end;
+   private:
+    string _id;
+    uint8_t _serviceDays;
+    std::map<ServiceDate, Service::EXCEPTION_TYPE> _exceptions;
+    ServiceDate _begin, _end;
 };
 
 }  // namespace gtfs

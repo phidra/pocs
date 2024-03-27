@@ -26,31 +26,31 @@ namespace util {
 typedef std::vector<std::string> HeaderList;
 
 class CsvWriter {
- public:
-  // Initializes the parser by opening the file
-  CsvWriter(std::ostream* str, const HeaderList& headers);
+   public:
+    // Initializes the parser by opening the file
+    CsvWriter(std::ostream* str, const HeaderList& headers);
 
-  void writeDouble(double d);
-  void writeString(const std::string& str);
-  void writeInt(int i);
-  void skip();
+    void writeDouble(double d);
+    void writeString(const std::string& str);
+    void writeInt(int i);
+    void skip();
 
-  void flushLine();
+    void flushLine();
 
- private:
-  std::ostream* _stream;
-  HeaderList _headers;
-  bool _hWritten;
-  bool _first;
-  char _delim;
+   private:
+    std::ostream* _stream;
+    HeaderList _headers;
+    bool _hWritten;
+    bool _first;
+    char _delim;
 
-  char _dblBuf[25];
+    char _dblBuf[25];
 
-  void writeRawString(const std::string& str);
-  void writeStrArr(const std::vector<std::string>& arr);
-  void writeHeader();
+    void writeRawString(const std::string& str);
+    void writeStrArr(const std::vector<std::string>& arr);
+    void writeHeader();
 
-  std::string escStr(const std::string& str) const;
+    std::string escStr(const std::string& str) const;
 };
 }  // namespace util
 }  // namespace ad

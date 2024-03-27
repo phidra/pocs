@@ -9,8 +9,7 @@
 using namespace boost;
 using namespace std;
 
-int main(int,char*[])
-{
+int main(int, char*[]) {
     cout << endl;
     cout << "Cette POC est surtout là pour illustrer l'ANCIENNE façon de manipuler les properties." << endl;
     cout << "(par opposition aux bundled-properties, qui sont la façon MODERNE de faire)" << endl;
@@ -21,7 +20,6 @@ int main(int,char*[])
     // remplissage du graphe (= rien ne change)
     // accès aux propriétés des vertex / edges
     // accès à une pmap des propriétés
-
 
     // Définition d'une vertex-property en utilisant un tag pré-existant (= son nom) :
     // cf. https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/property.html
@@ -36,7 +34,9 @@ int main(int,char*[])
     //      https://www.boost.org/doc/libs/1_75_0/boost/graph/properties.hpp
 
     // Définition de deux edge-properties, l'une avec un tag pré-existant, l'autre avec un tag custom :
-    struct edge_walk_allowed_t { using kind = edge_property_tag; };  // c'est comme ça qu'on définit un tag custom
+    struct edge_walk_allowed_t {
+        using kind = edge_property_tag;
+    };  // c'est comme ça qu'on définit un tag custom
     using EdgeProperty = property<edge_weight_t, int, property<edge_walk_allowed_t, bool> >;
 
     // La définition du graphe, et des properties des vertex+edges ne change pas :
@@ -82,4 +82,3 @@ int main(int,char*[])
 
     return 0;
 }
-

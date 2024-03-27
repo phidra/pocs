@@ -20,7 +20,8 @@ using namespace std;
 //      un stream est ".good()" même lorsqu'il et construit sur une ligne vide
 //      ce n'est que lorsqu'on essaye de le LIRE qu'un stream vide passe en ".bad()"
 //      par conséquent, un getline sur une ligne vide va setter le stream à bad (et le token correspondant sera vide)
-//      dans mon code de parsing ci-dessous, une ligne vide est donc convertie en un seul token vide (ce qui est le comportement souhaité)
+//      dans mon code de parsing ci-dessous, une ligne vide est donc convertie en un seul token vide (ce qui est le
+//      comportement souhaité)
 //
 // Comportement de getline : caractères renvoyés + conditions d'invalidité du stream ?
 //      doc = https://en.cppreference.com/w/cpp/string/basic_string/getline
@@ -37,19 +38,19 @@ using namespace std;
 //      On repart alors pour l'itération suivante, mais comme la virgule était le dernier caractère de la ligne...
 //      ... getline se retrouve immédiatement dans la situation où il n'y a plus de caractères à récupérer.
 //      Du coup il ne mets rien dans la STR, il sette eofbit, et retourne.
-//      (avec mon code de parsing ci-dessous, ça se traduit par le fait qu'on renvoie un dernier token vide, ce qui est le comportement souhaité)
+//      (avec mon code de parsing ci-dessous, ça se traduit par le fait qu'on renvoie un dernier token vide, ce qui est
+//      le comportement souhaité)
 
-vector<string> split_line(string const& line)
-{
+vector<string> split_line(string const& line) {
     // pour cette POC, le délimiteur est fixé :
     const char COMMA = ',';
 
-	vector<string> tokens;
+    vector<string> tokens;
     stringstream ss(line);
 
-    // NOTE : une raison pour laquelle ce code se comporte comme expected est que si getline ne trouve rien, il renvoie une string vide.
-    while(ss.good() )
-    {
+    // NOTE : une raison pour laquelle ce code se comporte comme expected est que si getline ne trouve rien, il renvoie
+    // une string vide.
+    while (ss.good()) {
         string substr;
         getline(ss, substr, COMMA);
         tokens.push_back(substr);
@@ -57,15 +58,13 @@ vector<string> split_line(string const& line)
     return tokens;
 }
 
-bool check(string testId, string const& line, vector<string> const& expected_tokens)
-{
+bool check(string testId, string const& line, vector<string> const& expected_tokens) {
     cout << boolalpha;
     vector<string> tokens = split_line(line);
     cout << (tokens == expected_tokens ? "[OK]" : "BOUM") << "      " << testId << endl;
 }
 
-int main(void)
-{
+int main(void) {
     // au passage : je vérifie qu'un stream initialisé sur une ligne vide est good :
     stringstream emptystream("");
     assert(emptystream.good());
@@ -79,13 +78,13 @@ int main(void)
 
     // Ces tests indiquent le comportement souhaité dans chaque cas.
     // Notamment, dans plusieurs cas, on VEUT récupérer un token vide.
-	check("basic",              "padme,amidala,62,Coruscant", {"padme","amidala","62","Coruscant"});
-	check("trailing comma",     "leia,skywalker,35,",         {"leia","skywalker","35",""});
-	check("emptyline",          "",                           {""});
-	check("singletoken",        "luke",                       {"luke"});
-	check("three empty tokens", ",,",                         {"", "", ""});
-	check("singletrailing",     "luke,",                      {"luke", ""});
-	check("singleleading",      ",luke",                      {"", "luke"});
-	check("withnewline",        "leia,skywalker,35,\n",         {"leia","skywalker","35","\n"});
-	check("withnewline2",       "leia,skywalker,35\n",         {"leia","skywalker","35\n"});
+    check("basic", "padme,amidala,62,Coruscant", {"padme", "amidala", "62", "Coruscant"});
+    check("trailing comma", "leia,skywalker,35,", {"leia", "skywalker", "35", ""});
+    check("emptyline", "", {""});
+    check("singletoken", "luke", {"luke"});
+    check("three empty tokens", ",,", {"", "", ""});
+    check("singletrailing", "luke,", {"luke", ""});
+    check("singleleading", ",luke", {"", "luke"});
+    check("withnewline", "leia,skywalker,35,\n", {"leia", "skywalker", "35", "\n"});
+    check("withnewline2", "leia,skywalker,35\n", {"leia", "skywalker", "35\n"});
 }

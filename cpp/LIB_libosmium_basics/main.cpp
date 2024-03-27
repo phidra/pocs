@@ -12,28 +12,20 @@
 // overwrite functions node(), way(), and relation(). Other functions are
 // available, too. Read the API documentation for details.
 struct CountHandler : public osmium::handler::Handler {
-
-    std::uint64_t nodes     = 0;
-    std::uint64_t ways      = 0;
+    std::uint64_t nodes = 0;
+    std::uint64_t ways = 0;
     std::uint64_t relations = 0;
 
     // This callback is called by osmium::apply for each node in the data.
-    void node(const osmium::Node&) noexcept {
-        ++nodes;
-    }
+    void node(const osmium::Node&) noexcept { ++nodes; }
 
     // This callback is called by osmium::apply for each way in the data.
-    void way(const osmium::Way&) noexcept {
-        ++ways;
-    }
+    void way(const osmium::Way&) noexcept { ++ways; }
 
     // This callback is called by osmium::apply for each relation in the data.
-    void relation(const osmium::Relation&) noexcept {
-        ++relations;
-    }
+    void relation(const osmium::Relation&) noexcept { ++relations; }
 
-}; // struct CountHandler
-
+};  // struct CountHandler
 
 int main(int argc, char* argv[]) {
     std::cout << "POC d'un exemple fourni avec libosmium = charger le fichier et compter les éléments" << std::endl;
@@ -59,8 +51,8 @@ int main(int argc, char* argv[]) {
         // destructor can't throw, you will not see any errors otherwise.
         reader.close();
 
-        std::cout << "Nodes: "     << handler.nodes << "\n";
-        std::cout << "Ways: "      << handler.ways << "\n";
+        std::cout << "Nodes: " << handler.nodes << "\n";
+        std::cout << "Ways: " << handler.ways << "\n";
         std::cout << "Relations: " << handler.relations << "\n";
 
         // Because of the huge amount of OSM data, some Osmium-based programs
@@ -82,4 +74,3 @@ int main(int argc, char* argv[]) {
     std::cout << "POC = done in " << duration_in_s << " ms" << std::endl;
     return 0;
 }
-

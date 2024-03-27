@@ -52,7 +52,7 @@ inline void dump_geojson_graph(std::ostream& out, Graph const& graph) {
     rapidjson::Value features(rapidjson::kArrayType);
 
     boost::graph_traits<Graph>::edge_iterator edge, edge_end;
-    for (std::tie(edge, edge_end) = boost::edges(graph); edge!= edge_end; ++edge) {
+    for (std::tie(edge, edge_end) = boost::edges(graph); edge != edge_end; ++edge) {
         // coordinates :
         rapidjson::Value coordinates(rapidjson::kArrayType);
 
@@ -99,17 +99,18 @@ inline void dump_geojson_graph(std::ostream& out, Graph const& graph) {
     doc.Accept(writer);
 }
 
-
 template <typename Polylines>
-void geometries_to_geojson_linestrings(std::ostream& out, Polylines const& polylines, const std::string stroke_color="#555555", const int stroke_width=2) {
+void geometries_to_geojson_linestrings(std::ostream& out,
+                                       Polylines const& polylines,
+                                       const std::string stroke_color = "#555555",
+                                       const int stroke_width = 2) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
 
     rapidjson::Value features(rapidjson::kArrayType);
 
-    for(auto polyline = boost::begin(polylines); polyline != boost::end(polylines); ++polyline)
-    {
+    for (auto polyline = boost::begin(polylines); polyline != boost::end(polylines); ++polyline) {
         // coordinates :
         rapidjson::Value coordinates(rapidjson::kArrayType);
         for (auto& node_location : *polyline) {
@@ -149,18 +150,19 @@ void geometries_to_geojson_linestrings(std::ostream& out, Polylines const& polyl
     out << std::endl;
 }
 
-
 template <typename Edges>
-void edges_to_geojson_linestrings(std::ostream& out, Edges const & edges, Graph const& graph, const std::string stroke_color="#555555", const int stroke_width=2) {
+void edges_to_geojson_linestrings(std::ostream& out,
+                                  Edges const& edges,
+                                  Graph const& graph,
+                                  const std::string stroke_color = "#555555",
+                                  const int stroke_width = 2) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
 
     rapidjson::Value features(rapidjson::kArrayType);
 
-    for(auto edge = boost::begin(edges); edge != boost::end(edges); ++edge)
-    {
-
+    for (auto edge = boost::begin(edges); edge != boost::end(edges); ++edge) {
         // coordinates :
         rapidjson::Value coordinates(rapidjson::kArrayType);
 
@@ -213,9 +215,8 @@ void edges_to_geojson_linestrings(std::ostream& out, Edges const & edges, Graph 
     out << std::endl;
 }
 
-
 template <typename Points>
-void points_to_geojson_linestring(std::ostream& out, Points const & points) {
+void points_to_geojson_linestring(std::ostream& out, Points const& points) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
@@ -223,8 +224,7 @@ void points_to_geojson_linestring(std::ostream& out, Points const & points) {
     // coordinates :
     rapidjson::Value coordinates(rapidjson::kArrayType);
 
-    for(auto it = boost::begin(points); it != boost::end(points); ++it)
-    {
+    for (auto it = boost::begin(points); it != boost::end(points); ++it) {
         double lat = boost::geometry::get<0>(*it);
         double lng = boost::geometry::get<1>(*it);
         rapidjson::Value coords(rapidjson::kArrayType);
@@ -259,9 +259,8 @@ void points_to_geojson_linestring(std::ostream& out, Points const & points) {
     out << std::endl;
 }
 
-
 template <typename Points>
-void points_to_geojson_points(std::ostream& out, Points const & points) {
+void points_to_geojson_points(std::ostream& out, Points const& points) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);

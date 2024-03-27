@@ -4,8 +4,7 @@
 #include <omp.h>
 #include <cmath>
 
-
-// basic case = parallelizing a heavy computation. 
+// basic case = parallelizing a heavy computation.
 //
 // evaluated on two computers (lscpu) :
 //
@@ -21,15 +20,15 @@
 //
 //      g++ -std=c++11 -fopenmp main.cpp -o bin
 
-
 using namespace std;
 
 void f_linear(vector<int>&, vector<int>::size_type);
 void f_parallel(vector<int>&, vector<int>::size_type);
-int compute(int i) { return i*i*static_cast<int>(sqrt(static_cast<float>(i))) - 5555 * sin(static_cast<float>(i*i)); }
+int compute(int i) {
+    return i * i * static_cast<int>(sqrt(static_cast<float>(i))) - 5555 * sin(static_cast<float>(i * i));
+}
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     vector<int>::size_type size = 50 * 1000 * 1000;
     vector<int> v_linear(size, 0);
     vector<int> v_parallel(size, 0);
@@ -38,29 +37,26 @@ int main(int argc, char* argv[])
     auto time_point_1 = chrono::steady_clock::now();
     f_linear(v_linear, size);
     auto time_point_2 = chrono::steady_clock::now();
-    cout << "f_linear took : " << chrono::duration_cast<chrono::milliseconds>(time_point_2-time_point_1).count() << " ms" << endl;
-
+    cout << "f_linear took : " << chrono::duration_cast<chrono::milliseconds>(time_point_2 - time_point_1).count()
+         << " ms" << endl;
 
     cout << "running f_parallel" << endl;
     auto time_point_3 = chrono::steady_clock::now();
     f_parallel(v_parallel, size);
     auto time_point_4 = chrono::steady_clock::now();
-    cout << "f_parallel took : " << chrono::duration_cast<chrono::milliseconds>(time_point_4-time_point_3).count() << " ms" << endl;
+    cout << "f_parallel took : " << chrono::duration_cast<chrono::milliseconds>(time_point_4 - time_point_3).count()
+         << " ms" << endl;
 }
 
-void f_linear(vector<int>& v, vector<int>::size_type size)
-{
-    for (vector<int>::size_type i = 0; i < size; ++i)
-    {
+void f_linear(vector<int>& v, vector<int>::size_type size) {
+    for (vector<int>::size_type i = 0; i < size; ++i) {
         v[i] = compute(i);
     }
 }
 
-void f_parallel(vector<int>& v, vector<int>::size_type size)
-{
-    # pragma omp parallel for
-    for (vector<int>::size_type i = 0; i < size; ++i)
-    {
+void f_parallel(vector<int>& v, vector<int>::size_type size) {
+#pragma omp parallel for
+    for (vector<int>::size_type i = 0; i < size; ++i) {
         v[i] = compute(i);
     }
 }

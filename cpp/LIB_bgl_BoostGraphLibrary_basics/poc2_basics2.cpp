@@ -8,8 +8,7 @@
 using namespace boost;
 using namespace std;
 
-int main(int,char*[])
-{
+int main(int, char*[]) {
     cout << endl;
     cout << "Cette POC reste basique mais apporte des réponses à quelques questions pratiques et concrètes :" << endl;
     cout << "   - attribution de propriétés aux vertices / edges (y compris custom)" << endl;
@@ -18,10 +17,13 @@ int main(int,char*[])
     cout << "   - itérer sur les edges/vertices" << endl;
     cout << endl;
 
-
     // propriétés custom = tomtom_id :
-    struct vertex_tomtom_id_t { using kind = vertex_property_tag; };
-    struct edge_tomtom_id_t { using kind = edge_property_tag; };
+    struct vertex_tomtom_id_t {
+        using kind = vertex_property_tag;
+    };
+    struct edge_tomtom_id_t {
+        using kind = edge_property_tag;
+    };
     // chaque vertex a deux propriétés : son nom, et son id tomtom :
     using VertexProperty = property<vertex_name_t, std::string, property<vertex_tomtom_id_t, unsigned long> >;
     // chaque edge a deux propriétés : son coût, et son id tomtom :
@@ -59,7 +61,6 @@ int main(int,char*[])
     cout << "Nb edges = " << num_edges(graph) << endl;
     cout << "Nb vertices = " << num_vertices(graph) << endl;
 
-
     // Les EdgeDescriptor / VertexDescriptor sont les handle permettant de manipuler les edges/vertex.
     // On peut accéder (en temps constant, si je dis pas de bêtise) à une propriété d'un vertex donné :
     // Il faut passer le PropertyTag en premier paramètre (ici, un vertex_name_t vide) :
@@ -79,10 +80,10 @@ int main(int,char*[])
     // Itération sur tous les vertices du graphe :
     cout << "Itération sur tous les vertices :" << endl;
     VertexIterator v, v_end;
-    for (tie(v, v_end) = vertices(graph); v != v_end; ++v)
-    {
+    for (tie(v, v_end) = vertices(graph); v != v_end; ++v) {
         VertexDescriptor vd = *v;
-        cout << "vertex " << get(vertex_name_t{}, graph, vd) << " has the tomtom id : " << get(vertex_tomtom_id_t{}, graph, vd) << endl;
+        cout << "vertex " << get(vertex_name_t{}, graph, vd)
+             << " has the tomtom id : " << get(vertex_tomtom_id_t{}, graph, vd) << endl;
     }
     cout << endl;
 
@@ -90,11 +91,12 @@ int main(int,char*[])
     auto edge_pair = edges(graph);
     EdgeIterator e_begin = edge_pair.first;
     EdgeIterator e_end = edge_pair.second;
-    for (EdgeIterator e = e_begin; e != e_end; ++e)
-    {
+    for (EdgeIterator e = e_begin; e != e_end; ++e) {
         EdgeDescriptor ed = *e;
-        cout << "edge [" << get(vertex_name_t{}, graph, source(ed, graph)) << "->" << get(vertex_name_t{}, graph, target(ed, graph)) << "]";
-        cout << " has weight " << get(edge_weight_t{}, graph, ed) << " and tomtom id " << get(edge_tomtom_id_t{}, graph, ed) << endl;
+        cout << "edge [" << get(vertex_name_t{}, graph, source(ed, graph)) << "->"
+             << get(vertex_name_t{}, graph, target(ed, graph)) << "]";
+        cout << " has weight " << get(edge_weight_t{}, graph, ed) << " and tomtom id "
+             << get(edge_tomtom_id_t{}, graph, ed) << endl;
     }
     cout << endl;
 

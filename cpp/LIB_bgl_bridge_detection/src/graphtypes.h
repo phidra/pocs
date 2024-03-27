@@ -17,7 +17,6 @@ using WayId = osmium::object_id_type;
 using LocatedNode = std::pair<NodeOsmId, osmium::Location>;
 using Polyline = std::vector<osmium::Location>;
 
-
 inline std::string node_url(NodeOsmId id) {
     return std::string("https://www.openstreetmap.org/node/") + std::to_string(id);
 }

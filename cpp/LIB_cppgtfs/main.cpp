@@ -5,9 +5,11 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
-{
-    if (argc < 2) { cout << "ERROR : missing gtfs folder" << endl; exit(1); }
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cout << "ERROR : missing gtfs folder" << endl;
+        exit(1);
+    }
 
     string gtfs_folder = argv[1];
     cout << "Parsing GTFS from folder : " << gtfs_folder << endl;
@@ -21,10 +23,9 @@ int main(int argc, char* argv[])
     cout << "Le feed contient " << feed.getStops().size() << " stops" << endl;
     cout << "Le feed contient " << feed.getTrips().size() << " trips" << endl;
 
-
     // STEP 2 = itérer sur les routes :
     int counter = 0;
-    for (auto const& route: feed.getRoutes()) {
+    for (auto const& route : feed.getRoutes()) {
         // en itérant sur un container, on récupère une paire [id->object*]
         cout << "Route #" << counter++ << " : " << endl;
         cout << "\t id (from pair.first)  = " << route.first << endl;
@@ -56,7 +57,7 @@ int main(int argc, char* argv[])
     cout << "Ce trip a pour stoptimes : " << endl;
 
     // itérer sur les stops d'un trip se fait en itérant sur ses stoptimes (qui disposent d'une référence sur le stop) :
-    for (auto const& stoptime: trip.getStopTimes()) {
+    for (auto const& stoptime : trip.getStopTimes()) {
         cout << "StopTime n°" << stoptime.getSeq() << endl;
         cout << "\t DEPARTURE = " << stoptime.getDepartureTime().toString() << endl;
         cout << "\t ARRIVAL = " << stoptime.getArrivalTime().toString() << endl;

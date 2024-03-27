@@ -15,7 +15,7 @@ using MultiPoint = bg::model::multi_point<Point>;
 using Polygon = bg::model::polygon<Point>;
 
 template <typename Points>
-void to_geojson(ostream& out, Points const & points) {
+void to_geojson(ostream& out, Points const& points) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
@@ -25,8 +25,7 @@ void to_geojson(ostream& out, Points const & points) {
     // coordinates :
     rapidjson::Value coordinates(rapidjson::kArrayType);
 
-    for(auto it = boost::begin(points); it != boost::end(points); ++it)
-    {
+    for (auto it = boost::begin(points); it != boost::end(points); ++it) {
         double lng = bg::get<0>(*it);
         double lat = bg::get<1>(*it);
         rapidjson::Value coords(rapidjson::kArrayType);

@@ -13,18 +13,18 @@ namespace gtfs {
 namespace flat {
 
 struct FrequencyFlds {
-  size_t tripIdFld;
-  size_t startTimeFld;
-  size_t endTimeFld;
-  size_t headwaySecsFld;
-  size_t exactTimesFld;
+    size_t tripIdFld;
+    size_t startTimeFld;
+    size_t endTimeFld;
+    size_t headwaySecsFld;
+    size_t exactTimesFld;
 };
 
 struct Frequency {
-  std::string tripId;
-  Time startTime, endTime;
-  uint16_t headwaySecs;
-  bool exactTimes;
+    std::string tripId;
+    Time startTime, endTime;
+    uint16_t headwaySecs;
+    bool exactTimes;
 };
 
 }  // namespace flat

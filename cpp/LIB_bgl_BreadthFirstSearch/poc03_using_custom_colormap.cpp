@@ -8,48 +8,57 @@ using namespace boost;
 using namespace std;
 
 // the rank property-map associates a vertex to the rank of its discovery
-class BfsDiscoveryRankVisitor : public default_bfs_visitor
-{
-public:
+class BfsDiscoveryRankVisitor : public default_bfs_visitor {
+   public:
     BfsDiscoveryRankVisitor(string& discovered_vertices_) : discovered_vertices{discovered_vertices_} {}
     template <typename VertexDescriptor, typename Graph>
-    void discover_vertex(VertexDescriptor u, const Graph& mygraph) const
-    {
+    void discover_vertex(VertexDescriptor u, const Graph& mygraph) const {
         discovered_vertices.append(mygraph[u].name);
     }
     string& discovered_vertices;
 };
 
-
 char const* color_to_string(default_color_type c) {
-    switch(c) {
-        case default_color_type::gray_color:  return "gray";
-        case default_color_type::white_color: return "white";
-        case default_color_type::black_color: return "black";
-        case default_color_type::green_color:  return "green";
-        case default_color_type::red_color:  return "red";
+    switch (c) {
+        case default_color_type::gray_color:
+            return "gray";
+        case default_color_type::white_color:
+            return "white";
+        case default_color_type::black_color:
+            return "black";
+        case default_color_type::green_color:
+            return "green";
+        case default_color_type::red_color:
+            return "red";
     }
     return "unknown";
 }
 
-
-int main(int, char*[])
-{
+int main(int, char*[]) {
     cout << endl;
     cout << "Par rapport aux POCs précédentes, cette POC utilise une ColorMap custom pour le BFS" << endl;
 
-    cout << "   - cette ColorMap custom permet de marquer des noeuds comme black (déjà explorés) avant le début de l'algo" << endl;
+    cout << "   - cette ColorMap custom permet de marquer des noeuds comme black (déjà explorés) avant le début de "
+            "l'algo"
+         << endl;
     cout << "   - on est responsable de créer la ColorMap (et initialiser tous les noeuds à white)" << endl;
-    cout << "   - la fonction à appeler change : https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/breadth_first_visit.html" << endl;
+    cout << "   - la fonction à appeler change : "
+            "https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/breadth_first_visit.html"
+         << endl;
     cout << "   - conséquence 1 = E n'est pas visité (et n'apparaît donc pas dans la string finale)" << endl;
-    cout << "   - conséquence 2 = certains noeuds (e.g. G) sont visités plus tardivement, car par un autre chemin" << endl;
-    cout << "   - note :si on est sûr que l'algo ne s'appliquera qu'à une sous-partie du graphe, on peut passer une colormap..." << endl;
-    cout << "   - ... qui n'est définie que pour les vertex concernés (alors qu'avec breadth_first_search, l'algo commençait..." << endl;
-    cout << "   - ... par initialiser tous les vertex à white -> la colormap devait nécessairement les connaître)" << endl;
+    cout << "   - conséquence 2 = certains noeuds (e.g. G) sont visités plus tardivement, car par un autre chemin"
+         << endl;
+    cout << "   - note :si on est sûr que l'algo ne s'appliquera qu'à une sous-partie du graphe, on peut passer une "
+            "colormap..."
+         << endl;
+    cout << "   - ... qui n'est définie que pour les vertex concernés (alors qu'avec breadth_first_search, l'algo "
+            "commençait..."
+         << endl;
+    cout << "   - ... par initialiser tous les vertex à white -> la colormap devait nécessairement les connaître)"
+         << endl;
     cout << endl;
     cout << "(cf. des notes générales sur les BFS et boost dans le script bash de build/run)" << endl;
     cout << endl;
-
 
     //========================================
     // STEP 1 = defining graph :
@@ -106,7 +115,6 @@ int main(int, char*[])
     add_edge(E, G, {5, "Rue Lecourbe"}, mygraph);
     add_edge(F, H, {2, "Avenue des Champs-Élysées"}, mygraph);
     add_edge(G, H, {3, "Rue de la Paix"}, mygraph);
-
 
     //========================================
     // STEP 3 = applying BFS :

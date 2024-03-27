@@ -8,46 +8,45 @@
 #include <stdio.h>
 #endif
 
-namespace RoutingKit{
+namespace RoutingKit {
 
-class FileDataSource{
-public:
-	FileDataSource();
-	FileDataSource(const char*file_name);
-	FileDataSource(const std::string&file_name);
-	
-	unsigned long long size()const;
+class FileDataSource {
+   public:
+    FileDataSource();
+    FileDataSource(const char* file_name);
+    FileDataSource(const std::string& file_name);
 
-	void rewind();
+    unsigned long long size() const;
 
-	void open(const char*file_name);
-	void open(const std::string&file_name) {open(file_name.c_str());}
+    void rewind();
 
-	void close();
+    void open(const char* file_name);
+    void open(const std::string& file_name) { open(file_name.c_str()); }
 
-	FileDataSource(const FileDataSource&) = delete;
-	const FileDataSource&operator=(const FileDataSource&) = delete;
+    void close();
 
-	FileDataSource(FileDataSource&&o);
-	const FileDataSource&operator=(FileDataSource&&o);
+    FileDataSource(const FileDataSource&) = delete;
+    const FileDataSource& operator=(const FileDataSource&) = delete;
 
-	unsigned long long minimum_read_size() const {
-		return 1;
-	}
+    FileDataSource(FileDataSource&& o);
+    const FileDataSource& operator=(FileDataSource&& o);
 
-	unsigned long long read(char*buffer, unsigned long long to_read);
+    unsigned long long minimum_read_size() const { return 1; }
 
-	std::function<unsigned long long(char*, unsigned long long)>get_read_function_object();
+    unsigned long long read(char* buffer, unsigned long long to_read);
 
-	~FileDataSource(){ close(); }
-private:
-	#ifndef ROUTING_KIT_NO_POSIX
-	int file_descriptor;
-	#else
-	FILE*file_descriptor;
-	#endif
+    std::function<unsigned long long(char*, unsigned long long)> get_read_function_object();
+
+    ~FileDataSource() { close(); }
+
+   private:
+#ifndef ROUTING_KIT_NO_POSIX
+    int file_descriptor;
+#else
+    FILE* file_descriptor;
+#endif
 };
 
-} // RoutingKit
+}  // namespace RoutingKit
 
 #endif

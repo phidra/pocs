@@ -17,33 +17,32 @@ namespace cppgtfs {
 namespace gtfs {
 
 class Transfer {
- public:
-  typedef flat::Transfer::TYPE TYPE;
-  Transfer() {}
+   public:
+    typedef flat::Transfer::TYPE TYPE;
+    Transfer() {}
 
-  Transfer(Stop* fromStop, Stop* toStop, TYPE type, int32_t tTime)
-      : _fromStop(fromStop), _toStop(toStop), _type(type), _tTime(tTime) {}
+    Transfer(Stop* fromStop, Stop* toStop, TYPE type, int32_t tTime)
+        : _fromStop(fromStop), _toStop(toStop), _type(type), _tTime(tTime) {}
 
-  Stop* getFromStop() const { return _fromStop; }
+    Stop* getFromStop() const { return _fromStop; }
 
-  Stop* getToStop() const { return _toStop; }
+    Stop* getToStop() const { return _toStop; }
 
-  TYPE getType() const { return _type; }
+    TYPE getType() const { return _type; }
 
-  int32_t getMinTransferTime() const { return _tTime; }
+    int32_t getMinTransferTime() const { return _tTime; }
 
-  flat::Transfer getFlat() const {
-    return flat::Transfer{getFromStop()->getId(), getToStop()->getId(),
-                          getType(), getMinTransferTime()};
-  }
+    flat::Transfer getFlat() const {
+        return flat::Transfer{getFromStop()->getId(), getToStop()->getId(), getType(), getMinTransferTime()};
+    }
 
-  // TODO(patrick): implement setters
+    // TODO(patrick): implement setters
 
- private:
-  Stop* _fromStop;
-  Stop* _toStop;
-  TYPE _type;
-  int32_t _tTime;
+   private:
+    Stop* _fromStop;
+    Stop* _toStop;
+    TYPE _type;
+    int32_t _tTime;
 };
 
 }  // namespace gtfs

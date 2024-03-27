@@ -1,12 +1,8 @@
-extern "C"
-{
+extern "C" {
 
 const char* description = "[say hello]";
 
-void say_hello()
-{
+void say_hello() {
     // I don't wanna say hello...
 }
-
 }
-

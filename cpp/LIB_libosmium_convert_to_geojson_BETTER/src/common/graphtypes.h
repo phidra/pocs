@@ -22,11 +22,7 @@ struct Node {
           location{location_},
           is_stop{false} {}
 
-    inline Node(NodeId id, osmium::Location const& location_)
-        : url{},
-          id{id},
-          location{location_},
-          is_stop{false} {}
+    inline Node(NodeId id, osmium::Location const& location_) : url{}, id{id}, location{location_}, is_stop{false} {}
 
     inline double lon() const { return location.lon(); }
     inline double lat() const { return location.lat(); }

@@ -37,7 +37,6 @@ std::vector<Edge> build_graph(std::map<WayId, std::vector<LocatedNode> > const& 
                               std::map<NodeOsmId, int> const& number_of_node_usage) {
     vector<Edge> edges;
 
-
     // L'objectif de ce traitement est de splitter les ways en plusieurs edges si nécessaire.
     // Basiquement, dans la donnée OSM, on peut avoir la situation suivante :
     //

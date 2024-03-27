@@ -11,9 +11,9 @@ using StopId = int;
 namespace my {
 
 class Pouet {
-public:
+   public:
     std::vector<StopId> hum;
     int dasize() const;
 };
 
-}
+}  // namespace my

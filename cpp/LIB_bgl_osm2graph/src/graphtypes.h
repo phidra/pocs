@@ -13,10 +13,7 @@ using LocatedNode = std::pair<NodeOsmId, osmium::Location>;
 using Polyline = std::vector<osmium::Location>;
 
 struct Node {
-    inline Node(NodeOsmId osm_id_, osmium::Location const& location_)
-        : id{osm_id_},
-          location{location_}
-    {}
+    inline Node(NodeOsmId osm_id_, osmium::Location const& location_) : id{osm_id_}, location{location_} {}
 
     inline double lon() const { return location.lon(); }
     inline double lat() const { return location.lat(); }
@@ -51,7 +48,6 @@ struct Edge {
     float length_m;
     Polyline geometry;
 };
-
 
 // boost::graph :
 struct VertexProperty {

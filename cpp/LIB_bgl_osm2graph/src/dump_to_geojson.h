@@ -10,33 +10,36 @@
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/ostreamwrapper.h>
 
-template<typename GraphType>
-struct Traits {
-};
+template <typename GraphType>
+struct Traits {};
 
 // Pour assurer que le process de dump est identique entre vector<Edge> ou boost::Graph,
 // la fonction de dump est templatisée, de sorte que la même fonction soit appliquée aux deux types.
 // Pour que ça marche, il faut définir des traits renseignants comment itérer sur un graphe.
 
-template<>
+template <>
 struct Traits<std::vector<Edge>> {
     using GraphType = std::vector<Edge>;
     using EdgeIterator = std::vector<Edge>::const_iterator;
-    static std::pair<EdgeIterator, EdgeIterator> get_iterators(GraphType const & v) { return {v.begin(), v.end()}; }
+    static std::pair<EdgeIterator, EdgeIterator> get_iterators(GraphType const& v) { return {v.begin(), v.end()}; }
     static Polyline get_geometry(GraphType const&, EdgeIterator ite) { return ite->geometry; }
     static NodeOsmId get_node_from_id(GraphType const&, EdgeIterator ite) { return ite->node_from.id; }
     static NodeOsmId get_node_to_id(GraphType const&, EdgeIterator ite) { return ite->node_to.id; }
     static float get_length_m(GraphType const&, EdgeIterator ite) { return ite->length_m; }
 };
 
-template<>
+template <>
 struct Traits<Graph> {
     using GraphType = Graph;
     using EdgeIterator = boost::graph_traits<Graph>::edge_iterator;
-    static std::pair<EdgeIterator, EdgeIterator> get_iterators(Graph const & graph) { return boost::edges(graph); }
+    static std::pair<EdgeIterator, EdgeIterator> get_iterators(Graph const& graph) { return boost::edges(graph); }
     static Polyline get_geometry(GraphType const& graph, EdgeIterator ite) { return graph[*ite].geometry; }
-    static NodeOsmId get_node_from_id(GraphType const& graph, EdgeIterator ite) { return graph[boost::source(*ite, graph)].osmid; }
-    static NodeOsmId get_node_to_id(GraphType const& graph, EdgeIterator ite) { return graph[boost::target(*ite, graph)].osmid; }
+    static NodeOsmId get_node_from_id(GraphType const& graph, EdgeIterator ite) {
+        return graph[boost::source(*ite, graph)].osmid;
+    }
+    static NodeOsmId get_node_to_id(GraphType const& graph, EdgeIterator ite) {
+        return graph[boost::target(*ite, graph)].osmid;
+    }
     static float get_length_m(GraphType const& graph, EdgeIterator ite) { return graph[*ite].length_m; }
 };
 
@@ -82,7 +85,7 @@ void dump_geojson_graph(std::ostream& out, GraphType const& graph) {
     using T = Traits<GraphType>;
 
     typename T::EdgeIterator edge, edge_end;
-    for (std::tie(edge, edge_end) = T::get_iterators(graph); edge!= edge_end; ++edge) {
+    for (std::tie(edge, edge_end) = T::get_iterators(graph); edge != edge_end; ++edge) {
         // coordinates :
         rapidjson::Value coordinates(rapidjson::kArrayType);
 

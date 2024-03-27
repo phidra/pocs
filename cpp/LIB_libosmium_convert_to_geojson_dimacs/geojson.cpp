@@ -3,12 +3,9 @@
 
 #include "geojson.h"
 
-void create_geojson(
-    std::string output_dir,
-    std::map<int, double> const & way_index_to_length,
-    std::map<int, std::vector<osmium::Location> > const & way_index_to_geometry
-)
-{
+void create_geojson(std::string output_dir,
+                    std::map<int, double> const& way_index_to_length,
+                    std::map<int, std::vector<osmium::Location> > const& way_index_to_geometry) {
     // Expected output :
     // {
     //   "type": "Feature",
@@ -36,9 +33,7 @@ void create_geojson(
     )DELIM";
     geojson_stream << geojson_header;
 
-
-    for (auto& way: way_index_to_geometry)
-    {
+    for (auto& way : way_index_to_geometry) {
         auto const& way_locations = way.second;
         double length_m = way_index_to_length.at(way.first);
 
@@ -52,16 +47,13 @@ void create_geojson(
         )DELIM";
 
         // TODO : récupérer les nodes
-        for (auto& node_location: way_locations)
-        {
+        for (auto& node_location : way_locations) {
             geojson_stream << "\n[" << node_location.lon() << ", " << node_location.lat() << "],";
             // note : a comma is wrongfully added for the last node : it will be removed later.
         }
 
         // removing last comma :
         geojson_stream.seekp(-1, geojson_stream.cur);
-
-
 
         // way footer + properties :
         geojson_stream << "] },\n";
@@ -85,5 +77,4 @@ void create_geojson(
     // dumping :
     std::ofstream out(output_dir + "osm.geojson");
     out << geojson_stream.str();
-
 }

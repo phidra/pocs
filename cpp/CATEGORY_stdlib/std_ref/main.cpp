@@ -8,7 +8,8 @@ using namespace std;
 
    std::ref<T> est converti implicitement en un T&
    (et encapsule un pointeur, en vrai, mais c'est du détail d'implémentation)
-   l'un des trucs cools, c'est que le wrapper est copiable/assignable, donc plus souple à utiliser qu'une vraie référence
+   l'un des trucs cools, c'est que le wrapper est copiable/assignable, donc plus souple à utiliser qu'une vraie
+   référence
 
    CAS D'USAGE 1 = permet de passer plus facilement une référence comme paramètre template.
         SANS std::ref   tuple<UnTypeQuiPeutEtreTresComplexe&, int, UnAutreTypeTresComplexe&> t1(m, n, s);
@@ -16,32 +17,27 @@ using namespace std;
 
    CAS D'USAGE 2 = permet de faire un tableau/container de références (interdit sinon).
    CAS D'USAGE 3 = passer un argument par référence à la start-function d'un thread
-   CAS D'USAGE 4 = avoir une référence comme membre de classe (car avec une "vraie" référence, c'est compliqué, notamment car la classe n'est plus assignable)
-   CAS D'USAGE 5 = passer par référence un objet de type fonction
-   CAS D'USAGE 6 = passer par référence à std::bind
+   CAS D'USAGE 4 = avoir une référence comme membre de classe (car avec une "vraie" référence, c'est compliqué,
+   notamment car la classe n'est plus assignable) CAS D'USAGE 5 = passer par référence un objet de type fonction CAS
+   D'USAGE 6 = passer par référence à std::bind
 */
 
 template <typename T>
-void increment(T x)
-{
+void increment(T x) {
     x += 1;
 }
 
 template <typename T>
-void assign_100_KO(T x)
-{
+void assign_100_KO(T x) {
     x = 100;
 }
 
 template <typename T>
-void assign_100_OK(T x)
-{
+void assign_100_OK(T x) {
     x.get() = 100;
 }
 
-
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     // ===== CAS D'USAGE 1 = passer une référence comme paramètre template :
 
     // sans précaution, T=int et x N'EST PAS muté :
@@ -70,8 +66,8 @@ int main(int argc, char* argv[])
     cout << "VERSION 4 :   x = " << x4 << endl;
 
     // ===== CAS D'USAGE 2 = avoir un tableau de références :
-    int a=1, b=2, c=3;
-    int &aref=a, &bref=b, &cref=c;
+    int a = 1, b = 2, c = 3;
+    int &aref = a, &bref = b, &cref = c;
     // int& array[] = {aref, bref, cref};  // ne compile pas, on n'a pas le droit de faire un tableau de références
     std::reference_wrapper<int> array[] = {std::ref(a), std::ref(b), std::ref(c)};
     array[1] += 10;

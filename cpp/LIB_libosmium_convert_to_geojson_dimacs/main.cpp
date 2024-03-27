@@ -13,7 +13,6 @@
 
 // libosmium Handler that fills way+nodes structures
 struct MyHandler : public osmium::handler::Handler {
-
     std::map<osmium::unsigned_object_id_type, int> way_osmid_to_index;
     std::map<int, osmium::unsigned_object_id_type> way_index_to_osmid;
     std::map<int, double> way_index_to_length;
@@ -27,13 +26,12 @@ struct MyHandler : public osmium::handler::Handler {
     std::map<int, osmium::Location> node_index_to_location;
     int current_node_index = 0;
 
-
-    void way(const osmium::Way& way) noexcept
-    {
+    void way(const osmium::Way& way) noexcept {
         auto tag_highway = way.tags()["highway"];
         // FIXME : we would probably like to filter out non-pedestrian ways.
         // For now, we keep all ways with tag highway set :
-        if (tag_highway == nullptr) return;
+        if (tag_highway == nullptr)
+            return;
 
         double length_m = osmium::geom::haversine::distance(way.nodes());
 
@@ -41,71 +39,61 @@ struct MyHandler : public osmium::handler::Handler {
         way_index_to_osmid.emplace(current_way_index, way.id());
         way_index_to_length.emplace(current_way_index, length_m);
 
-
-
         bool at_least_one_valid_node = false;
         int node_from = current_node_index;
 
         way_index_to_geometry.emplace(current_way_index, std::vector<osmium::Location>());
-        for (auto const & node: way.nodes())
-        {
-            auto const & loc = node.location();
-            if (loc.valid())
-            {
+        for (auto const& node : way.nodes()) {
+            auto const& loc = node.location();
+            if (loc.valid()) {
                 // update node structures :
                 node_index_to_osmid.emplace(current_node_index, node.ref());
                 node_index_to_location.emplace(current_node_index, loc);
                 auto returned = node_osmid_to_index.emplace(node.ref(), current_node_index);
                 auto new_node_was_inserted = returned.second;
-                if (new_node_was_inserted)
-                {
+                if (new_node_was_inserted) {
                     ++current_node_index;
                 }
 
                 way_index_to_geometry[current_way_index].push_back(node.location());
 
                 at_least_one_valid_node = true;
-            }
-            else
-            {
-                throw std::string("NOT IMPLEMENTED: can't handle node with invalid location : ") + std::to_string(current_node_index);
+            } else {
+                throw std::string("NOT IMPLEMENTED: can't handle node with invalid location : ") +
+                    std::to_string(current_node_index);
             }
         }
         int node_to = current_node_index - 1;
         edges.emplace_back(node_from, node_to, length_m);
 
-        if (!at_least_one_valid_node)
-        {
-            throw std::string("NOT IMPLEMENTED: can't handle when there is no valid node, for way : ") + std::to_string(current_way_index);
+        if (!at_least_one_valid_node) {
+            throw std::string("NOT IMPLEMENTED: can't handle when there is no valid node, for way : ") +
+                std::to_string(current_way_index);
         }
 
         auto returned = way_osmid_to_index.emplace(way.id(), current_way_index);
         auto new_way_was_inserted = returned.second;
-        if (new_way_was_inserted) ++current_way_index;
+        if (new_way_was_inserted)
+            ++current_way_index;
     }
 };
 
-void debug_display(MyHandler const & handler)
-{
+void debug_display(MyHandler const& handler) {
     // first ways :
     int counter = 0;
-    for (auto pair: handler.way_index_to_osmid)
-    {
+    for (auto pair : handler.way_index_to_osmid) {
         if (counter++ < 5)
-        std::cout << "[way " << pair.first << "] = https://www.openstreetmap.org/way/" << pair.second << std::endl;
+            std::cout << "[way " << pair.first << "] = https://www.openstreetmap.org/way/" << pair.second << std::endl;
     }
 
     // first nodes :
     counter = 0;
-    for (auto pair: handler.node_index_to_osmid)
-    {
+    for (auto pair : handler.node_index_to_osmid) {
         if (counter++ < 5)
-        std::cout << "[node " << pair.first << "] = https://www.openstreetmap.org/node/" << pair.second << std::endl;
+            std::cout << "[node " << pair.first << "] = https://www.openstreetmap.org/node/" << pair.second
+                      << std::endl;
     }
 }
-
-
-
 
 int main(int argc, char* argv[]) {
     auto time_before = std::chrono::steady_clock::now();
@@ -120,11 +108,9 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-
         auto osmfile = argv[1];
         std::string output_dir(argv[2]);
-        if (output_dir.back() != '/')
-        {
+        if (output_dir.back() != '/') {
             output_dir.push_back('/');
         }
 
@@ -151,4 +137,3 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
-

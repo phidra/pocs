@@ -7,13 +7,11 @@
 
 using namespace std;
 
-string as_string(unsigned long long value)
-{
+string as_string(unsigned long long value) {
     return bitset<8 * sizeof(int)>{value}.to_string();
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     unsigned long long k = 45;
     cout << "bitwise shift ending with 1 :" << endl;
     cout << "k = " << k << " : " << as_string(k) << endl;

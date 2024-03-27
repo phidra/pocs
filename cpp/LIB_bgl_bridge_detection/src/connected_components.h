@@ -8,8 +8,12 @@
 
 // connected components :
 std::vector<std::vector<VertexDescriptor>> compute_connected_vertices(Graph const& graph);
-void display_connected_vertices(Graph const& graph, std::vector<std::vector<VertexDescriptor>> const& connected_vertices, const int threshold = 0);
-void dump_connected_vertices_hull(Graph const& graph, std::vector<std::vector<VertexDescriptor>> const& connected_vertices, std::string const& output_dir);
+void display_connected_vertices(Graph const& graph,
+                                std::vector<std::vector<VertexDescriptor>> const& connected_vertices,
+                                const int threshold = 0);
+void dump_connected_vertices_hull(Graph const& graph,
+                                  std::vector<std::vector<VertexDescriptor>> const& connected_vertices,
+                                  std::string const& output_dir);
 
 // biconnected components :
 struct BiconnResults {

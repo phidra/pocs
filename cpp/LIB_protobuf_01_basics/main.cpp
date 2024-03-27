@@ -3,11 +3,9 @@
 #include "addressbook.pb.h"
 #include <google/protobuf/util/json_util.h>
 
-
 using namespace std;
 
 int main(void) {
-
     cout << "BEFORE SERIALIZATION" << endl;
 
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -18,7 +16,6 @@ int main(void) {
     *new_person_ptr->mutable_name() = "Luke Skywalker";
     new_person_ptr->set_email("luke@etoilenoire.com");
 
-
     tutorial::Person::PhoneNumber* phone1 = new_person_ptr->add_phones();
     phone1->set_number("01.23.45.67.89");
     phone1->set_type(tutorial::Person::HOME);
@@ -28,7 +25,6 @@ int main(void) {
     phone2->set_type(tutorial::Person::WORK);
 
     cout << "AFTER SERIALIZATION" << endl;
-
 
     string json_string;
     google::protobuf::util::MessageToJsonString(address_book, &json_string);

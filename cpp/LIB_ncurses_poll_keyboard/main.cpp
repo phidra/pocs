@@ -5,11 +5,9 @@
 #include <sys/poll.h>
 #include <unistd.h>
 
-
 // this is a POC on poll usage to get key pressed.
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     struct pollfd pfdArray[1];
     pfdArray[0].fd = 0;
     pfdArray[0].events = POLLIN;
@@ -31,36 +29,30 @@ int main(int argc, char* argv[])
     bool keypressed = false;
     char buffer[16];
 
-    while (!exit_asked)
-    {
+    while (!exit_asked) {
         // is there a key pressed ?
         poll(pfdArray, 1, 5);
-        if (pfdArray[0].revents & POLLIN)  
-        {
+        if (pfdArray[0].revents & POLLIN) {
             keypressed = true;
             read(0, buffer, 16);
             exit_asked = (buffer[0] == 'q');
         }
 
         // default display = blank
-        for (int y = max_y / 2 - 1; y <= max_y / 2 + 1; ++y)
-        {
+        for (int y = max_y / 2 - 1; y <= max_y / 2 + 1; ++y) {
             mvprintw(y, 0, BLANK.c_str());
         }
 
         // key pressed display :
-        if (keypressed)
-        {
-            for (int y = max_y / 2 - 1; y <= max_y / 2 + 1; ++y)
-            {
+        if (keypressed) {
+            for (int y = max_y / 2 - 1; y <= max_y / 2 + 1; ++y) {
                 mvprintw(y, 0, WHEN_KEYPRESSED.c_str());
             }
             keypressed = false;
         }
 
         // spinning chars :
-        for (int x = max_x / 2 - 1; x <= max_x / 2 + 1; ++x)
-        {
+        for (int x = max_x / 2 - 1; x <= max_x / 2 + 1; ++x) {
             unsigned int modulo = counter % 4;
             char spin = '.';
             if (modulo == 0)
@@ -71,7 +63,7 @@ int main(int argc, char* argv[])
                 spin = '-';
             else
                 spin = '\\';
-            mvaddch(max_y / 2 , x, spin);
+            mvaddch(max_y / 2, x, spin);
         }
 
         mvprintw(0, 0, "Press q to exit");

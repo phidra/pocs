@@ -11,7 +11,6 @@
 using namespace std;
 using namespace boost;
 
-
 float geometry_length_in_meters(Polyline const& geometry) {
     // precondition = polyline has at least 2 points
     Polyline::const_iterator first = geometry.begin();
@@ -40,15 +39,13 @@ static void add_edge(Graph& boost_graph,
     if (osmid2descriptor.find(node_from) == osmid2descriptor.end()) {
         from = add_vertex({geometry.front().lat(), geometry.front().lon(), node_from}, boost_graph);
         osmid2descriptor.insert({node_from, from});
-    }
-    else {
+    } else {
         from = osmid2descriptor.at(node_from);
     }
     if (osmid2descriptor.find(node_to) == osmid2descriptor.end()) {
         to = add_vertex({geometry.back().lat(), geometry.back().lon(), node_to}, boost_graph);
         osmid2descriptor.insert({node_to, to});
-    }
-    else {
+    } else {
         to = osmid2descriptor.at(node_to);
     }
 
@@ -58,13 +55,12 @@ static void add_edge(Graph& boost_graph,
 }
 
 // precondition = chaque way a au moins 2 nodes
-pair<vector<Edge>, Graph> build_graph(map<WayId, vector<LocatedNode> > const& way_to_nodes, map<NodeOsmId, int> const& number_of_node_usage) {
-
+pair<vector<Edge>, Graph> build_graph(map<WayId, vector<LocatedNode> > const& way_to_nodes,
+                                      map<NodeOsmId, int> const& number_of_node_usage) {
     // on représente le graphe de deux façons : 1. par un vector d'Edges 2. par un boost::graph
     vector<Edge> edges;
     Graph boost_graph;
     std::unordered_map<osmium::object_id_type, VertexDescriptor> osmid2descriptor;
-
 
     // L'objectif de ce traitement est de splitter les ways en plusieurs edges si nécessaire.
     // Basiquement, dans la donnée OSM, on peut avoir la situation suivante :
@@ -106,7 +102,8 @@ pair<vector<Edge>, Graph> build_graph(map<WayId, vector<LocatedNode> > const& wa
             // Dit autrement : la way était une impasse, se terminant sur second_node.
             // Dans ce cas, on ajoute l'edge, et on a fini pour cette way :
             if (second_node == nodes.end()) {
-                add_edge(boost_graph, osmid2descriptor, edges, first_node->first, (second_node - 1)->first, std::move(geometry));
+                add_edge(boost_graph, osmid2descriptor, edges, first_node->first, (second_node - 1)->first,
+                         std::move(geometry));
                 break;
             }
 

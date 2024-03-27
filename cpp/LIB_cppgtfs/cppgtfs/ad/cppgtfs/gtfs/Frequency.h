@@ -16,23 +16,19 @@ namespace cppgtfs {
 namespace gtfs {
 
 class Frequency {
- public:
-  Frequency(const Time& startTime, const Time& endTime, uint16_t headwaySecs,
-            bool exactTimes)
-      : _startTime(startTime),
-        _endTime(endTime),
-        _headwaySecs(headwaySecs),
-        _exactTimes(exactTimes) {}
+   public:
+    Frequency(const Time& startTime, const Time& endTime, uint16_t headwaySecs, bool exactTimes)
+        : _startTime(startTime), _endTime(endTime), _headwaySecs(headwaySecs), _exactTimes(exactTimes) {}
 
-  const Time& getStartTime() const { return _startTime; }
-  const Time& getEndTime() const { return _endTime; }
-  uint16_t getHeadwaySecs() const { return _headwaySecs; }
-  bool hasExactTimes() const { return _exactTimes; }
+    const Time& getStartTime() const { return _startTime; }
+    const Time& getEndTime() const { return _endTime; }
+    uint16_t getHeadwaySecs() const { return _headwaySecs; }
+    bool hasExactTimes() const { return _exactTimes; }
 
- private:
-  Time _startTime, _endTime;
-  uint16_t _headwaySecs;
-  bool _exactTimes;
+   private:
+    Time _startTime, _endTime;
+    uint16_t _headwaySecs;
+    bool _exactTimes;
 };
 
 }  // namespace gtfs

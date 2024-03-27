@@ -4,13 +4,9 @@
 
 #include "dimacs.h"
 
-
-void create_dimacs(
-    std::string output_dir,
-    std::map<int, osmium::Location> const& nodes,
-    std::vector<Edge> const& edges
-)
-{
+void create_dimacs(std::string output_dir,
+                   std::map<int, osmium::Location> const& nodes,
+                   std::vector<Edge> const& edges) {
     // objectif = générer le fichier de nodes suivant :
     // p aux sp co 12703
     // v 1 7.4174923 43.7296303
@@ -20,8 +16,7 @@ void create_dimacs(
     auto const nb_nodes = nodes.size();
     dimacs_nodes << "p aux sp co " << nb_nodes << std::endl;
     dimacs_nodes << std::setprecision(8);
-    for (auto nodepair: nodes)
-    {
+    for (auto nodepair : nodes) {
         auto const& node_index = nodepair.first;
         auto const& node_location = nodepair.second;
         dimacs_nodes << "v " << node_index << " " << node_location.lon() << " " << node_location.lat() << "\n";
@@ -35,8 +30,7 @@ void create_dimacs(
     std::ofstream dimacs_edges(output_dir + "edges.gr");
     dimacs_edges << "p sp " << nb_nodes << " " << edges.size() << std::endl;
     dimacs_edges << std::fixed << std::setprecision(1);  // 1 digit after the comma
-    for (auto edge: edges)
-    {
+    for (auto edge : edges) {
         dimacs_edges << "a " << edge.node_from << " " << edge.node_to << " " << edge.length_m << "\n";
     }
 }

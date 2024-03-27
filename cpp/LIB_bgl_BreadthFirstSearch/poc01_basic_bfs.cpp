@@ -7,30 +7,27 @@
 using namespace boost;
 using namespace std;
 
-
 // the rank property-map associates a vertex to the rank of its discovery
 template <typename RankPMap>
-class BfsDiscoveryRankVisitor : public default_bfs_visitor
-{
+class BfsDiscoveryRankVisitor : public default_bfs_visitor {
     using T = typename property_traits<RankPMap>::value_type;
 
-public:
+   public:
     BfsDiscoveryRankVisitor(RankPMap tmap, T& t) : m_rank_pmap(tmap), m_rank(t) {}
     template <typename VertexDescriptor, typename Graph>
-    void discover_vertex(VertexDescriptor u, const Graph&) const
-    {
+    void discover_vertex(VertexDescriptor u, const Graph&) const {
         put(m_rank_pmap, u, m_rank++);
     }
     RankPMap m_rank_pmap;
     T& m_rank;
 };
 
-int main(int, char*[])
-{
+int main(int, char*[]) {
     cout << endl;
     cout << "Cette POC vise à faire un BFS/DFS sur un graphe donné, elle se contente de " << endl;
     cout << "   - construire le graphe, ses vertex/edges (et leur properties)" << endl;
-    cout << "   - appliquer le BFS (en utilisant un visitor custom pour mémoriser le rank de visite des noeuds)" << endl;
+    cout << "   - appliquer le BFS (en utilisant un visitor custom pour mémoriser le rank de visite des noeuds)"
+         << endl;
     cout << "   - afficher les noeuds par rank de visite" << endl;
     cout << endl;
     cout << "Ce que cette POC démontre :" << endl;
@@ -39,7 +36,6 @@ int main(int, char*[])
     cout << endl;
     cout << "(cf. des notes générales sur les BFS et boost dans le script bash de build/run)" << endl;
     cout << endl;
-
 
     //========================================
     // STEP 1 = defining graph :
@@ -57,7 +53,7 @@ int main(int, char*[])
     Graph mygraph;
     using VertexDescriptor = graph_traits<Graph>::vertex_descriptor;
     using VertexIterator = graph_traits<Graph>::vertex_iterator;
-    auto nameof = [&mygraph](VertexDescriptor const & vd) {return mygraph[vd].name;};
+    auto nameof = [&mygraph](VertexDescriptor const& vd) { return mygraph[vd].name; };
 
     //========================================
     // STEP 2 = creating vertices+edges :
@@ -100,7 +96,6 @@ int main(int, char*[])
     add_edge(F, H, {2, "Avenue des Champs-Élysées"}, mygraph);
     add_edge(G, H, {3, "Rue de la Paix"}, mygraph);
 
-
     //========================================
     // STEP 3 = applying BFS :
 
@@ -121,27 +116,22 @@ int main(int, char*[])
     VertexIterator v, v_end;
     tie(v, v_end) = vertices(mygraph);
     vector<VertexDescriptor> vertices(v, v_end);
-    for (auto vd: vertices) {
-        cout << nameof(vd) << " was discovered in rank : " << get(discovery_rank_pmap, vd) << endl;;
+    for (auto vd : vertices) {
+        cout << nameof(vd) << " was discovered in rank : " << get(discovery_rank_pmap, vd) << endl;
+        ;
     }
 
     // sorting the vertices by their discovery ranks :
-    sort(
-        vertices.begin(),
-        vertices.end(),
-        [&discovery_rank_pmap](VertexDescriptor const& left, VertexDescriptor const& right) {
-            auto left_discovery_rank = get(discovery_rank_pmap, left);
-            auto right_discovery_rank = get(discovery_rank_pmap, right);
-            return left_discovery_rank < right_discovery_rank;
-        }
-    );
+    sort(vertices.begin(), vertices.end(),
+         [&discovery_rank_pmap](VertexDescriptor const& left, VertexDescriptor const& right) {
+             auto left_discovery_rank = get(discovery_rank_pmap, left);
+             auto right_discovery_rank = get(discovery_rank_pmap, right);
+             return left_discovery_rank < right_discovery_rank;
+         });
 
-    string vertices_by_rank = accumulate(
-        vertices.cbegin(),
-        vertices.cend(),
-        string{},
-        [&nameof](string const& acc, VertexDescriptor const& vd) { return acc + nameof(vd); }
-    );
+    string vertices_by_rank =
+        accumulate(vertices.cbegin(), vertices.cend(), string{},
+                   [&nameof](string const& acc, VertexDescriptor const& vd) { return acc + nameof(vd); });
     cout << "Here are the vertices, sorted by discovery-rank : " << vertices_by_rank << endl;
     // expected order = BACEDFGH
 

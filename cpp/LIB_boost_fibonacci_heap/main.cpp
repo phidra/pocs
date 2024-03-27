@@ -3,8 +3,7 @@
 
 using namespace std;
 
-void basic_interface(void)
-{
+void basic_interface(void) {
     boost::heap::fibonacci_heap<int> pq;
 
     pq.push(2);
@@ -12,13 +11,13 @@ void basic_interface(void)
     pq.push(1);
 
     cout << "Priority Queue: popped elements" << endl;
-    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl; // 3
+    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl;  // 3
     pq.pop();
-    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl; // 2
+    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl;  // 2
     pq.pop();
-    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl; // 1
+    cout << pq.top() << "  (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl;  // 1
     pq.pop();
-    cout << "   (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl; // 1
+    cout << "   (size=" << pq.size() << " / empty=" << pq.empty() << ")" << endl;  // 1
     cout << endl;
 
     // needed by dijkstra CH :
@@ -29,8 +28,7 @@ void basic_interface(void)
     //    - emplace
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     cout << "coucou" << endl;
     basic_interface();
 }

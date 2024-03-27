@@ -9,11 +9,13 @@
 using namespace std;
 
 struct IllFormattedPolygonException : public runtime_error {
-    IllFormattedPolygonException(string description) : runtime_error{string("Ill-formatted polygon file : ") + description} {}
+    IllFormattedPolygonException(string description)
+        : runtime_error{string("Ill-formatted polygon file : ") + description} {}
 };
 
 struct UnreadablePolygonFileException : public runtime_error {
-    UnreadablePolygonFileException(string description) : runtime_error{string("Unable to read polygonefile : ") + description} {}
+    UnreadablePolygonFileException(string description)
+        : runtime_error{string("Unable to read polygonefile : ") + description} {}
 };
 
 static void assert_geojson_format(bool condition, string description) {

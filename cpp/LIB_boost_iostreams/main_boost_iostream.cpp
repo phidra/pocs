@@ -9,12 +9,10 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
-
 using namespace std;
 namespace io = boost::iostreams;
 
-void basic_writes()
-{
+void basic_writes() {
     // stream is directly usable :
     io::stream<io::file_sink> buf("data_GITIGNORE/log1.txt");
     buf << "[WRITING]  Tom" << endl;
@@ -25,8 +23,7 @@ void basic_writes()
     out << "[WRITING]  Jerry" << endl;
 }
 
-void basic_compress()
-{
+void basic_compress() {
     ofstream file("data_GITIGNORE/output.gz", ios_base::out | ios_base::binary);
     io::filtering_streambuf<io::output> out;
     out.push(io::gzip_compressor());
@@ -36,10 +33,7 @@ void basic_compress()
     o << "[COMPRESSED WRITING]  Han SOLO" << endl;
 }
 
-
-
-void basic_uncompress()
-{
+void basic_uncompress() {
     ifstream file("data_GITIGNORE/already_compressed.gz", ios_base::in | ios_base::binary);
     io::filtering_streambuf<io::input> in;
     in.push(io::gzip_decompressor());
@@ -48,9 +42,7 @@ void basic_uncompress()
     boost::iostreams::copy(in, cout);
 }
 
-int main(int argc, char* argv[])
-{
-
+int main(int argc, char* argv[]) {
     basic_writes();
     basic_compress();
     basic_uncompress();

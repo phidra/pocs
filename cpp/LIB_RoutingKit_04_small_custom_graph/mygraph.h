@@ -8,25 +8,14 @@
 #include <routingkit/contraction_hierarchy.h>
 
 // easy way to set variables to nodes, but we could also `unsigned A = 0` :
-enum _ {
-    A = 0,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H
-};
+enum _ { A = 0, B, C, D, E, F, G, H };
 
-void _add_edge(
-    unsigned tail_node,
-    unsigned head_node,
-    unsigned edge_weight,
-    std::vector<unsigned>& tails,
-    std::vector<unsigned>& heads,
-    std::vector<unsigned>& weights
-    ) {
+void _add_edge(unsigned tail_node,
+               unsigned head_node,
+               unsigned edge_weight,
+               std::vector<unsigned>& tails,
+               std::vector<unsigned>& heads,
+               std::vector<unsigned>& weights) {
     assert(tails.size() == heads.size());
     assert(tails.size() == weights.size());
     tails.push_back(tail_node);

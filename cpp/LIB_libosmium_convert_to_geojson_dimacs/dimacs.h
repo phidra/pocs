@@ -7,8 +7,6 @@
 
 #include "edge.h"
 
-void create_dimacs(
-    std::string output_dir,
-    std::map<int, osmium::Location> const& nodes,
-    std::vector<Edge> const& edges
-);
+void create_dimacs(std::string output_dir,
+                   std::map<int, osmium::Location> const& nodes,
+                   std::vector<Edge> const& edges);

@@ -86,26 +86,24 @@ int main(int argc, char* argv[]) {
 
         // computing potential bridges = biconnected-components containing only a single edge :
         // amongst those bridges, we distinguish :
-        //      - deadends = edge at the end of a road (one of the two nodes of the edge has no other incident edge than the bridge itself)
+        //      - deadends = edge at the end of a road (one of the two nodes of the edge has no other incident edge than
+        //      the bridge itself)
         //      - real bridges = potential bridges that are not deadends
         using BiconnAndEdge = decltype(biconns.biconn2edges)::value_type;
         vector<BiconnAndEdge> potential_bridges;
-        copy_if(
-            biconns.biconn2edges.cbegin(),
-            biconns.biconn2edges.cend(),
-            back_inserter(potential_bridges),
-            [](auto const& x) {
-                auto biconn_id = x.first;
-                auto const& edges = x.second;
-                return edges.size() == 1;
-        });
+        copy_if(biconns.biconn2edges.cbegin(), biconns.biconn2edges.cend(), back_inserter(potential_bridges),
+                [](auto const& x) {
+                    auto biconn_id = x.first;
+                    auto const& edges = x.second;
+                    return edges.size() == 1;
+                });
         cout << "Combien de biconns en tout ? " << biconns.biconn2edges.size() << endl;
         cout << "Combien de biconns à un seul edge ? " << potential_bridges.size() << endl;
 
         // identifying dead-ends = potential bridges for which a node only has 1 edge :
         set<EdgeDescriptor> deadend_bridges;
         set<EdgeDescriptor> real_bridges;
-        for (auto x: potential_bridges) {
+        for (auto x : potential_bridges) {
             auto biconn_id = x.first;
             auto edge = *x.second.begin();
             VertexDescriptor node_from = source(edge, boost_graph);
@@ -115,8 +113,7 @@ int main(int argc, char* argv[]) {
             bool is_deadend = out_degree_from == 1 || out_degree_to == 1;
             if (is_deadend) {
                 deadend_bridges.insert(edge);
-            }
-            else {
+            } else {
                 real_bridges.insert(edge);
             }
         }
@@ -129,9 +126,10 @@ int main(int argc, char* argv[]) {
         ofstream unmerged_bridges_stream(output_dir + "unmerged_bridges.geojson");
         edges_to_geojson_linestrings(unmerged_bridges_stream, real_bridges, boost_graph, "#0000ff", 5);
 
-        // here, we want to merge adjacent bridges (we want to treat multiple consecutive bridges as a single big bridge) :
+        // here, we want to merge adjacent bridges (we want to treat multiple consecutive bridges as a single big
+        // bridge) :
         vector<Polyline> merged_bridges;  // we will mutate elements -> set is not usable
-        for (auto x: potential_bridges) {
+        for (auto x : potential_bridges) {
             auto biconn_id = x.first;
             auto current_edge = *x.second.begin();
             auto current_edge_geometry = boost_graph[current_edge].geometry;
@@ -147,45 +145,38 @@ int main(int argc, char* argv[]) {
                 bool is_edge_adjacent_to_an_existing_bridge = false;
 
                 // this way of merging is not optimal (quadratic), but it'll do the work for now...
-                for (auto& existing_bridge_geometry: merged_bridges) {
+                for (auto& existing_bridge_geometry : merged_bridges) {
                     auto bridge_extremity1 = existing_bridge_geometry.front();
                     auto bridge_extremity2 = existing_bridge_geometry.back();
 
                     // if both bridges are adjacent, we'll go in one of these branches, and merge geometries :
                     if (current_edge_extremity1 == bridge_extremity1) {
                         // note : utiliser swap
-                        current_edge_geometry.insert(
-                            current_edge_geometry.end(),
-                            make_move_iterator(++existing_bridge_geometry.rbegin()),
-                            make_move_iterator(existing_bridge_geometry.rend())
-                        );
+                        current_edge_geometry.insert(current_edge_geometry.end(),
+                                                     make_move_iterator(++existing_bridge_geometry.rbegin()),
+                                                     make_move_iterator(existing_bridge_geometry.rend()));
                         existing_bridge_geometry = current_edge_geometry;
-                        is_edge_adjacent_to_an_existing_bridge = true; break;
-                    }
-                    else if (current_edge_extremity1 == bridge_extremity2) {
-                        existing_bridge_geometry.insert(
-                            existing_bridge_geometry.end(),
-                            make_move_iterator(++current_edge_geometry.begin()),
-                            make_move_iterator(current_edge_geometry.end())
-                        );
-                        is_edge_adjacent_to_an_existing_bridge = true; break;
-                    }
-                    else if (current_edge_extremity2 == bridge_extremity1) {
-                        current_edge_geometry.insert(
-                            current_edge_geometry.end(),
-                            make_move_iterator(++existing_bridge_geometry.begin()),
-                            make_move_iterator(existing_bridge_geometry.end())
-                        );
+                        is_edge_adjacent_to_an_existing_bridge = true;
+                        break;
+                    } else if (current_edge_extremity1 == bridge_extremity2) {
+                        existing_bridge_geometry.insert(existing_bridge_geometry.end(),
+                                                        make_move_iterator(++current_edge_geometry.begin()),
+                                                        make_move_iterator(current_edge_geometry.end()));
+                        is_edge_adjacent_to_an_existing_bridge = true;
+                        break;
+                    } else if (current_edge_extremity2 == bridge_extremity1) {
+                        current_edge_geometry.insert(current_edge_geometry.end(),
+                                                     make_move_iterator(++existing_bridge_geometry.begin()),
+                                                     make_move_iterator(existing_bridge_geometry.end()));
                         existing_bridge_geometry = current_edge_geometry;
-                        is_edge_adjacent_to_an_existing_bridge = true; break;
-                    }
-                    else if (current_edge_extremity2 == bridge_extremity2) {
-                        existing_bridge_geometry.insert(
-                            existing_bridge_geometry.end(),
-                            make_move_iterator(++current_edge_geometry.rbegin()),
-                            make_move_iterator(current_edge_geometry.rend())
-                        );
-                        is_edge_adjacent_to_an_existing_bridge = true; break;
+                        is_edge_adjacent_to_an_existing_bridge = true;
+                        break;
+                    } else if (current_edge_extremity2 == bridge_extremity2) {
+                        existing_bridge_geometry.insert(existing_bridge_geometry.end(),
+                                                        make_move_iterator(++current_edge_geometry.rbegin()),
+                                                        make_move_iterator(current_edge_geometry.rend()));
+                        is_edge_adjacent_to_an_existing_bridge = true;
+                        break;
                     }
 
                     // éventuellement, par robustesse, comparer des distances, plutôt ?
@@ -196,8 +187,7 @@ int main(int argc, char* argv[]) {
                 if (!is_edge_adjacent_to_an_existing_bridge) {
                     // new bridge is totally independant from existing bridges -> we add it :
                     merged_bridges.push_back(current_edge_geometry);
-                }
-                else {
+                } else {
                     // cout << "MERGE !" << endl;
                 }
             }
@@ -207,7 +197,6 @@ int main(int argc, char* argv[]) {
         ofstream merged_bridges_stream(output_dir + "merged_bridges.geojson");
         geometries_to_geojson_linestrings(merged_bridges_stream, merged_bridges, "#0000ff", 5);
 
-
     } catch (const exception& e) {
         cerr << e.what() << '\n';
         exit(1);
@@ -216,4 +205,3 @@ int main(int argc, char* argv[]) {
     cerr << "All is ok." << endl;
     return 0;
 }
-

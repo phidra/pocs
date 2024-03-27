@@ -9,18 +9,18 @@
 
 using namespace std;
 
-
 string id_to_osm_node_url(long node_id) {
     return string("https://www.openstreetmap.org/node/") + to_string(node_id);
 }
-
 
 void usage(string prog_name) {
     cerr << "USAGE:" << endl;
     cerr << "\t" << prog_name << " <TAILS>  <HEADS>  <WEIGHTS>  <OSMIDS>  <OUTPUT-DIR>" << endl;
     cerr << endl;
     cerr << "Where  :" << endl;
-    cerr << "\t TAILS / HEADS / WEIGHTS describe edges (as text files containing a single unsigned integer on each line)" << endl;
+    cerr
+        << "\t TAILS / HEADS / WEIGHTS describe edges (as text files containing a single unsigned integer on each line)"
+        << endl;
     cerr << "\t OSMIDS describes NODES (as text file containing a single osmid integer on each line)" << endl;
     cerr << "\t OUTPUT-DIR must point to an already existing dir" << endl;
     cerr << endl;
@@ -35,18 +35,15 @@ void usage(string prog_name) {
     cerr << endl;
 }
 
-RoutingKit::ContractionHierarchy build_ch(vector<unsigned> const& tails, vector<unsigned> const& heads, vector<unsigned> const& weights, size_t num_nodes) {
-    auto ch = RoutingKit::ContractionHierarchy::build(
-        num_nodes,
-        tails,
-        heads,
-        weights
-    );
+RoutingKit::ContractionHierarchy build_ch(vector<unsigned> const& tails,
+                                          vector<unsigned> const& heads,
+                                          vector<unsigned> const& weights,
+                                          size_t num_nodes) {
+    auto ch = RoutingKit::ContractionHierarchy::build(num_nodes, tails, heads, weights);
     return ch;
 }
 
-int main(int argc, char* argv[]){
-
+int main(int argc, char* argv[]) {
     string prog_name = argv[0];
 
     if (argc != 6) {
@@ -83,24 +80,22 @@ int main(int argc, char* argv[]){
     cerr << "NUM NODES    = " << NUM_NODES << endl;
     cerr << "NUM EDGES    = " << NUM_EDGES << endl;
 
-
     cerr << "Building CH" << endl;
     auto ch = build_ch(tails, heads, weights, NUM_NODES);
-
 
     cerr << "size or rank  = " << ch.rank.size() << endl;
     cerr << "size or order = " << ch.order.size() << endl;
 
-    string rank_file = dump_vector(ch.rank,  output_dir + "NOGIT_OUT_ranks.txt");
-    string order_file = dump_vector(ch.order,  output_dir + "NOGIT_OUT_orders.txt");
+    string rank_file = dump_vector(ch.rank, output_dir + "NOGIT_OUT_ranks.txt");
+    string order_file = dump_vector(ch.order, output_dir + "NOGIT_OUT_orders.txt");
     cout << rank_file << endl;
     cout << order_file << endl;
     auto written_files_forward = dump_side(ch.forward, output_dir + "NOGIT_OUT_forward");
-    for (auto f: written_files_forward) {
+    for (auto f : written_files_forward) {
         cout << f << endl;
     }
     auto written_files_backward = dump_side(ch.backward, output_dir + "NOGIT_OUT_backward");
-    for (auto f: written_files_backward) {
+    for (auto f : written_files_backward) {
         cout << f << endl;
     }
 }

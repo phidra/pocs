@@ -21,26 +21,23 @@
 using namespace RoutingKit;
 using namespace std;
 
-int main(int argc, char*argv[]){
-	try{
+int main(int argc, char* argv[]) {
+    try {
+        ContractionHierarchy ch;
 
-		ContractionHierarchy ch;
+        cerr << "Loading ... " << flush;
+        if (argc != 2) {
+            cerr << "Usage : \n" << argv[0] << " ch" << endl;
+            return 1;
+        } else {
+            ch = ContractionHierarchy::load_file(argv[1]);
+        }
+        cerr << "done" << endl;
 
-		cerr << "Loading ... " << flush;	
-		if(argc != 2){
-			cerr
-				<< "Usage : \n"
-				<< argv[0] << " ch" << endl;
-			return 1;
-		}else{
-			ch = ContractionHierarchy::load_file(argv[1]);
-		}
-		cerr << "done" << endl;
-
-		cout << "node_count : "<< ch.rank.size() << endl;
-		cout << "forward_ch_arc_count : "<< ch.forward.head.size() << endl;
-		cout << "backward_ch_arc_count : "<< ch.backward.head.size() << endl;
-	}catch(exception&err){
-		cerr << "Stopped on exception : " << err.what() << endl;
-	}
+        cout << "node_count : " << ch.rank.size() << endl;
+        cout << "forward_ch_arc_count : " << ch.forward.head.size() << endl;
+        cout << "backward_ch_arc_count : " << ch.backward.head.size() << endl;
+    } catch (exception& err) {
+        cerr << "Stopped on exception : " << err.what() << endl;
+    }
 }

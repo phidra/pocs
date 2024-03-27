@@ -7,9 +7,7 @@
 using namespace boost;
 using namespace std;
 
-int main(int,char*[])
-{
-
+int main(int, char*[]) {
     cout << endl;
     cout << "Cette POC est une simple prise de contact avec la librairie." << endl;
     cout << "Elle soulève beaucoup de questions..." << endl;
@@ -58,8 +56,7 @@ int main(int,char*[])
     cout << "Itération sur les vertices adjacents au vercice 0 :" << endl;
     AdjacencyIterator ai;
     AdjacencyIterator ai_end;
-    for (tie(ai, ai_end) = adjacent_vertices(0, graph); ai != ai_end; ++ai)
-    {
+    for (tie(ai, ai_end) = adjacent_vertices(0, graph); ai != ai_end; ++ai) {
         cout << *ai << endl;
     }
     cout << "FIN" << endl;

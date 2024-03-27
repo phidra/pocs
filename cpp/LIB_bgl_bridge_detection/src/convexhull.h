@@ -13,10 +13,10 @@ using Point = bg::model::point<double, 2, bg::cs::cartesian>;
 using MultiPoint = bg::model::multi_point<Point>;
 using Polygon = bg::model::polygon<Point>;
 
-std::pair<MultiPoint, Polygon> build_convex_hull(Graph const& graph, std::vector<VertexDescriptor> const& connected_component) {
-
+std::pair<MultiPoint, Polygon> build_convex_hull(Graph const& graph,
+                                                 std::vector<VertexDescriptor> const& connected_component) {
     MultiPoint points;
-    for (auto vd: connected_component) {
+    for (auto vd : connected_component) {
         bg::append(points, Point(graph[vd].latitude, graph[vd].longitude));
     }
     Polygon hull;

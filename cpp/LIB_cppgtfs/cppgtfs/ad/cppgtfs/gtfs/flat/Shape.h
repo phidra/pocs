@@ -16,18 +16,18 @@ namespace gtfs {
 namespace flat {
 
 struct ShapeFlds {
-  size_t shapeIdFld;
-  size_t shapePtSequenceFld;
-  size_t shapePtLonFld;
-  size_t shapePtLatFld;
-  size_t shapeDistTraveledFld;
+    size_t shapeIdFld;
+    size_t shapePtSequenceFld;
+    size_t shapePtLonFld;
+    size_t shapePtLatFld;
+    size_t shapeDistTraveledFld;
 };
 
 struct ShapePoint {
-  std::string id;
-  float lat, lng;
-  float travelDist;
-  uint32_t seq;
+    std::string id;
+    float lat, lng;
+    float travelDist;
+    uint32_t seq;
 };
 
 }  // namespace flat

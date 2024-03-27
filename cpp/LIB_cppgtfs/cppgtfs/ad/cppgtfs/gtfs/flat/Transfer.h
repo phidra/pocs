@@ -14,24 +14,19 @@ namespace gtfs {
 namespace flat {
 
 struct TransfersFlds {
-  size_t fromStopIdFld;
-  size_t toStopIdFld;
-  size_t transferTypeFld;
-  size_t minTransferTimeFld;
+    size_t fromStopIdFld;
+    size_t toStopIdFld;
+    size_t transferTypeFld;
+    size_t minTransferTimeFld;
 };
 
 struct Transfer {
-  enum TYPE : uint8_t {
-    RECOMMENDED = 0,
-    TIMED = 1,
-    MIN_TIME = 2,
-    NO_TRANSFER = 3
-  };
+    enum TYPE : uint8_t { RECOMMENDED = 0, TIMED = 1, MIN_TIME = 2, NO_TRANSFER = 3 };
 
-  std::string fromStop;
-  std::string toStop;
-  TYPE type;
-  int32_t tTime;
+    std::string fromStop;
+    std::string toStop;
+    TYPE type;
+    int32_t tTime;
 };
 
 }  // namespace flat

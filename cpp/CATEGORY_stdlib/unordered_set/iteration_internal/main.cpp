@@ -6,27 +6,19 @@
 
 using namespace std;
 
-
-void iteration_through_buckets(unordered_set<int> const & myset)
-{
+void iteration_through_buckets(unordered_set<int> const& myset) {
     cout << "ITERATION THROUGH BUCKETS :" << endl;
-    for (int bucket = 0; bucket < myset.bucket_count(); ++bucket)
-    {
-        for (auto elemIt = myset.cbegin(bucket); elemIt != myset.cend(bucket); ++elemIt)
-        {
+    for (int bucket = 0; bucket < myset.bucket_count(); ++bucket) {
+        for (auto elemIt = myset.cbegin(bucket); elemIt != myset.cend(bucket); ++elemIt) {
             cout << "\t element : " << *elemIt << "   -> bucket# " << bucket << endl;
         }
     }
 }
 
-size_t get_bucket(int value, unordered_set<int> const& myset)
-{
-    for (int bucket = 0; bucket < myset.bucket_count(); ++bucket)
-    {
-        for (auto elemIt = myset.cbegin(bucket); elemIt != myset.cend(bucket); ++elemIt)
-        {
-            if (*elemIt == value)
-            {
+size_t get_bucket(int value, unordered_set<int> const& myset) {
+    for (int bucket = 0; bucket < myset.bucket_count(); ++bucket) {
+        for (auto elemIt = myset.cbegin(bucket); elemIt != myset.cend(bucket); ++elemIt) {
+            if (*elemIt == value) {
                 return bucket;
             }
         }
@@ -34,30 +26,26 @@ size_t get_bucket(int value, unordered_set<int> const& myset)
     throw std::logic_error("unexistent value");
 }
 
-void direct_iteration(unordered_set<int> const & myset)
-{
+void direct_iteration(unordered_set<int> const& myset) {
     cout << "DIRECT ITERATION : " << endl;
-    for (auto x: myset)
-    {
-            cout << "\t element : " << x << "   -> bucket# " << get_bucket(x, myset) << endl;
+    for (auto x : myset) {
+        cout << "\t element : " << x << "   -> bucket# " << get_bucket(x, myset) << endl;
     }
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     unordered_set<int> myset;
     myset.reserve(8);
     /* auto v = vector<int>(8); */
-    /* std::iota(v.begin(), v.end(), 1);  // AVEC ces valeurs, chaque élément est dans un bucket différent -> j'itère bien dans l'ordre inverse de l'ajout, ce qui est cohérent avec le source-code */
+    /* std::iota(v.begin(), v.end(), 1);  // AVEC ces valeurs, chaque élément est dans un bucket différent -> j'itère
+     * bien dans l'ordre inverse de l'ajout, ce qui est cohérent avec le source-code */
     auto v = vector<int>({239, 245, 644, 844, 244, 346, 344, 544});
-    for (auto x: v)
-    {
+    for (auto x : v) {
         cout << "+++ inserting " << x << endl;
         myset.insert(x);
     }
     direct_iteration(myset);
     iteration_through_buckets(myset);
-
 
     const char* poc_description = R"RAWSTRING(
 La POC était supposée montrer que l'itération d'un set itérait sur ses buckets...

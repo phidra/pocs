@@ -76,15 +76,12 @@ int main(int argc, char* argv[]) {
         ofstream stream2(output_dir + "graph_boostgraph.geojson");
         dump_geojson_graph(stream2, boost_graph);
 
-
-
         // ensuring that both geojson are identical :
         ostringstream oss1;
         dump_geojson_graph(oss1, edges);
         ostringstream oss2;
         dump_geojson_graph(oss1, boost_graph);
         assert(oss1.str() == oss2.str());
-
 
     } catch (const exception& e) {
         cerr << e.what() << '\n';

@@ -3,23 +3,21 @@
 
 #include <vector>
 
-namespace RoutingKit{
+namespace RoutingKit {
 
-struct StronlyConnectedComponentsResult{
-	std::vector<unsigned>component_of;
-	unsigned component_count;
+struct StronlyConnectedComponentsResult {
+    std::vector<unsigned> component_of;
+    unsigned component_count;
 };
 
-StronlyConnectedComponentsResult compute_strongly_connected_components(
-	const std::vector<unsigned>&first_out, const std::vector<unsigned>&head
-);
+StronlyConnectedComponentsResult compute_strongly_connected_components(const std::vector<unsigned>& first_out,
+                                                                       const std::vector<unsigned>& head);
 
 //! Computes a largest strongly connected component and returns a vector that is
 //! true for every node in this component.
-std::vector<bool>compute_largest_strongly_connected_component(
-	const std::vector<unsigned>&first_out, const std::vector<unsigned>&head
-);
+std::vector<bool> compute_largest_strongly_connected_component(const std::vector<unsigned>& first_out,
+                                                               const std::vector<unsigned>& head);
 
-} // RoutingKit
+}  // namespace RoutingKit
 
 #endif

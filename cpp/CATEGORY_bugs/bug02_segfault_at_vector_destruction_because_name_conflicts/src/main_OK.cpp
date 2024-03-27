@@ -6,7 +6,6 @@
 using namespace std;
 
 int main(void) {
-
     my::Pouet p = my::build();
     cout << "size = " << p.hum.size() << endl;
 

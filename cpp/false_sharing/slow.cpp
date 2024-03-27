@@ -2,31 +2,25 @@
 #include <sstream>
 #include <thread>
 
-void compute(const unsigned long long size, unsigned long long& result)
-{
+void compute(const unsigned long long size, unsigned long long& result) {
     // SLOW : directly working on the result, thus false sharing ensues
-    for (int i = 0; i < size; ++i)
-    {
+    for (int i = 0; i < size; ++i) {
         (i % 2 == 0) ? result += 3 : result -= 2;
     }
 }
 
-void check(const unsigned long long size, const unsigned long long result)
-{
-    const unsigned long long expected_even = size / 2;  // when input size is even
+void check(const unsigned long long size, const unsigned long long result) {
+    const unsigned long long expected_even = size / 2;     // when input size is even
     const unsigned long long expected_odd = size / 2 + 3;  // when input size is odd
-    if (result != expected_even && result != expected_odd)
-    {
+    if (result != expected_even && result != expected_odd) {
         std::ostringstream oss;
         oss << "wrong result : " << result;
         throw std::logic_error(oss.str());
     }
 }
 
-int main(int argc, char* argv[])
-{
-    if (argc < 2)
-    {
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
         std::cout << std::endl;
         std::cerr << "USAGE: " << argv[0] << "  SIZE" << std::endl;
         std::cout << std::endl;

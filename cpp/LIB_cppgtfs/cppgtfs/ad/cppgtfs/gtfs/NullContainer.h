@@ -13,12 +13,17 @@ namespace gtfs {
 
 template <typename T>
 class NullContainer {
- public:
-  NullContainer(){}
-  std::string add(const T& obj) const {return obj.getId();}
-  T* get(const std::string& id) const {do { (void)(id); } while (0); return 0;}
-  std::string getRef(const std::string& id) const {return id;}
-  void finalize() {};
+   public:
+    NullContainer() {}
+    std::string add(const T& obj) const { return obj.getId(); }
+    T* get(const std::string& id) const {
+        do {
+            (void)(id);
+        } while (0);
+        return 0;
+    }
+    std::string getRef(const std::string& id) const { return id; }
+    void finalize(){};
 };
 
 }  // namespace gtfs

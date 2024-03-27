@@ -4,7 +4,6 @@
 #include "addressbook.pb.h"
 #include <google/protobuf/util/json_util.h>
 
-
 using namespace std;
 
 void add_empty_person(tutorial::AddressBook& book) {
@@ -45,7 +44,6 @@ int main(int argc, char* argv[]) {
     book.ParseFromIstream(&in);
 
     cout << "Nombre de personnes dans le book : " << book.people_size() << endl;
-
 
     for (int i = 0; i < book.people_size(); i++) {
         const tutorial::Person& person = book.people(i);

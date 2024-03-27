@@ -4,30 +4,31 @@
 
 using namespace std;
 
-
-void display(unordered_set<int> const & myset)
-{
-    auto f = [&](string s, int x) { string r = move(s); if (! r.empty()) { r += "|"s; }; return move(r) + to_string(x); };
+void display(unordered_set<int> const& myset) {
+    auto f = [&](string s, int x) {
+        string r = move(s);
+        if (!r.empty()) {
+            r += "|"s;
+        };
+        return move(r) + to_string(x);
+    };
     cout << "\tSIZE            : " << myset.size() << endl;
     cout << "\tCONTENT         : " << accumulate(myset.cbegin(), myset.cend(), ""s, f) << endl;
     cout << "\tLOAD FACTOR     : " << myset.load_factor() << endl;
     cout << "\tMAX LOAD FACTOR : " << myset.max_load_factor() << endl;
     cout << "\tNB BUCKETS      : " << myset.bucket_count() << endl;
-    for (int i = 0; i < myset.bucket_count(); ++i)
-    {
+    for (int i = 0; i < myset.bucket_count(); ++i) {
         cout << "\t\t bucket#" << i << " contains " << myset.bucket_size(i) << " elements" << endl;
     }
 }
 
-void insert(unordered_set<int>& myset, int element)
-{
+void insert(unordered_set<int>& myset, int element) {
     cout << "++++++ inserting element : " << element << endl;
     myset.insert(element);
     display(myset);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     unordered_set<int> myset;
     cout << "État INITIAL du set : " << endl;
     display(myset);
@@ -63,6 +64,7 @@ Que se passe-t-il quand le container grandit ?
     on place l'élément dans son nouveau bucket
     une fois que tous les éléments sont replacés, on désalloue la mémoire des anciens buckets
 
-)RAWSTRING" << endl;
+)RAWSTRING"
+         << endl;
     return 0;
 }

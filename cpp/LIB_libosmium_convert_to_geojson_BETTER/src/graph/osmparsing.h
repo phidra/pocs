@@ -27,7 +27,7 @@ struct FillingHandler : public osmium::handler::Handler {
     // The simplest way to do this, is to track the ways that use a given node (here, x).
     // We can then add an edge, each time a node is used by 2 different ways.
 
-    BgPolygon polygon;                                        // the ways outside of this polygon will be ignored
+    BgPolygon polygon;  // the ways outside of this polygon will be ignored
     inline FillingHandler(BgPolygon polygon_ = DEFAULT_POLYGON) : polygon(polygon_) {}
     void way(const osmium::Way& way) noexcept;
 };

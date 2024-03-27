@@ -7,16 +7,16 @@
 using namespace boost;
 using namespace std;
 
-struct StopTheBFS : public runtime_error { StopTheBFS() : runtime_error{""} {} };
+struct StopTheBFS : public runtime_error {
+    StopTheBFS() : runtime_error{""} {}
+};
 
 // the rank property-map associates a vertex to the rank of its discovery
-class BfsDiscoveryRankVisitor : public default_bfs_visitor
-{
-public:
+class BfsDiscoveryRankVisitor : public default_bfs_visitor {
+   public:
     BfsDiscoveryRankVisitor(string& discovered_vertices_) : discovered_vertices{discovered_vertices_} {}
     template <typename VertexDescriptor, typename Graph>
-    void discover_vertex(VertexDescriptor u, const Graph& mygraph) const
-    {
+    void discover_vertex(VertexDescriptor u, const Graph& mygraph) const {
         discovered_vertices.append(mygraph[u].name);
         if (mygraph[u].name == "G") {
             throw StopTheBFS{};
@@ -25,20 +25,20 @@ public:
     string& discovered_vertices;
 };
 
-int main(int, char*[])
-{
+int main(int, char*[]) {
     cout << endl;
     cout << "Par rapport à la POC précédente, cette POC stoppe le BFS dès que le noeud G a été trouvé" << endl;
 
     cout << "   - par conséquent, certains noeuds du graphe ne seront pas visités (au moins H)" << endl;
-    cout << "   - suit les préconisations de l'item 1 de : https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/faq.html" << endl;
+    cout
+        << "   - suit les préconisations de l'item 1 de : https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/faq.html"
+        << endl;
     cout << "   - (aka : le visiteur throw lorsqu'il visite le noeud d'arrêt, l'appelant catche)" << endl;
     cout << "   - par ailleurs, le stockage du discovery-rank est plus simple que dans la POC précédente" << endl;
     cout << "   - (le visitor construit une string décrivant l'ordre de découverte, plutôt qu'un vector)" << endl;
     cout << endl;
     cout << "(cf. des notes générales sur les BFS et boost dans le script bash de build/run)" << endl;
     cout << endl;
-
 
     //========================================
     // STEP 1 = defining graph :
@@ -96,7 +96,6 @@ int main(int, char*[])
     add_edge(F, H, {2, "Avenue des Champs-Élysées"}, mygraph);
     add_edge(G, H, {3, "Rue de la Paix"}, mygraph);
 
-
     //========================================
     // STEP 3 = applying BFS :
 
@@ -104,8 +103,7 @@ int main(int, char*[])
     BfsDiscoveryRankVisitor my_super_visitor(discovered_vertices);
     try {
         breadth_first_search(mygraph, vertex(B, mygraph), visitor(my_super_visitor));
-    }
-    catch (StopTheBFS&) {
+    } catch (StopTheBFS&) {
         // passing here is "normal", see https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/faq.html
     }
 

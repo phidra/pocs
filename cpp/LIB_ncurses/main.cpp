@@ -7,8 +7,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     // init ncurses :
     initscr();
     noecho();
@@ -21,14 +20,11 @@ int main(int argc, char* argv[])
 
     int displayed_x = 0;
     int displayed_y = 0;
-    
-    while (true)
-    {
+
+    while (true) {
         // background :
-        for (int y = 0; y < max_y; ++y)
-        {
-            for (int x = 0; x < max_x; ++x)
-            {
+        for (int y = 0; y < max_y; ++y) {
+            for (int x = 0; x < max_x; ++x) {
                 string char_to_display = (x % 4 == 0 ? "|" : " ");
                 mvprintw(y, x, char_to_display.c_str());
             }
@@ -48,5 +44,4 @@ int main(int argc, char* argv[])
     // restore normal terminal behaviour
     this_thread::sleep_for(chrono::seconds(2));
     endwin();
-
 }

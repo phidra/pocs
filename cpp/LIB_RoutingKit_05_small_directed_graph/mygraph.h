@@ -11,11 +11,31 @@
 // easy way to set variables to nodes, but we could also `unsigned A = 0` :
 enum _ {
     A = 0,
-    B, C, D, E, F,
-    G, H, I, J, K,
-    L, M, N, O, P,
-    Q, R, S, T, U,
-    V, W, X, Y, Z,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
 };
 
 struct OriginalGraph {
@@ -45,7 +65,6 @@ struct OriginalGraph {
 
     const std::string node_names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 };
-
 
 void display_original_graph() {
     std::cout << R"DELIM(
@@ -99,7 +118,6 @@ OriginalGraph build_original_graph() {
 
     graph.add_edge(G, H, 3);
     graph.add_edge(K, H, 2);
-
 
     constexpr const size_t NUM_EDGES = 15;
     constexpr const size_t NUM_NODES = 11;
