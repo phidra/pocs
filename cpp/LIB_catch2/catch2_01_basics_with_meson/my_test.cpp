@@ -1,6 +1,6 @@
-#include "my_code.h"
-
 #include <catch2/catch_test_macros.hpp>
+
+#include "my_code.h"
 
 TEST_CASE("testing my own code", "function check_the_truth") {
     MyClass obj;

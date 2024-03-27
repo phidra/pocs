@@ -1,5 +1,6 @@
-#include <iostream>
 #include "polygon.h"
+
+#include <iostream>
 
 using namespace std;
 

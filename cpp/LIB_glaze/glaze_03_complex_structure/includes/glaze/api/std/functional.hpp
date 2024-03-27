@@ -10,24 +10,24 @@
 
 namespace glz {
 namespace detail {
-template <const std::string_view& Str, class Tuple, size_t I = 0>
+template <std::string_view const& Str, class Tuple, size_t I = 0>
 struct expander {
     static constexpr auto impl() noexcept {
-        const auto N = std::tuple_size_v<Tuple>;
+        auto const N = std::tuple_size_v<Tuple>;
         if constexpr (I >= N) {
             return Str;
         } else if constexpr (I == N - 1) {
             return expander<detail::join_v<Str, name_v<std::tuple_element_t<I, Tuple>>>, Tuple, I + 1>::value;
         } else {
-            return expander<detail::join_v<Str, name_v<std::tuple_element_t<I, Tuple>>, chars<",">>, Tuple,
-                            I + 1>::value;
+            return expander<detail::join_v<Str, name_v<std::tuple_element_t<I, Tuple>>, chars<",">>, Tuple, I + 1>::
+                value;
         }
     }
 
     static constexpr std::string_view value = impl();
 };
 
-template <const std::string_view& Str, class Tuple>
+template <std::string_view const& Str, class Tuple>
 inline constexpr std::string_view expander_v = expander<Str, Tuple>::value;
 }  // namespace detail
 
@@ -44,8 +44,11 @@ struct meta<T> {
         } else if constexpr (fun::N == 0) {
             return chars<"std::function<void()>">;
         } else {
-            return detail::join_v<chars<"std::function<">, name_v<R>, chars<"(">,
-                                  detail::expander_v<chars<"">, typename fun::arguments>, chars<")>">>;
+            return detail::join_v<chars<"std::function<">,
+                                  name_v<R>,
+                                  chars<"(">,
+                                  detail::expander_v<chars<"">, typename fun::arguments>,
+                                  chars<")>">>;
         }
     }
 

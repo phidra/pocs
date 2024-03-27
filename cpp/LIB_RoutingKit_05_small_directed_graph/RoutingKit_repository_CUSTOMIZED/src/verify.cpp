@@ -5,7 +5,7 @@
 
 namespace RoutingKit {
 
-void check_if_graph_is_valid(const std::vector<unsigned>& first_out, const std::vector<unsigned>& head) {
+void check_if_graph_is_valid(std::vector<unsigned> const& first_out, std::vector<unsigned> const& head) {
     if (first_out.front() != 0)
         throw std::runtime_error("first_out[0] must be 0");
     if (first_out.back() != head.size())
@@ -22,9 +22,9 @@ void check_if_graph_is_valid(const std::vector<unsigned>& first_out, const std::
 }
 
 void check_if_arc_ipp_are_valid(unsigned period,
-                                const std::vector<unsigned>& first_ipp_of_arc,
-                                const std::vector<unsigned>& ipp_departure_time,
-                                const std::vector<unsigned>& ipp_travel_time) {
+                                std::vector<unsigned> const& first_ipp_of_arc,
+                                std::vector<unsigned> const& ipp_departure_time,
+                                std::vector<unsigned> const& ipp_travel_time) {
     if (first_ipp_of_arc.front() != 0)
         throw std::runtime_error("first_ipp_of_arc[0] must be 0");
     if (first_ipp_of_arc.back() != ipp_departure_time.size())
@@ -52,11 +52,11 @@ void check_if_arc_ipp_are_valid(unsigned period,
 }
 
 void check_if_td_graph_is_valid(unsigned period,
-                                const std::vector<unsigned>& first_out,
-                                const std::vector<unsigned>& head,
-                                const std::vector<unsigned>& first_ipp_of_arc,
-                                const std::vector<unsigned>& ipp_departure_time,
-                                const std::vector<unsigned>& ipp_travel_time) {
+                                std::vector<unsigned> const& first_out,
+                                std::vector<unsigned> const& head,
+                                std::vector<unsigned> const& first_ipp_of_arc,
+                                std::vector<unsigned> const& ipp_departure_time,
+                                std::vector<unsigned> const& ipp_travel_time) {
     check_if_graph_is_valid(first_out, head);
     if (head.size() != first_ipp_of_arc.size() - 1)
         throw std::runtime_error("head.size() must be first_ipp_of_arc.size()-1");
@@ -65,10 +65,10 @@ void check_if_td_graph_is_valid(unsigned period,
 
 void check_if_sst_queries_are_valid(unsigned period,
                                     unsigned node_count,
-                                    const std::vector<unsigned>& source,
-                                    const std::vector<unsigned>& source_time,
-                                    const std::vector<unsigned>& target,
-                                    const std::vector<unsigned>& rank) {
+                                    std::vector<unsigned> const& source,
+                                    std::vector<unsigned> const& source_time,
+                                    std::vector<unsigned> const& target,
+                                    std::vector<unsigned> const& rank) {
     for (auto x : source)
         if (x >= node_count)
             throw std::runtime_error("source node is out of range");

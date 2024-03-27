@@ -1,10 +1,10 @@
+#include <cassert>
+#include <fstream>
+#include <functional>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <functional>
-#include <cassert>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ using namespace std;
 
 vector<string> split_line(string const& line) {
     // pour cette POC, le délimiteur est fixé :
-    const char COMMA = ',';
+    char const COMMA = ',';
 
     vector<string> tokens;
     stringstream ss(line);

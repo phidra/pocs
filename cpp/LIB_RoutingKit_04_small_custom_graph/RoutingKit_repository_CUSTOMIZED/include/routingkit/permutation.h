@@ -1,11 +1,11 @@
 #ifndef ROUTING_KIT_PERMUTATION_H
 #define ROUTING_KIT_PERMUTATION_H
 
+#include <assert.h>
 #include <routingkit/constants.h>
 
-#include <vector>
-#include <assert.h>
 #include <algorithm>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -16,7 +16,7 @@ namespace RoutingKit {
 //  ... , p[v[n]]}
 //
 
-inline bool is_permutation(const std::vector<unsigned>& p) {
+inline bool is_permutation(std::vector<unsigned> const& p) {
     std::vector<bool> found(p.size(), false);
     for (unsigned x : p) {
         if (x >= p.size())
@@ -28,8 +28,8 @@ inline bool is_permutation(const std::vector<unsigned>& p) {
     return true;
 }
 
-inline std::vector<unsigned> chain_permutation_first_left_then_right(const std::vector<unsigned>& p,
-                                                                     const std::vector<unsigned>& q) {
+inline std::vector<unsigned> chain_permutation_first_left_then_right(std::vector<unsigned> const& p,
+                                                                     std::vector<unsigned> const& q) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(is_permutation(q) && "q must be a permutation");
     assert(p.size() == q.size() && "p and q must permute the same number of objects");
@@ -39,13 +39,13 @@ inline std::vector<unsigned> chain_permutation_first_left_then_right(const std::
     return r;
 }
 
-inline std::vector<unsigned> chain_permutation_first_right_then_left(const std::vector<unsigned>& p,
-                                                                     const std::vector<unsigned>& q) {
+inline std::vector<unsigned> chain_permutation_first_right_then_left(std::vector<unsigned> const& p,
+                                                                     std::vector<unsigned> const& q) {
     return chain_permutation_first_left_then_right(q, p);
 }
 
 template <class T>
-std::vector<T> apply_permutation(const std::vector<unsigned>& p, const std::vector<T>& v) {
+std::vector<T> apply_permutation(std::vector<unsigned> const& p, std::vector<T> const& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(p.size() == v.size() && "permutation and vector must have the same size");
 
@@ -57,7 +57,7 @@ std::vector<T> apply_permutation(const std::vector<unsigned>& p, const std::vect
 }
 
 template <class T>
-std::vector<T> apply_permutation(const std::vector<unsigned>& p, std::vector<T>&& v) {
+std::vector<T> apply_permutation(std::vector<unsigned> const& p, std::vector<T>&& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(p.size() == v.size() && "permutation and vector must have the same size");
 
@@ -69,7 +69,7 @@ std::vector<T> apply_permutation(const std::vector<unsigned>& p, std::vector<T>&
 }
 
 template <class T>
-std::vector<T> apply_inverse_permutation(const std::vector<unsigned>& p, const std::vector<T>& v) {
+std::vector<T> apply_inverse_permutation(std::vector<unsigned> const& p, std::vector<T> const& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(p.size() == v.size() && "permutation and vector must have the same size");
 
@@ -81,7 +81,7 @@ std::vector<T> apply_inverse_permutation(const std::vector<unsigned>& p, const s
 }
 
 template <class T>
-std::vector<T> apply_inverse_permutation(const std::vector<unsigned>& p, std::vector<T>&& v) {
+std::vector<T> apply_inverse_permutation(std::vector<unsigned> const& p, std::vector<T>&& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(p.size() == v.size() && "permutation and vector must have the same size");
 
@@ -92,7 +92,7 @@ std::vector<T> apply_inverse_permutation(const std::vector<unsigned>& p, std::ve
     return r;  // NVRO
 }
 
-inline void inplace_apply_permutation_to_elements_of(const std::vector<unsigned>& p, std::vector<unsigned>& v) {
+inline void inplace_apply_permutation_to_elements_of(std::vector<unsigned> const& p, std::vector<unsigned>& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(std::all_of(v.begin(), v.end(), [&](unsigned x) { return x < p.size(); }) &&
            "v has an out of bounds element");
@@ -101,8 +101,8 @@ inline void inplace_apply_permutation_to_elements_of(const std::vector<unsigned>
         v[i] = p[v[i]];
 }
 
-inline std::vector<unsigned> apply_permutation_to_elements_of(const std::vector<unsigned>& p,
-                                                              const std::vector<unsigned>& v) {
+inline std::vector<unsigned> apply_permutation_to_elements_of(std::vector<unsigned> const& p,
+                                                              std::vector<unsigned> const& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(std::all_of(v.begin(), v.end(), [&](unsigned x) { return x < p.size(); }) &&
            "v has an out of bounds element");
@@ -112,7 +112,7 @@ inline std::vector<unsigned> apply_permutation_to_elements_of(const std::vector<
     return r;  // NVRO
 }
 
-inline void inplace_apply_permutation_to_possibly_invalid_elements_of(const std::vector<unsigned>& p,
+inline void inplace_apply_permutation_to_possibly_invalid_elements_of(std::vector<unsigned> const& p,
                                                                       std::vector<unsigned>& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(std::all_of(v.begin(), v.end(), [&](unsigned x) { return x < p.size() || x == invalid_id; }) &&
@@ -123,8 +123,8 @@ inline void inplace_apply_permutation_to_possibly_invalid_elements_of(const std:
             v[i] = p[v[i]];
 }
 
-inline std::vector<unsigned> apply_permutation_to_possibly_invalid_elements_of(const std::vector<unsigned>& p,
-                                                                               const std::vector<unsigned>& v) {
+inline std::vector<unsigned> apply_permutation_to_possibly_invalid_elements_of(std::vector<unsigned> const& p,
+                                                                               std::vector<unsigned> const& v) {
     assert(is_permutation(p) && "p must be a permutation");
     assert(std::all_of(v.begin(), v.end(), [&](unsigned x) { return x < p.size() || x == invalid_id; }) &&
            "v has an out of bounds element");
@@ -134,7 +134,7 @@ inline std::vector<unsigned> apply_permutation_to_possibly_invalid_elements_of(c
     return r;  // NVRO
 }
 
-inline std::vector<unsigned> invert_permutation(const std::vector<unsigned>& p) {
+inline std::vector<unsigned> invert_permutation(std::vector<unsigned> const& p) {
     assert(is_permutation(p) && "p must be a permutation");
 
     std::vector<unsigned> inv_p(p.size());

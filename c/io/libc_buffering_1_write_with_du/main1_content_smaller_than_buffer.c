@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
     assert(argc >= 2);

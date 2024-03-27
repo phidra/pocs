@@ -45,8 +45,8 @@ struct from_json {};
 
 template <auto Opts, class T, class Ctx, class It0, class It1>
 concept read_json_invocable = requires(T&& value, Ctx&& ctx, It0&& it, It1&& end) {
-    from_json<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                         std::forward<It0>(it), std::forward<It1>(end));
+    from_json<std::remove_cvref_t<T>>::template op<Opts>(
+        std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
 };
 
 template <>
@@ -63,8 +63,8 @@ struct read<json> {
         } else {
             if constexpr (read_json_invocable<Opts, T, Ctx, It0, It1>) {
                 using V = std::remove_cvref_t<T>;
-                from_json<V>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it),
-                                                std::forward<It1>(end));
+                from_json<V>::template op<Opts>(
+                    std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
             } else {
                 static_assert(false_v<T>, "Glaze metadata is probably needed for your type");
             }
@@ -73,7 +73,7 @@ struct read<json> {
 
     // This unknown key handler should not be given unescaped keys, that is for the user to handle.
     template <auto Opts, class T, is_context Ctx, class It0, class It1>
-    GLZ_ALWAYS_INLINE static void handle_unknown(const sv& key, T&& value, Ctx&& ctx, It0&& it, It1&& end) noexcept {
+    GLZ_ALWAYS_INLINE static void handle_unknown(sv const& key, T&& value, Ctx&& ctx, It0&& it, It1&& end) noexcept {
         using ValueType = std::decay_t<decltype(value)>;
         if constexpr (detail::has_unknown_reader<ValueType>) {
             constexpr auto& reader = meta_unknown_read_v<ValueType>;
@@ -115,8 +115,10 @@ struct from_json<T> {
     template <auto Opts, is_context Ctx, class It0, class It1>
     GLZ_ALWAYS_INLINE static void op(auto&& value, Ctx&& ctx, It0&& it, It1&& end) noexcept {
         using V = std::decay_t<decltype(get_member(std::declval<T>(), meta_wrapper_v<T>))>;
-        from_json<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx),
-                                        std::forward<It0>(it), std::forward<It1>(end));
+        from_json<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>),
+                                        std::forward<Ctx>(ctx),
+                                        std::forward<It0>(it),
+                                        std::forward<It1>(end));
     }
 };
 
@@ -136,7 +138,7 @@ struct from_json<T> {
         if (bool(ctx.error)) [[unlikely]]
             return;
 
-        const auto n = value.size();
+        auto const n = value.size();
         for (size_t i = 1; it < end; ++i, ++it) {
             if (*it == '"') {
                 ++it;
@@ -308,8 +310,8 @@ struct from_json<T> {
                     }
 
                     static_assert(sizeof(*it) == sizeof(char));
-                    const char* cur = reinterpret_cast<const char*>(&*it);
-                    const char* beg = cur;
+                    char const* cur = reinterpret_cast<char const*>(&*it);
+                    char const* beg = cur;
                     auto s = parse_int<V, Options.force_conformance>(value, cur);
                     if (!s) [[unlikely]] {
                         ctx.error = error_code::parse_number_failure;
@@ -325,8 +327,8 @@ struct from_json<T> {
                     }
 
                     static_assert(sizeof(*it) == sizeof(char));
-                    const char* cur = reinterpret_cast<const char*>(&*it);
-                    const char* beg = cur;
+                    char const* cur = reinterpret_cast<char const*>(&*it);
+                    char const* beg = cur;
                     auto s = parse_int<std::decay_t<decltype(i)>, Options.force_conformance>(i, cur);
                     if (!s) [[unlikely]] {
                         ctx.error = error_code::parse_number_failure;
@@ -349,8 +351,8 @@ struct from_json<T> {
                 }
 
                 static_assert(sizeof(*it) == sizeof(char));
-                const char* cur = reinterpret_cast<const char*>(&*it);
-                const char* beg = cur;
+                char const* cur = reinterpret_cast<char const*>(&*it);
+                char const* beg = cur;
                 auto s = parse_int<std::decay_t<decltype(i)>, Options.force_conformance>(i, cur);
                 if (!s) [[unlikely]] {
                     ctx.error = error_code::parse_number_failure;
@@ -401,7 +403,7 @@ GLZ_ALWAYS_INLINE unsigned char hex2dec(char hex) {
     return ((hex & 0xf) + (hex >> 6) * 9);
 }
 
-GLZ_ALWAYS_INLINE char32_t hex4_to_char32(const char* hex) {
+GLZ_ALWAYS_INLINE char32_t hex4_to_char32(char const* hex) {
     uint32_t value = hex2dec(hex[3]);
     value |= hex2dec(hex[2]) << 4;
     value |= hex2dec(hex[1]) << 8;
@@ -437,9 +439,9 @@ GLZ_ALWAYS_INLINE void read_escaped_unicode(Val& value, is_context auto&& ctx, I
                     ctx.error = error_code::unicode_escape_conversion_failure;
                     return;
                 } else {
-                    const auto t = codepoint - 0x10000;
-                    const auto high = static_cast<T>(((t << 12) >> 22) + 0xD800);
-                    const auto low = static_cast<T>(((t << 22) >> 22) + 0xDC00);
+                    auto const t = codepoint - 0x10000;
+                    auto const high = static_cast<T>(((t << 12) >> 22) + 0xD800);
+                    auto const low = static_cast<T>(((t << 22) >> 22) + 0xDC00);
                     value.push_back(high);
                     value.push_back(low);
                 }
@@ -448,9 +450,9 @@ GLZ_ALWAYS_INLINE void read_escaped_unicode(Val& value, is_context auto&& ctx, I
             char8_t buffer[4];
             auto& facet = std::use_facet<std::codecvt<char32_t, char8_t, mbstate_t>>(std::locale());
             std::mbstate_t mbstate{};
-            const char32_t* from_next;
+            char32_t const* from_next;
             char8_t* to_next;
-            const auto result = facet.out(mbstate, &codepoint, &codepoint + 1, from_next, buffer, buffer + 4, to_next);
+            auto const result = facet.out(mbstate, &codepoint, &codepoint + 1, from_next, buffer, buffer + 4, to_next);
             if (result != std::codecvt_base::ok) {
                 ctx.error = error_code::unicode_escape_conversion_failure;
                 return;
@@ -469,7 +471,7 @@ GLZ_ALWAYS_INLINE void read_escaped_unicode(Val& value, is_context auto&& ctx, I
             } else if constexpr (std::is_same_v<T, wchar_t>) {
                 wchar_t bufferw[MB_LEN_MAX];
                 std::mbstate_t statew{};
-                auto buffer_ptr = reinterpret_cast<const char*>(buffer);
+                auto buffer_ptr = reinterpret_cast<char const*>(buffer);
                 auto n = std::mbsrtowcs(bufferw, &buffer_ptr, MB_LEN_MAX, &statew);
                 if (n == (std::numeric_limits<std::size_t>::max)()) [[unlikely]] {
                     ctx.error = error_code::unicode_escape_conversion_failure;
@@ -808,12 +810,12 @@ struct from_json<T> {
                 return;
         }
 
-        const auto key = parse_key(ctx, it, end);
+        auto const key = parse_key(ctx, it, end);
         if (bool(ctx.error)) [[unlikely]]
             return;
 
         static constexpr auto frozen_map = detail::make_string_to_enum_map<T>();
-        const auto& member_it = frozen_map.find(key);
+        auto const& member_it = frozen_map.find(key);
         if (member_it != frozen_map.end()) {
             value = member_it->second;
         } else [[unlikely]] {
@@ -943,7 +945,7 @@ requires(readable_array_t<T> && (emplace_backable<T> || !resizeable<T>)&&!emplac
             return;
         }
 
-        const auto n = value.size();
+        auto const n = value.size();
 
         auto value_it = value.begin();
 
@@ -1075,7 +1077,7 @@ requires readable_array_t<T> &&(!emplace_backable<T> && resizeable<T>)struct fro
         match<'['>(ctx, it, end);
         if (bool(ctx.error)) [[unlikely]]
             return;
-        const auto n = number_of_array_elements<Opts>(ctx, it, end);
+        auto const n = number_of_array_elements<Opts>(ctx, it, end);
         if (bool(ctx.error)) [[unlikely]]
             return;
         value.resize(n);
@@ -1207,19 +1209,19 @@ struct from_json<includer<T>> {
         if (bool(ctx.error)) [[unlikely]]
             return;
 
-        const auto file_path = relativize_if_not_absolute(std::filesystem::path(ctx.current_file).parent_path(),
+        auto const file_path = relativize_if_not_absolute(std::filesystem::path(ctx.current_file).parent_path(),
                                                           std::filesystem::path{path});
 
         std::string& buffer = string_buffer();
         std::string string_file_path = file_path.string();
-        const auto ec = file_to_buffer(buffer, string_file_path);
+        auto const ec = file_to_buffer(buffer, string_file_path);
 
         if (bool(ec)) {
             ctx.error = ec;
             return;
         }
 
-        const auto current_file = ctx.current_file;
+        auto const current_file = ctx.current_file;
         ctx.current_file = file_path.string();
 
         std::ignore = glz::read<Opts>(value.value, buffer, ctx);
@@ -1233,7 +1235,7 @@ struct from_json<includer<T>> {
 // TODO: count the maximum number of escapes that can be seen if error_on_unknown_keys is true
 template <glaze_object_t T>
 GLZ_ALWAYS_INLINE constexpr bool keys_may_contain_escape() {
-    auto is_unicode = [](const auto c) { return (static_cast<uint8_t>(c) >> 7) > 0; };
+    auto is_unicode = [](auto const c) { return (static_cast<uint8_t>(c) >> 7) > 0; };
 
     bool may_escape = false;
     constexpr auto N = std::tuple_size_v<meta_t<T>>;
@@ -1361,7 +1363,7 @@ GLZ_ALWAYS_INLINE constexpr auto key_stats() {
 }
 
 template <glz::opts Opts>
-GLZ_ALWAYS_INLINE void parse_object_opening(is_context auto& ctx, auto& it, const auto end) {
+GLZ_ALWAYS_INLINE void parse_object_opening(is_context auto& ctx, auto& it, auto const end) {
     if constexpr (!Opts.opening_handled) {
         if constexpr (!Opts.ws_handled) {
             skip_ws<Opts>(ctx, it, end);
@@ -1379,7 +1381,7 @@ GLZ_ALWAYS_INLINE void parse_object_opening(is_context auto& ctx, auto& it, cons
 }
 
 template <glz::opts Opts>
-GLZ_ALWAYS_INLINE void parse_object_entry_sep(is_context auto& ctx, auto& it, const auto end) {
+GLZ_ALWAYS_INLINE void parse_object_entry_sep(is_context auto& ctx, auto& it, auto const end) {
     skip_ws_no_pre_check<Opts>(ctx, it, end);
     if (bool(ctx.error)) [[unlikely]]
         return;
@@ -1453,7 +1455,7 @@ requires(Opts.error_on_unknown_keys) GLZ_ALWAYS_INLINE std::string_view
                 } else if constexpr (stats.length_range < 4) {
                     auto start = it;
                     it += stats.min_length;
-                    for (const auto e = it + stats.length_range + 1; it < e; ++it) {
+                    for (auto const e = it + stats.length_range + 1; it < e; ++it) {
                         if (*it == '"') {
                             const sv key{start, size_t(it - start)};
                             ++it;
@@ -1524,7 +1526,7 @@ requires(!Opts.error_on_unknown_keys) GLZ_ALWAYS_INLINE std::string_view
                 } else if constexpr (stats.length_range < 4) {
                     auto start = it;
                     it += stats.min_length;
-                    for (const auto e = it + stats.length_range + 1; it < e; ++it) {
+                    for (auto const e = it + stats.length_range + 1; it < e; ++it) {
                         if (*it == '"') {
                             return {start, size_t(it - start)};
                         }
@@ -1650,7 +1652,7 @@ struct from_json<T> {
                     // handled by the user.
 
                     sv key;
-                    const auto start = it;
+                    auto const start = it;
                     while (true) {
                         skip_till_escape_or_quote(ctx, it, end);
                         if (bool(ctx.error)) [[unlikely]]
@@ -1686,7 +1688,7 @@ struct from_json<T> {
 
                     if constexpr (Opts.error_on_unknown_keys) {
                         static constexpr auto frozen_map = detail::make_map<T, Opts.use_hash_comparison>();
-                        if (const auto& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
+                        if (auto const& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
                             parse_object_entry_sep<Opts>(ctx, it, end);
                             if (bool(ctx.error)) [[unlikely]]
                                 return;
@@ -1728,7 +1730,7 @@ struct from_json<T> {
                     } else {
                         static constexpr auto frozen_map = detail::make_map<T, Opts.use_hash_comparison>();
 
-                        if (const auto& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
+                        if (auto const& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
                             match<'"'>(ctx, it, end);
                             if (bool(ctx.error)) [[unlikely]]
                                 return;
@@ -1757,7 +1759,7 @@ struct from_json<T> {
                             // Unknown key handler does not unescape keys or want unescaped keys. Unknown escaped keys
                             // are handled by the user.
 
-                            const auto start = it;
+                            auto const start = it;
                             while (true) {
                                 skip_till_escape_or_quote(ctx, it, end);
                                 if (bool(ctx.error)) [[unlikely]]
@@ -2021,7 +2023,7 @@ struct from_json<T> {
                                             auto id_it = id_map.find(type_id);
                                             if (id_it != id_map.end()) [[likely]] {
                                                 it = start;
-                                                const auto type_index = id_it->second;
+                                                auto const type_index = id_it->second;
                                                 if (value.index() != type_index)
                                                     value = runtime_variant_map<T>()[type_index];
                                                 std::visit(
@@ -2067,7 +2069,7 @@ struct from_json<T> {
                                     auto id_it = id_map.find(type_id);
                                     if (id_it != id_map.end()) [[likely]] {
                                         it = start;
-                                        const auto type_index = id_it->second;
+                                        auto const type_index = id_it->second;
                                         if (value.index() != type_index)
                                             value = runtime_variant_map<T>()[type_index];
                                         return;
@@ -2090,7 +2092,7 @@ struct from_json<T> {
                                 return;
                             } else if (matching_types == 1) {
                                 it = start;
-                                const auto type_index = possible_types.countr_zero();
+                                auto const type_index = possible_types.countr_zero();
                                 if (value.index() != static_cast<size_t>(type_index))
                                     value = runtime_variant_map<T>()[type_index];
                                 std::visit(
@@ -2098,8 +2100,8 @@ struct from_json<T> {
                                         using V = std::decay_t<decltype(v)>;
                                         constexpr bool is_object = glaze_object_t<V>;
                                         if constexpr (is_object) {
-                                            from_json<V>::template op<opening_handled<Opts>(), tag_literal>(v, ctx, it,
-                                                                                                            end);
+                                            from_json<V>::template op<opening_handled<Opts>(), tag_literal>(
+                                                v, ctx, it, end);
                                         }
                                     },
                                     value);
@@ -2199,7 +2201,7 @@ struct from_json<array_variant_wrapper<T>> {
             match<','>(ctx, it, end);
             if (bool(ctx.error)) [[unlikely]]
                 return;
-            const auto type_index = id_it->second;
+            auto const type_index = id_it->second;
             if (value.index() != type_index)
                 value = runtime_variant_map<T>()[type_index];
             std::visit([&](auto&& v) { read<json>::op<Opts>(v, ctx, it, end); }, value);
@@ -2346,7 +2348,7 @@ struct from_json<T> {
 
                     // Because parse_object_key does not necessarily return a valid JSON key, the logic for handling
                     // whitespace and the colon must run after checking if the key exists
-                    if (const auto& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
+                    if (auto const& member_it = frozen_map.find(key); member_it != frozen_map.end()) [[likely]] {
                         parse_object_entry_sep<Opts>(ctx, it, end);
                         if (bool(ctx.error)) [[unlikely]]
                             return;
@@ -2423,7 +2425,7 @@ template <class T, class Buffer>
 [[nodiscard]] inline expected<T, parse_error> read_json(Buffer&& buffer) noexcept {
     T value{};
     context ctx{};
-    const auto ec = read<opts{}>(value, std::forward<Buffer>(buffer), ctx);
+    auto const ec = read<opts{}>(value, std::forward<Buffer>(buffer), ctx);
     if (ec) {
         return unexpected(ec);
     }
@@ -2435,7 +2437,7 @@ inline parse_error read_file_json(T& value, const sv file_name, auto&& buffer) n
     context ctx{};
     ctx.current_file = file_name;
 
-    const auto ec = file_to_buffer(buffer, ctx.current_file);
+    auto const ec = file_to_buffer(buffer, ctx.current_file);
 
     if (bool(ec)) {
         return {ec};

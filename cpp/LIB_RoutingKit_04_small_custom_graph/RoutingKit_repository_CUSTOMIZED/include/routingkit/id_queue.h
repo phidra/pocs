@@ -1,10 +1,11 @@
 #ifndef ROUTING_KIT_ID_QUEUE_H
 #define ROUTING_KIT_ID_QUEUE_H
 
-#include <routingkit/constants.h>
-#include <vector>
-#include <algorithm>
 #include <assert.h>
+#include <routingkit/constants.h>
+
+#include <algorithm>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -17,7 +18,7 @@ struct IDKeyPair {
 //! constructor. The elements are sorted by integer keys.
 class MinIDQueue {
    private:
-    static const unsigned tree_arity = 4;
+    static unsigned const tree_arity = 4;
 
    public:
     MinIDQueue() : heap_size(0) {}

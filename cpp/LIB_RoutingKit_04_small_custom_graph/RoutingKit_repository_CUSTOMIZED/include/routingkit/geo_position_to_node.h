@@ -2,8 +2,9 @@
 #define ROUTING_KIT_GEO_POSITION_TO_NODE_H
 
 #include <routingkit/constants.h>
-#include <vector>
+
 #include <algorithm>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -11,7 +12,7 @@ class GeoPositionToNode {
    public:
     GeoPositionToNode(){};
 
-    GeoPositionToNode(const std::vector<float>& latitude, const std::vector<float>& longitude);
+    GeoPositionToNode(std::vector<float> const& latitude, std::vector<float> const& longitude);
 
     unsigned point_count() const { return point_position.size(); }
 

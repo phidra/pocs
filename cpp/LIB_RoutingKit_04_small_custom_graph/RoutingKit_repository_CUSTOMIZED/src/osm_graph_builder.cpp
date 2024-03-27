@@ -1,27 +1,27 @@
-#include <routingkit/osm_graph_builder.h>
-#include <routingkit/geo_dist.h>
-#include <routingkit/timer.h>
-#include <routingkit/sort.h>
-#include <routingkit/inverse_vector.h>
-#include <routingkit/permutation.h>
-#include <routingkit/graph_util.h>
 #include <routingkit/bit_vector.h>
 #include <routingkit/filter.h>
+#include <routingkit/geo_dist.h>
+#include <routingkit/graph_util.h>
 #include <routingkit/id_mapper.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/osm_decoder.h>
-
-#include <vector>
+#include <routingkit/osm_graph_builder.h>
+#include <routingkit/permutation.h>
+#include <routingkit/sort.h>
+#include <routingkit/timer.h>
 #include <stdint.h>
-#include <string>
 #include <stdio.h>
+
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace RoutingKit {
 
-OSMRoutingIDMapping load_osm_id_mapping_from_pbf(const std::string& file_name,
-                                                 std::function<bool(uint64_t, const TagMap&)> is_routing_node,
-                                                 std::function<bool(uint64_t, const TagMap&)> is_way_used_for_routing,
-                                                 std::function<void(const std::string&)> log_message,
+OSMRoutingIDMapping load_osm_id_mapping_from_pbf(std::string const& file_name,
+                                                 std::function<bool(uint64_t, TagMap const&)> is_routing_node,
+                                                 std::function<bool(uint64_t, TagMap const&)> is_way_used_for_routing,
+                                                 std::function<void(std::string const&)> log_message,
                                                  bool all_modelling_nodes_are_routing_nodes) {
     OSMRoutingIDMapping map;
 
@@ -36,9 +36,9 @@ OSMRoutingIDMapping load_osm_id_mapping_from_pbf(const std::string& file_name,
         timer = -get_micro_time();
     }
 
-    std::function<void(uint64_t, double, double, const TagMap&)> node_callback;
+    std::function<void(uint64_t, double, double, TagMap const&)> node_callback;
     if (is_routing_node) {
-        node_callback = [&](uint64_t osm_node_id, double lat, double lon, const TagMap& tags) {
+        node_callback = [&](uint64_t osm_node_id, double lat, double lon, TagMap const& tags) {
             if (is_routing_node(osm_node_id, tags)) {
                 map.is_modelling_node.make_large_enough_for(osm_node_id);
                 map.is_modelling_node.set(osm_node_id);
@@ -48,52 +48,52 @@ OSMRoutingIDMapping load_osm_id_mapping_from_pbf(const std::string& file_name,
         };
     }
 
-    std::function<void(uint64_t, const std::vector<std::uint64_t>& osm_node_id_list, const TagMap&)> way_callback;
+    std::function<void(uint64_t, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const&)> way_callback;
     if (!all_modelling_nodes_are_routing_nodes) {
-        way_callback = [&](uint64_t osm_way_id, const std::vector<std::uint64_t>& osm_node_id_list,
-                           const TagMap& tags) {
-            if (osm_node_id_list.size() >= 2 && is_way_used_for_routing(osm_way_id, tags)) {
-                map.is_routing_way.make_large_enough_for(osm_way_id);
-                map.is_routing_way.set(osm_way_id);
+        way_callback =
+            [&](uint64_t osm_way_id, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const& tags) {
+                if (osm_node_id_list.size() >= 2 && is_way_used_for_routing(osm_way_id, tags)) {
+                    map.is_routing_way.make_large_enough_for(osm_way_id);
+                    map.is_routing_way.set(osm_way_id);
 
-                for (std::uint64_t osm_node_id : osm_node_id_list) {
-                    map.is_modelling_node.make_large_enough_for(osm_node_id);
-                    if (map.is_modelling_node.is_set(osm_node_id)) {
+                    for (std::uint64_t osm_node_id : osm_node_id_list) {
+                        map.is_modelling_node.make_large_enough_for(osm_node_id);
+                        if (map.is_modelling_node.is_set(osm_node_id)) {
+                            map.is_routing_node.make_large_enough_for(osm_node_id);
+                            map.is_routing_node.set(osm_node_id);
+                        } else {
+                            map.is_modelling_node.set(osm_node_id);
+                        }
+                    }
+
+                    assert(map.is_modelling_node.is_set(osm_node_id_list.front()));
+                    assert(map.is_modelling_node.is_set(osm_node_id_list.back()));
+
+                    map.is_routing_node.make_large_enough_for(osm_node_id_list.front());
+                    map.is_routing_node.set(osm_node_id_list.front());
+                    map.is_routing_node.make_large_enough_for(osm_node_id_list.back());
+                    map.is_routing_node.set(osm_node_id_list.back());
+                }
+            };
+    } else {
+        way_callback =
+            [&](uint64_t osm_way_id, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const& tags) {
+                if (osm_node_id_list.size() >= 2 && is_way_used_for_routing(osm_way_id, tags)) {
+                    map.is_routing_way.make_large_enough_for(osm_way_id);
+                    map.is_routing_way.set(osm_way_id);
+
+                    for (std::uint64_t osm_node_id : osm_node_id_list) {
+                        map.is_modelling_node.make_large_enough_for(osm_node_id);
                         map.is_routing_node.make_large_enough_for(osm_node_id);
+
                         map.is_routing_node.set(osm_node_id);
-                    } else {
                         map.is_modelling_node.set(osm_node_id);
                     }
+
+                    assert(map.is_modelling_node.is_set(osm_node_id_list.front()));
+                    assert(map.is_modelling_node.is_set(osm_node_id_list.back()));
                 }
-
-                assert(map.is_modelling_node.is_set(osm_node_id_list.front()));
-                assert(map.is_modelling_node.is_set(osm_node_id_list.back()));
-
-                map.is_routing_node.make_large_enough_for(osm_node_id_list.front());
-                map.is_routing_node.set(osm_node_id_list.front());
-                map.is_routing_node.make_large_enough_for(osm_node_id_list.back());
-                map.is_routing_node.set(osm_node_id_list.back());
-            }
-        };
-    } else {
-        way_callback = [&](uint64_t osm_way_id, const std::vector<std::uint64_t>& osm_node_id_list,
-                           const TagMap& tags) {
-            if (osm_node_id_list.size() >= 2 && is_way_used_for_routing(osm_way_id, tags)) {
-                map.is_routing_way.make_large_enough_for(osm_way_id);
-                map.is_routing_way.set(osm_way_id);
-
-                for (std::uint64_t osm_node_id : osm_node_id_list) {
-                    map.is_modelling_node.make_large_enough_for(osm_node_id);
-                    map.is_routing_node.make_large_enough_for(osm_node_id);
-
-                    map.is_routing_node.set(osm_node_id);
-                    map.is_modelling_node.set(osm_node_id);
-                }
-
-                assert(map.is_modelling_node.is_set(osm_node_id_list.front()));
-                assert(map.is_modelling_node.is_set(osm_node_id_list.back()));
-            }
-        };
+            };
     }
 
     unordered_read_osm_pbf(file_name, node_callback, way_callback, nullptr, log_message);
@@ -115,20 +115,20 @@ OSMRoutingIDMapping load_osm_id_mapping_from_pbf(const std::string& file_name,
 }
 
 OSMRoutingGraph load_osm_routing_graph_from_pbf(
-    const std::string& pbf_file,
-    const OSMRoutingIDMapping& mapping,
-    std::function<OSMWayDirectionCategory(uint64_t, unsigned, const TagMap&)> way_callback,
+    std::string const& pbf_file,
+    OSMRoutingIDMapping const& mapping,
+    std::function<OSMWayDirectionCategory(uint64_t, unsigned, TagMap const&)> way_callback,
     std::function<void(uint64_t osm_relation_id,
-                       const std::vector<OSMRelationMember>& member_list,
-                       const TagMap& tags,
+                       std::vector<OSMRelationMember> const& member_list,
+                       TagMap const& tags,
                        std::function<void(OSMTurnRestriction)>)> turn_restriction_decoder,
-    std::function<void(const std::string&)> log_message,
+    std::function<void(std::string const&)> log_message,
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered,
     OSMRoadGeometry geometry_to_be_extracted) {
     assert((mapping.is_modelling_node | mapping.is_routing_node) == mapping.is_modelling_node);
 
     if (!way_callback) {
-        way_callback = [](uint64_t, unsigned, const TagMap&) { return OSMWayDirectionCategory::open_in_both; };
+        way_callback = [](uint64_t, unsigned, TagMap const&) { return OSMWayDirectionCategory::open_in_both; };
     }
 
     if (turn_restriction_decoder && geometry_to_be_extracted == OSMRoadGeometry::none) {
@@ -154,9 +154,13 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
         log_message("Finished, needed " + std::to_string(timer) + " musec.");
     }
 
-    auto on_new_arc = [&](unsigned x, unsigned y, unsigned dist, unsigned routing_way_id, bool is_antiparallel_to_way,
-                          const std::vector<float>& modelling_node_latitude,
-                          const std::vector<float>& modelling_node_longitude) {
+    auto on_new_arc = [&](unsigned x,
+                          unsigned y,
+                          unsigned dist,
+                          unsigned routing_way_id,
+                          bool is_antiparallel_to_way,
+                          std::vector<float> const& modelling_node_latitude,
+                          std::vector<float> const& modelling_node_longitude) {
         tail.push_back(x);
         routing_graph.head.push_back(y);
         routing_graph.geo_distance.push_back(dist);
@@ -185,16 +189,16 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
     };
 
     std::vector<OSMTurnRestriction> osm_turn_restrictions;
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback = nullptr;
 
     if (turn_restriction_decoder) {
-        relation_callback = [&](uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list,
-                                const TagMap& tags) {
-            turn_restriction_decoder(osm_relation_id, member_list, tags, [&](OSMTurnRestriction restriction) {
-                osm_turn_restrictions.push_back(restriction);
-            });
-        };
+        relation_callback =
+            [&](uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags) {
+                turn_restriction_decoder(osm_relation_id, member_list, tags, [&](OSMTurnRestriction restriction) {
+                    osm_turn_restrictions.push_back(restriction);
+                });
+            };
     }
 
     std::vector<float> latitude(modelling_node.local_id_count());
@@ -208,14 +212,14 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
     }
     ordered_read_osm_pbf(
         pbf_file,
-        [&](uint64_t osm_node_id, double lat, double lon, const TagMap& tags) {
+        [&](uint64_t osm_node_id, double lat, double lon, TagMap const& tags) {
             unsigned modelling_id = modelling_node.to_local(osm_node_id, invalid_id);
             if (modelling_id != invalid_id) {
                 latitude[modelling_id] = lat;
                 longitude[modelling_id] = lon;
             }
         },
-        [&](uint64_t osm_way_id, const std::vector<std::uint64_t>& node_list, const TagMap& tags) {
+        [&](uint64_t osm_way_id, std::vector<std::uint64_t> const& node_list, TagMap const& tags) {
             unsigned routing_way_id = routing_way.to_local(osm_way_id, invalid_id);
             if (routing_way_id != invalid_id) {
                 OSMWayDirectionCategory dir = way_callback(osm_way_id, routing_way_id, tags);
@@ -228,10 +232,10 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
                     for (unsigned i = 1; i < node_list.size(); ++i) {
                         unsigned modelling_id_of_current_node = modelling_node.to_local(node_list[i]);
 
-                        dist_since_last_routing_node +=
-                            geo_dist(latitude[modelling_id_of_current_node], longitude[modelling_id_of_current_node],
-                                     latitude[modelling_id_of_previous_modelling_node],
-                                     longitude[modelling_id_of_previous_modelling_node]);
+                        dist_since_last_routing_node += geo_dist(latitude[modelling_id_of_current_node],
+                                                                 longitude[modelling_id_of_current_node],
+                                                                 latitude[modelling_id_of_previous_modelling_node],
+                                                                 longitude[modelling_id_of_previous_modelling_node]);
                         if (geometry_to_be_extracted == OSMRoadGeometry::uncompressed ||
                             geometry_to_be_extracted == OSMRoadGeometry::first_and_last) {
                             modelling_node_latitude.push_back(latitude[modelling_id_of_current_node]);
@@ -250,21 +254,33 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
 
                             switch (dir) {
                                 case OSMWayDirectionCategory::only_open_forwards:
-                                    on_new_arc(routing_id_of_last_routing_node, routing_id_of_current_node,
-                                               dist_since_last_routing_node, routing_way_id, false,
-                                               modelling_node_latitude, modelling_node_longitude);
+                                    on_new_arc(routing_id_of_last_routing_node,
+                                               routing_id_of_current_node,
+                                               dist_since_last_routing_node,
+                                               routing_way_id,
+                                               false,
+                                               modelling_node_latitude,
+                                               modelling_node_longitude);
                                     break;
                                 case OSMWayDirectionCategory::open_in_both:
-                                    on_new_arc(routing_id_of_last_routing_node, routing_id_of_current_node,
-                                               dist_since_last_routing_node, routing_way_id, false,
-                                               modelling_node_latitude, modelling_node_longitude);
+                                    on_new_arc(routing_id_of_last_routing_node,
+                                               routing_id_of_current_node,
+                                               dist_since_last_routing_node,
+                                               routing_way_id,
+                                               false,
+                                               modelling_node_latitude,
+                                               modelling_node_longitude);
                                     // no break
                                 case OSMWayDirectionCategory::only_open_backwards:
                                     std::reverse(modelling_node_latitude.begin(), modelling_node_latitude.end());
                                     std::reverse(modelling_node_longitude.begin(), modelling_node_longitude.end());
-                                    on_new_arc(routing_id_of_current_node, routing_id_of_last_routing_node,
-                                               dist_since_last_routing_node, routing_way_id, true,
-                                               modelling_node_latitude, modelling_node_longitude);
+                                    on_new_arc(routing_id_of_current_node,
+                                               routing_id_of_last_routing_node,
+                                               dist_since_last_routing_node,
+                                               routing_way_id,
+                                               true,
+                                               modelling_node_latitude,
+                                               modelling_node_longitude);
                                     break;
                                 default:
                                     assert(false);
@@ -279,7 +295,9 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
                 }
             }
         },
-        relation_callback, log_message, file_is_ordered_even_though_file_header_says_that_it_is_unordered);
+        relation_callback,
+        log_message,
+        file_is_ordered_even_though_file_header_says_that_it_is_unordered);
 
     if (log_message) {
         timer += get_micro_time();
@@ -292,8 +310,8 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
     {
         unsigned node_count = routing_node.local_id_count();
 
-        auto p = compute_inverse_sort_permutation_first_by_tail_then_by_head_and_apply_sort_to_tail(node_count, tail,
-                                                                                                    routing_graph.head);
+        auto p = compute_inverse_sort_permutation_first_by_tail_then_by_head_and_apply_sort_to_tail(
+            node_count, tail, routing_graph.head);
         routing_graph.head = apply_inverse_permutation(p, std::move(routing_graph.head));
         routing_graph.geo_distance = apply_inverse_permutation(p, std::move(routing_graph.geo_distance));
         routing_graph.way = apply_inverse_permutation(p, std::move(routing_graph.way));
@@ -369,9 +387,9 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
         auto& head = routing_graph.head;
         auto& way = routing_graph.way;
 
-        const unsigned node_count = first_out.size() - 1;
-        const unsigned arc_count = head.size();
-        const unsigned way_count = routing_way.local_id_count();
+        unsigned const node_count = first_out.size() - 1;
+        unsigned const arc_count = head.size();
+        unsigned const way_count = routing_way.local_id_count();
 
         {
             if (log_message) {
@@ -611,8 +629,8 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
                 timer = -get_micro_time();
             }
 
-            const unsigned node_count = routing_graph.first_out.size() - 1;
-            const unsigned arc_count = routing_graph.head.size();
+            unsigned const node_count = routing_graph.first_out.size() - 1;
+            unsigned const arc_count = routing_graph.head.size();
             (void)arc_count;
 
             auto in_arc =
@@ -685,7 +703,7 @@ OSMRoutingGraph load_osm_routing_graph_from_pbf(
                     float via_lat = routing_graph.latitude[x.via_node];
                     float via_lon = routing_graph.longitude[x.via_node];
 
-                    const float pi = 3.14159265359f;
+                    float const pi = 3.14159265359f;
 
                     auto mod_2pi = [&](float angle) -> float {
                         while (angle < 0.0f) {

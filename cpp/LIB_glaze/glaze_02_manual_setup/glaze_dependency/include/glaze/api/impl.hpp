@@ -92,8 +92,8 @@ struct impl : api {
 
     bool caller(const sv path, const glz::hash_t type_hash, void*& ret, std::span<void*> args) noexcept override {
         auto p = parent_last_json_ptrs(path);
-        const auto parent_ptr = p.first;
-        const auto last_ptr = p.second;
+        auto const parent_ptr = p.first;
+        auto const last_ptr = p.second;
 
         bool found = false;
 
@@ -118,15 +118,15 @@ struct impl : api {
                                     if constexpr (std::is_void_v<Ret>) {
                                         call_args<Tuple>(std::mem_fn(val), parent, args, std::make_index_sequence<N>{});
                                     } else if constexpr (std::is_pointer_v<std::decay_t<Ret>>) {
-                                        ret = call_args<Tuple>(std::mem_fn(val), parent, args,
-                                                               std::make_index_sequence<N>{});
+                                        ret = call_args<Tuple>(
+                                            std::mem_fn(val), parent, args, std::make_index_sequence<N>{});
                                     } else if constexpr (std::is_lvalue_reference_v<Ret>) {
                                         // TODO remove const cast
                                         ret = const_cast<std::decay_t<Ret>*>(&call_args<Tuple>(
                                             std::mem_fn(val), parent, args, std::make_index_sequence<N>{}));
                                     } else {
-                                        *static_cast<Ret*>(ret) = call_args<Tuple>(std::mem_fn(val), parent, args,
-                                                                                   std::make_index_sequence<N>{});
+                                        *static_cast<Ret*>(ret) = call_args<Tuple>(
+                                            std::mem_fn(val), parent, args, std::make_index_sequence<N>{});
                                     }
                                     found = true;
                                 } else [[unlikely]] {
@@ -140,9 +140,11 @@ struct impl : api {
                             error = "caller: type is not a member function";
                         }
                     },
-                    parent, last_ptr);
+                    parent,
+                    last_ptr);
             },
-            user, parent_ptr);  // seek to parent
+            user,
+            parent_ptr);  // seek to parent
 
         if (found) {
             return true;
@@ -179,7 +181,7 @@ struct impl : api {
 
         glz::hash_t type_hash{};
 
-        const auto success = detail::seek_impl(
+        auto const success = detail::seek_impl(
             [&](auto&& val) {
                 using V = std::decay_t<decltype(*unwrap(val))>;
                 if constexpr (std::is_member_function_pointer_v<V>) {
@@ -190,7 +192,8 @@ struct impl : api {
                     result = unwrap(val);
                 }
             },
-            std::forward<T>(root_value), json_ptr);
+            std::forward<T>(root_value),
+            json_ptr);
 
         if (!error.empty()) {
             return {nullptr, {}};
@@ -207,8 +210,8 @@ struct impl : api {
         std::unique_ptr<void, void (*)(void*)> result{nullptr, nullptr};
 
         auto p = parent_last_json_ptrs(json_ptr);
-        const auto parent_ptr = p.first;
-        const auto last_ptr = p.second;
+        auto const parent_ptr = p.first;
+        auto const last_ptr = p.second;
 
         detail::seek_impl(
             [&](auto&& parent) {
@@ -250,9 +253,11 @@ struct impl : api {
                                     " is not a member function or std::function";
                         }
                     },
-                    parent, last_ptr);
+                    parent,
+                    last_ptr);
             },
-            root_value, parent_ptr);  // seek to parent
+            root_value,
+            parent_ptr);  // seek to parent
 
         if (error.empty() && result == nullptr) {
             error = "invalid path";

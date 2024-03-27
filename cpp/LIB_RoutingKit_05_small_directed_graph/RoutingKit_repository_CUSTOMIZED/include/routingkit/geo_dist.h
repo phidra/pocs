@@ -92,8 +92,8 @@ inline double geo_dist(double lat_a, double lon_a, double lat_b, double lon_b) {
     //	)
     // )
 
-    const double pi_div_180 = 3.14159265359 / 180.0;
-    const double earth_radius = 6371000.785;  // in meter
+    double const pi_div_180 = 3.14159265359 / 180.0;
+    double const earth_radius = 6371000.785;  // in meter
 
     // To help the auto-vectorizer figure out that using SIMD is a good idea here, we use a local array with a constant
     // size instead of variables. GCC 5's auto vectorizer requires that the array has a power of two size. We thus add a

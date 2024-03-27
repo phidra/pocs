@@ -1,6 +1,7 @@
+#include "phonebook/database.h"
+
 #include <algorithm>
 
-#include "phonebook/database.h"
 #include "filter.h"
 
 void DataBase::add_person(Person person, Address address, Phone phone) {
@@ -25,7 +26,8 @@ std::vector<Person> DataBase::get_persons_by_insertion_order() const {
 
 std::vector<Person> DataBase::get_persons_by_alphabetical_order() const {
     auto to_return = get_persons_by_insertion_order();
-    std::sort(to_return.begin(), to_return.end(),
-              [](Person const& left, Person const& right) { return left.name < right.name; });
+    std::sort(to_return.begin(), to_return.end(), [](Person const& left, Person const& right) {
+        return left.name < right.name;
+    });
     return to_return;
 }

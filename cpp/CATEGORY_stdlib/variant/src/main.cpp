@@ -1,9 +1,9 @@
-#include <iostream>
 #include <iomanip>
-#include <vector>
+#include <iostream>
 #include <sstream>
-#include <variant>
 #include <unordered_map>
+#include <variant>
+#include <vector>
 
 using namespace std;
 
@@ -42,8 +42,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     // les différents variants qu'on va essayer de traiter de façon uniforme (= en les convertissant en id) :
     // à noter que le vector in-fine contient des objets de type différents (par le biais du variant)
     vector<Point> points{
-        Point{10}, Point{"Paris"},           Point{"Berlin"}, Point{Coords{2.222, 8.888}},
-        Point{99}, Point{"Inexisting city"}, Point{1},
+        Point{10},
+        Point{"Paris"},
+        Point{"Berlin"},
+        Point{Coords{2.222, 8.888}},
+        Point{99},
+        Point{"Inexisting city"},
+        Point{1},
     };
 
     // un index qui sert à convertir les variants de type string en id :

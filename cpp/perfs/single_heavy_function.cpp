@@ -1,7 +1,7 @@
-#include <iostream>
 #include <chrono>
-#include <vector>
 #include <cmath>
+#include <iostream>
+#include <vector>
 
 // EXPECTED ON FLAMEGRAPH = all the time is passed in 'heavy_function'
 

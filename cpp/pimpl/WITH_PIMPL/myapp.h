@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 // IMPORTANT : grâce à pimpl, myapp ne dépend plus publiquement de la lib !
 

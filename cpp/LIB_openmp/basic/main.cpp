@@ -1,8 +1,9 @@
-#include <iostream>
-#include <chrono>
-#include <vector>
 #include <omp.h>
+
+#include <chrono>
 #include <cmath>
+#include <iostream>
+#include <vector>
 
 // basic case = parallelizing a heavy computation.
 //

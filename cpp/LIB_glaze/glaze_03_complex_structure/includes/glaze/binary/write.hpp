@@ -69,8 +69,8 @@ struct to_binary {};
 
 template <auto Opts, class T, class Ctx, class B, class IX>
 concept write_binary_invocable = requires(T&& value, Ctx&& ctx, B&& b, IX&& ix) {
-    to_binary<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                         std::forward<B>(b), std::forward<IX>(ix));
+    to_binary<std::remove_cvref_t<T>>::template op<Opts>(
+        std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
 };
 
 template <>
@@ -78,8 +78,8 @@ struct write<binary> {
     template <auto Opts, class T, is_context Ctx, class B, class IX>
     GLZ_ALWAYS_INLINE static void op(T&& value, Ctx&& ctx, B&& b, IX&& ix) noexcept {
         if constexpr (write_binary_invocable<Opts, T, Ctx, B, IX>) {
-            to_binary<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                                 std::forward<B>(b), std::forward<IX>(ix));
+            to_binary<std::remove_cvref_t<T>>::template op<Opts>(
+                std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
         } else {
             static_assert(false_v<T>, "Glaze metadata is probably needed for your type");
         }
@@ -87,8 +87,8 @@ struct write<binary> {
 
     template <auto Opts, class T, is_context Ctx, class B, class IX>
     GLZ_ALWAYS_INLINE static void no_header(T&& value, Ctx&& ctx, B&& b, IX&& ix) noexcept {
-        to_binary<std::remove_cvref_t<T>>::template no_header<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                                    std::forward<B>(b), std::forward<IX>(ix));
+        to_binary<std::remove_cvref_t<T>>::template no_header<Opts>(
+            std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
     }
 };
 
@@ -111,7 +111,7 @@ struct to_binary<T> {
         dump_compressed_int<Opts>(value.size(), args...);
 
         // constexpr auto num_bytes = (value.size() + 7) / 8;
-        const auto num_bytes = (value.size() + 7) / 8;
+        auto const num_bytes = (value.size() + 7) / 8;
         // .size() should be constexpr, but clang doesn't support this
         std::vector<uint8_t> bytes(num_bytes);
         // std::array<uint8_t, num_bytes> bytes{};
@@ -163,7 +163,7 @@ struct to_binary<includer<T>> {
 template <boolean_like T>
 struct to_binary<T> final {
     template <auto Opts, class... Args>
-    GLZ_ALWAYS_INLINE static void op(const bool value, is_context auto&&, Args&&... args) noexcept {
+    GLZ_ALWAYS_INLINE static void op(bool const value, is_context auto&&, Args&&... args) noexcept {
         dump_type(value ? tag::bool_true : tag::bool_false, args...);
     }
 };
@@ -252,7 +252,7 @@ struct to_binary<T> final {
         constexpr uint8_t tag = tag::string;
 
         dump_type(tag, b, ix);
-        const auto n = value.size();
+        auto const n = value.size();
         dump_compressed_int<Opts>(n, b, ix);
 
         assert(ix <= b.size());
@@ -269,7 +269,7 @@ struct to_binary<T> final {
         dump_compressed_int<Opts>(value.size(), b, ix);
 
         assert(ix <= b.size());
-        const auto n = value.size();
+        auto const n = value.size();
         if (ix + n > b.size()) [[unlikely]] {
             b.resize((std::max)(b.size() * 2, ix + n));
         }
@@ -302,7 +302,7 @@ struct to_binary<T> final {
                 }
                 dump(bytes, args...);
             } else if constexpr (accessible<T>) {
-                const auto num_bytes = (value.size() + 7) / 8;
+                auto const num_bytes = (value.size() + 7) / 8;
                 for (size_t byte_i{}, i{}; byte_i < num_bytes; ++byte_i) {
                     uint8_t byte{};
                     for (size_t bit_i = 7; bit_i < 8 && i < value.size(); --bit_i, ++i) {
@@ -399,7 +399,7 @@ struct to_binary<T> final {
         dump_type(tag, args...);
 
         dump_compressed_int<Opts>(1, args...);
-        const auto& [k, v] = value;
+        auto const& [k, v] = value;
         write<binary>::no_header<Opts>(k, ctx, args...);
         write<binary>::op<Opts>(v, ctx, args...);
     }
@@ -533,7 +533,7 @@ inline auto write_binary(T&& value) {
 }
 
 template <class Map, class Key>
-concept findable = requires(Map& map, const Key& key) {
+concept findable = requires(Map& map, Key const& key) {
     map.find(key);
 };
 
@@ -613,7 +613,7 @@ template <auto& Partial, opts Opts, class T, output_buffer Buffer>
     }
     context ctx{};
     size_t ix = 0;
-    const auto error = write<Partial, Opts>(std::forward<T>(value), ctx, buffer, ix);
+    auto const error = write<Partial, Opts>(std::forward<T>(value), ctx, buffer, ix);
     if constexpr (detail::resizeable<Buffer>) {
         buffer.resize(ix);
     }
@@ -627,7 +627,7 @@ inline auto write_binary(T&& value, Buffer&& buffer) {
 
 // std::string file_name needed for std::ofstream
 template <class T>
-[[nodiscard]] inline write_error write_file_binary(T&& value, const std::string& file_name, auto&& buffer) noexcept {
+[[nodiscard]] inline write_error write_file_binary(T&& value, std::string const& file_name, auto&& buffer) noexcept {
     static_assert(sizeof(decltype(*buffer.data())) == 1);
 
     write<opts{.format = binary}>(std::forward<T>(value), buffer);
@@ -635,7 +635,7 @@ template <class T>
     std::ofstream file(file_name, std::ios::binary);
 
     if (file) {
-        file.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+        file.write(reinterpret_cast<char const*>(buffer.data()), buffer.size());
     } else {
         return {error_code::file_open_failure};
     }

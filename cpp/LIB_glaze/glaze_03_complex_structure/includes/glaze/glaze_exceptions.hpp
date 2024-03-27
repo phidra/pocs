@@ -38,7 +38,7 @@ size_t write(T&& value, Buffer&& buffer) noexcept {
 namespace glz::ex {
 template <class T>
 void read_file(T& value, const sv file_name, auto&& buffer) {
-    const auto ec = glz::read_file(value, file_name, buffer);
+    auto const ec = glz::read_file(value, file_name, buffer);
     if (ec == glz::error_code::file_open_failure) {
         throw std::runtime_error("file failed to open: " + std::string(file_name));
     } else if (ec) {
@@ -48,7 +48,7 @@ void read_file(T& value, const sv file_name, auto&& buffer) {
 
 template <class T>
 void write_file(T& value, const sv file_name, auto&& buffer) {
-    const auto ec = glz::write_file(value, file_name, buffer);
+    auto const ec = glz::write_file(value, file_name, buffer);
     if (ec == glz::error_code::file_open_failure) {
         throw std::runtime_error("file failed to open: " + std::string(file_name));
     } else if (ec) {

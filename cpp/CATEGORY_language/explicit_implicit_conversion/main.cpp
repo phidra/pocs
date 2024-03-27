@@ -1,6 +1,6 @@
 #include <iostream>
-#include <typeinfo>
 #include <string>
+#include <typeinfo>
 
 using std::cout;
 using std::endl;
@@ -35,14 +35,14 @@ class Explicit {
     int member = 42;
 };
 
-void f(const Implicit& arg) {
+void f(Implicit const& arg) {
     cout << "===== appel de f (qui attend un Implicit) avec un paramètre de type : " << typeid(arg).name()
          << " =====" << endl;
     arg.display();
     cout << endl;
 }
 
-void g(const Explicit& arg) {
+void g(Explicit const& arg) {
     cout << "===== appel de g (qui attend un Implicit) avec un paramètre de type : " << typeid(arg).name()
          << " =====" << endl;
     arg.display();

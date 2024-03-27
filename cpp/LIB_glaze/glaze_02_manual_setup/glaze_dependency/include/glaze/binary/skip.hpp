@@ -15,12 +15,12 @@ inline void skip_value_binary(is_context auto&&, auto&&, auto&&) noexcept;
 
 inline void skip_string_binary(is_context auto&&, auto&& it, auto&& end) noexcept {
     ++it;
-    const auto n = int_from_compressed(it, end);
+    auto const n = int_from_compressed(it, end);
     std::advance(it, n);
 }
 
 inline void skip_number_binary(is_context auto&&, auto&& it, auto&&) noexcept {
-    const auto tag = uint8_t(*it);
+    auto const tag = uint8_t(*it);
     const uint8_t byte_count = byte_count_lookup[tag >> 5];
     ++it;
 
@@ -29,14 +29,14 @@ inline void skip_number_binary(is_context auto&&, auto&& it, auto&&) noexcept {
 
 template <opts Opts>
 inline void skip_object_binary(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-    const auto tag = uint8_t(*it);
+    auto const tag = uint8_t(*it);
     ++it;
 
-    const auto n_keys = int_from_compressed(it, end);
+    auto const n_keys = int_from_compressed(it, end);
 
     if ((tag & 0b00000'111) == tag::string) {
         for (size_t i = 0; i < n_keys; ++i) {
-            const auto string_length = int_from_compressed(it, end);
+            auto const string_length = int_from_compressed(it, end);
             std::advance(it, string_length);
             if (bool(ctx.error)) [[unlikely]]
                 return;
@@ -48,7 +48,7 @@ inline void skip_object_binary(is_context auto&& ctx, auto&& it, auto&& end) noe
     } else if ((tag & 0b00000'111) == tag::number) {
         const uint8_t byte_count = byte_count_lookup[tag >> 5];
         for (size_t i = 0; i < n_keys; ++i) {
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
             std::advance(it, byte_count * n);
             if (bool(ctx.error)) [[unlikely]]
                 return;
@@ -65,27 +65,27 @@ inline void skip_object_binary(is_context auto&& ctx, auto&& it, auto&& end) noe
 
 template <opts Opts>
 inline void skip_typed_array_binary(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-    const auto tag = uint8_t(*it);
+    auto const tag = uint8_t(*it);
     const uint8_t type = (tag & 0b000'11'000) >> 3;
     switch (type) {
         case 0:    // floating point (fallthrough)
         case 1:    // signed integer (fallthrough)
         case 2: {  // unsigned integer
             ++it;
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
             const uint8_t byte_count = byte_count_lookup[tag >> 5];
             std::advance(it, byte_count * n);
             break;
         }
         case 3: {  // bool or string
-            const bool is_bool = (tag & 0b00'1'00'000) >> 5;
+            bool const is_bool = (tag & 0b00'1'00'000) >> 5;
             ++it;
             if (is_bool) {
-                const auto n = int_from_compressed(it, end);
-                const auto num_bytes = (n + 7) / 8;
+                auto const n = int_from_compressed(it, end);
+                auto const num_bytes = (n + 7) / 8;
                 std::advance(it, num_bytes);
             } else {
-                const auto n = int_from_compressed(it, end);
+                auto const n = int_from_compressed(it, end);
                 std::advance(it, n);
             }
             break;
@@ -98,7 +98,7 @@ inline void skip_typed_array_binary(is_context auto&& ctx, auto&& it, auto&& end
 template <opts Opts>
 inline void skip_untyped_array_binary(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
     ++it;
-    const auto n = int_from_compressed(it, end);
+    auto const n = int_from_compressed(it, end);
     for (size_t i = 0; i < n; ++i) {
         skip_value_binary<Opts>(ctx, it, end);
     }

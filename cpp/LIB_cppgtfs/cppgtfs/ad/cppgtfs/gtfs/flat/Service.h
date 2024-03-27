@@ -6,10 +6,10 @@
 #define AD_CPPGTFS_GTFS_FLAT_SERVICE_H_
 
 #include <ctime>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 using std::exception;
 using std::string;
@@ -40,8 +40,8 @@ struct CalendarDateFlds {
 
 class ServiceDate {
    public:
-    ServiceDate(uint8_t day, uint8_t month, uint16_t year)
-        : _yyyymmdd((year * 10000 + month * 100 + day) - (1900 * 10000)) {}
+    ServiceDate(uint8_t day, uint8_t month, uint16_t year) :
+        _yyyymmdd((year * 10000 + month * 100 + day) - (1900 * 10000)) {}
 
     explicit ServiceDate(uint32_t yyyymmdd) : _yyyymmdd(yyyymmdd - (1900 * 10000)) {}
 
@@ -76,31 +76,31 @@ class ServiceDate {
     uint32_t _yyyymmdd : 24;
 };
 
-inline bool operator>(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator>(ServiceDate const& lh, ServiceDate const& rh) {
     return lh.getYYYYMMDD() > rh.getYYYYMMDD();
 }
 
-inline bool operator<(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator<(ServiceDate const& lh, ServiceDate const& rh) {
     return rh > lh;
 }
 
-inline bool operator==(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator==(ServiceDate const& lh, ServiceDate const& rh) {
     return !(lh > rh) && !(lh < rh);
 }
 
-inline bool operator!=(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator!=(ServiceDate const& lh, ServiceDate const& rh) {
     return !(lh == rh);
 }
 
-inline bool operator>=(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator>=(ServiceDate const& lh, ServiceDate const& rh) {
     return lh > rh || lh == rh;
 }
 
-inline bool operator<=(const ServiceDate& lh, const ServiceDate& rh) {
+inline bool operator<=(ServiceDate const& lh, ServiceDate const& rh) {
     return rh > lh || lh == rh;
 }
 
-inline ServiceDate operator+(const ServiceDate& lh, int i) {
+inline ServiceDate operator+(ServiceDate const& lh, int i) {
     tm tStrc = lh.getTimeStrc();
     tStrc.tm_mday += i;
     mktime(&tStrc);
@@ -108,7 +108,7 @@ inline ServiceDate operator+(const ServiceDate& lh, int i) {
     return ServiceDate(tStrc.tm_mday, tStrc.tm_mon + 1, tStrc.tm_year + 1900);
 }
 
-inline ServiceDate operator-(const ServiceDate& lh, int i) {
+inline ServiceDate operator-(ServiceDate const& lh, int i) {
     return lh + (-i);
 }
 

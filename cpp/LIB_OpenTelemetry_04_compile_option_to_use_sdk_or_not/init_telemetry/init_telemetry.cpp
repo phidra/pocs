@@ -1,7 +1,7 @@
 #include "init_telemetry.h"
 
-#include "opentelemetry/trace/provider.h"
 #include "opentelemetry/exporters/ostream/span_exporter.h"
+#include "opentelemetry/trace/provider.h"
 
 // La librairie 'init_telemetry' n'utilise le SDK OpenTelemetry *QUE* si on l'a configurée pour cela
 // via le flag de compilation WITH_OPENTELEMETRY. Et dans tous les cas, c'est un détail d'implémentation.

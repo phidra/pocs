@@ -24,8 +24,8 @@ struct to_json {};
 
 template <auto Opts, class T, class Ctx, class B, class IX>
 concept write_json_invocable = requires(T&& value, Ctx&& ctx, B&& b, IX&& ix) {
-    to_json<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                       std::forward<B>(b), std::forward<IX>(ix));
+    to_json<std::remove_cvref_t<T>>::template op<Opts>(
+        std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
 };
 
 template <>
@@ -33,8 +33,8 @@ struct write<json> {
     template <auto Opts, class T, is_context Ctx, class B, class IX>
     GLZ_ALWAYS_INLINE static void op(T&& value, Ctx&& ctx, B&& b, IX&& ix) {
         if constexpr (write_json_invocable<Opts, T, Ctx, B, IX>) {
-            to_json<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                               std::forward<B>(b), std::forward<IX>(ix));
+            to_json<std::remove_cvref_t<T>>::template op<Opts>(
+                std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
         } else {
             static_assert(false_v<T>, "Glaze metadata is probably needed for your type");
         }
@@ -46,8 +46,8 @@ struct to_json<T> {
     template <auto Opts, is_context Ctx, class B, class IX>
     GLZ_ALWAYS_INLINE static void op(auto&& value, Ctx&& ctx, B&& b, IX&& ix) {
         using V = std::decay_t<decltype(get_member(std::declval<T>(), meta_wrapper_v<T>))>;
-        to_json<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx), std::forward<B>(b),
-                                      std::forward<IX>(ix));
+        to_json<V>::template op<Opts>(
+            get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
     }
 };
 
@@ -136,7 +136,7 @@ struct to_json<T> {
 template <boolean_like T>
 struct to_json<T> {
     template <auto Opts, class... Args>
-    GLZ_ALWAYS_INLINE static void op(const bool value, is_context auto&&, Args&&... args) noexcept {
+    GLZ_ALWAYS_INLINE static void op(bool const value, is_context auto&&, Args&&... args) noexcept {
         if (value) {
             dump<"true">(std::forward<Args>(args)...);
         } else {
@@ -159,7 +159,7 @@ struct to_json<T> {
     }
 };
 
-constexpr uint16_t combine(const char chars[2]) noexcept {
+constexpr uint16_t combine(char const chars[2]) noexcept {
     return uint16_t(chars[0]) | (uint16_t(chars[1]) << 8);
 }
 
@@ -219,7 +219,8 @@ struct to_json<T> {
                         break;
                     default:
                         // Hiding warning for build, this is an error with wider char types
-                        dump(static_cast<char>(value), b,
+                        dump(static_cast<char>(value),
+                             b,
                              ix);  // TODO: This warning is an error We need to be able to dump wider char types
                 }
 
@@ -233,12 +234,12 @@ struct to_json<T> {
                     return value;
                 }
             }();
-            const auto n = str.size();
+            auto const n = str.size();
 
             if constexpr (Opts.raw_string) {
                 // We need at space for quotes and the string length: 2 + n.
                 if constexpr (detail::resizeable<B>) {
-                    const auto k = ix + 2 + n;
+                    auto const k = ix + 2 + n;
                     if (k >= b.size()) [[unlikely]] {
                         b.resize((std::max)(b.size() * 2, k));
                     }
@@ -254,7 +255,7 @@ struct to_json<T> {
                 // So, we need 2 + 2 * n characters to handle all cases.
                 // We add another 8 characters to support SWAR
                 if constexpr (detail::resizeable<B>) {
-                    const auto k = ix + 10 + 2 * n;
+                    auto const k = ix + 10 + 2 * n;
                     if (k >= b.size()) [[unlikely]] {
                         b.resize((std::max)(b.size() * 2, k));
                     }
@@ -267,19 +268,19 @@ struct to_json<T> {
                     dump_unchecked<'"'>(b, ix);
 
                     if (!str.empty()) {
-                        const auto* c = str.data();
-                        const auto* const e = c + n;
+                        auto const* c = str.data();
+                        auto const* const e = c + n;
 
-                        for (const auto end_m7 = e - 7; c < end_m7;) {
+                        for (auto const end_m7 = e - 7; c < end_m7;) {
                             auto* const chunk = reinterpret_cast<uint64_t*>(data_ptr(b) + ix);
                             std::memcpy(chunk, c, 8);
                             const uint64_t test_chars = has_quote(*chunk) | has_escape(*chunk) | is_less_16(*chunk);
                             if (test_chars) {
-                                const auto length = (std::countr_zero(test_chars) >> 3);
+                                auto const length = (std::countr_zero(test_chars) >> 3);
                                 c += length;
                                 ix += length;
 
-                                if (const auto escaped = char_escape_table[uint8_t(*c)]; escaped) [[likely]] {
+                                if (auto const escaped = char_escape_table[uint8_t(*c)]; escaped) [[likely]] {
                                     std::memcpy(data_ptr(b) + ix, &escaped, 2);
                                 }
                                 ix += 2;
@@ -292,7 +293,7 @@ struct to_json<T> {
 
                         // Tail end of buffer. Uncommon for long strings.
                         for (; c < e; ++c) {
-                            if (const auto escaped = char_escape_table[uint8_t(*c)]; escaped) [[likely]] {
+                            if (auto const escaped = char_escape_table[uint8_t(*c)]; escaped) [[likely]] {
                                 std::memcpy(data_ptr(b) + ix, &escaped, 2);
                                 ix += 2;
                             } else {
@@ -315,7 +316,7 @@ struct to_json<T> {
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, Args&&... args) noexcept {
         using key_t = std::underlying_type_t<T>;
         static constexpr auto frozen_map = detail::make_enum_to_string_map<T>();
-        const auto& member_it = frozen_map.find(static_cast<key_t>(value));
+        auto const& member_it = frozen_map.find(static_cast<key_t>(value));
         if (member_it != frozen_map.end()) {
             const sv str = {member_it->second.data(), member_it->second.size()};
             // TODO: Assumes people dont use strings with chars that need to be escaped for their enum names
@@ -334,8 +335,8 @@ template <class T>
 requires(std::is_enum_v<std::decay_t<T>> && !glaze_enum_t<T>) struct to_json<T> {
     template <auto Opts, class... Args>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, Args&&... args) noexcept {
-        write<json>::op<Opts>(static_cast<std::underlying_type_t<std::decay_t<T>>>(value), ctx,
-                              std::forward<Args>(args)...);
+        write<json>::op<Opts>(
+            static_cast<std::underlying_type_t<std::decay_t<T>>>(value), ctx, std::forward<Args>(args)...);
     }
 };
 
@@ -382,7 +383,7 @@ struct to_json<T> {
             auto it = std::begin(value);
             write<json>::op<Opts>(*it, ctx, args...);
             ++it;
-            for (const auto fin = std::end(value); it != fin; ++it) {
+            for (auto const fin = std::end(value); it != fin; ++it) {
                 write_entry_separator<Opts>(ctx, args...);
                 write<json>::op<Opts>(*it, ctx, args...);
             }
@@ -398,7 +399,7 @@ struct to_json<T> {
 };
 
 template <opts Opts, typename Key, typename Value, is_context Ctx>
-void write_pair_content(const Key& key, const Value& value, Ctx& ctx, auto&&... args) noexcept {
+void write_pair_content(Key const& key, Value const& value, Ctx& ctx, auto&&... args) noexcept {
     if constexpr (str_t<Key> || char_t<Key> || glaze_enum_t<Key> || Opts.quoted_num) {
         write<json>::op<Opts>(key, ctx, args...);
     } else {
@@ -414,7 +415,7 @@ void write_pair_content(const Key& key, const Value& value, Ctx& ctx, auto&&... 
 }
 
 template <glz::opts Opts, typename Value>
-[[nodiscard]] GLZ_ALWAYS_INLINE constexpr bool skip_member(const Value& value) noexcept {
+[[nodiscard]] GLZ_ALWAYS_INLINE constexpr bool skip_member(Value const& value) noexcept {
     if constexpr (null_t<Value> && Opts.skip_null_members) {
         if constexpr (always_null_t<Value>)
             return true;
@@ -430,7 +431,7 @@ template <pair_t T>
 struct to_json<T> {
     template <glz::opts Opts, class... Args>
     GLZ_ALWAYS_INLINE static void op(const T& value, is_context auto&& ctx, Args&&... args) noexcept {
-        const auto& [key, val] = value;
+        auto const& [key, val] = value;
         if (skip_member<Opts>(val)) {
             return dump<"{}">(args...);
         }
@@ -470,7 +471,7 @@ struct to_json<T> {
                 }
             }
 
-            auto write_first_entry = [&ctx, &args...](const auto first_it) {
+            auto write_first_entry = [&ctx, &args...](auto const first_it) {
                 const auto& [first_key, first_val] = *first_it;
                 if (skip_member<Opts>(first_val)) {
                     return true;
@@ -481,9 +482,9 @@ struct to_json<T> {
 
             auto it = std::begin(value);
             [[maybe_unused]] bool previous_skipped = write_first_entry(it);
-            const auto fin = std::end(value);
+            auto const fin = std::end(value);
             for (++it; it != fin; ++it) {
-                const auto& [key, entry_val] = *it;
+                auto const& [key, entry_val] = *it;
                 if (skip_member<Opts>(entry_val)) {
                     previous_skipped = true;
                     continue;
@@ -736,7 +737,7 @@ struct to_json<T> {
     }
 };
 
-template <const std::string_view& S>
+template <std::string_view const& S>
 GLZ_ALWAYS_INLINE constexpr auto array_from_sv() noexcept {
     constexpr auto N = S.size();
     std::array<char, N> arr;
@@ -744,8 +745,8 @@ GLZ_ALWAYS_INLINE constexpr auto array_from_sv() noexcept {
     return arr;
 }
 
-GLZ_ALWAYS_INLINE constexpr bool needs_escaping(const auto& S) noexcept {
-    for (const auto& c : S) {
+GLZ_ALWAYS_INLINE constexpr bool needs_escaping(auto const& S) noexcept {
+    for (auto const& c : S) {
         if (c == '"') {
             return true;
         }
@@ -1123,7 +1124,7 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] inline write_error write_file_json(T&& value, const std::string& file_name, auto&& buffer) noexcept {
+[[nodiscard]] inline write_error write_file_json(T&& value, std::string const& file_name, auto&& buffer) noexcept {
     write<opts{}>(std::forward<T>(value), buffer);
     return {buffer_to_file(buffer, file_name)};
 }

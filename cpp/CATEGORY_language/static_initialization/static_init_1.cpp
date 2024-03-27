@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <typeinfo>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -14,13 +14,13 @@ using std::vector;
 struct Storage {
     static vector<int> _data;  // membre statique -> utilisable sans jamais instancier la classe
 
-    static void add(const int& t) {
+    static void add(int const& t) {
         cout << "... adding : " << t << endl;
         _data.push_back(t);
     }
     static void display() {
         cout << "Contenu de storage :" << endl;
-        for (const int& x : _data) {
+        for (int const& x : _data) {
             cout << "\t - " << x << endl;
         }
     }

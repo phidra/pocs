@@ -121,9 +121,9 @@ namespace glz {
 template <class Signature>
 requires(std::is_void_v<typename function_traits<std::function<Signature>>::result_type>) struct invoke_update {
     invoke_update() = default;
-    invoke_update(const invoke_update&) = default;
+    invoke_update(invoke_update const&) = default;
     invoke_update(invoke_update&&) = default;
-    invoke_update& operator=(const invoke_update&) = default;
+    invoke_update& operator=(invoke_update const&) = default;
     invoke_update& operator=(invoke_update&&) = default;
 
     template <class F>

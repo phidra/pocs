@@ -1,11 +1,11 @@
-#include <routingkit/strongly_connected_component.h>
 #include <routingkit/min_max.h>
+#include <routingkit/strongly_connected_component.h>
 
 namespace RoutingKit {
 
-StronlyConnectedComponentsResult compute_strongly_connected_components(const std::vector<unsigned>& first_out,
-                                                                       const std::vector<unsigned>& head) {
-    const unsigned node_count = first_out.size() - 1;
+StronlyConnectedComponentsResult compute_strongly_connected_components(std::vector<unsigned> const& first_out,
+                                                                       std::vector<unsigned> const& head) {
+    unsigned const node_count = first_out.size() - 1;
 
     std::vector<unsigned> dfs_stack(node_count);
     unsigned dfs_stack_top = 0;
@@ -71,9 +71,9 @@ StronlyConnectedComponentsResult compute_strongly_connected_components(const std
     return result;  // NVRO
 }
 
-std::vector<bool> compute_largest_strongly_connected_component(const std::vector<unsigned>& first_out,
-                                                               const std::vector<unsigned>& head) {
-    const unsigned node_count = first_out.size() - 1;
+std::vector<bool> compute_largest_strongly_connected_component(std::vector<unsigned> const& first_out,
+                                                               std::vector<unsigned> const& head) {
+    unsigned const node_count = first_out.size() - 1;
     std::vector<bool> result(node_count);
     if (node_count > 0) {
         StronlyConnectedComponentsResult scc = compute_strongly_connected_components(first_out, head);

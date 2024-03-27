@@ -7,7 +7,7 @@ namespace panic {
 //--------------------------------------------------------------------------------------------------
 // panic_impl
 //--------------------------------------------------------------------------------------------------
-[[noreturn]] void panic_impl(const char* s) noexcept {
+[[noreturn]] void panic_impl(char const* s) noexcept {
     std::fputs(s, stderr);
     std::abort();
 }

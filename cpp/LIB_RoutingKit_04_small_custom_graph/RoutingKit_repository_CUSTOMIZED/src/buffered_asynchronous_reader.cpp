@@ -1,15 +1,17 @@
 #include "buffered_asynchronous_reader.h"
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include <string.h>
+
 #include <assert.h>
+#include <string.h>
+
+#include <condition_variable>
 #include <exception>
+#include <mutex>
 #include <string>
+#include <thread>
 
 namespace RoutingKit {
 
-const int blocks_per_buffer = 5;
+int const blocks_per_buffer = 5;
 
 struct BufferedAsynchronousReader::Impl {
     unsigned block_size;
@@ -63,8 +65,8 @@ BufferedAsynchronousReader::~BufferedAsynchronousReader() {}
 
 BufferedAsynchronousReader::BufferedAsynchronousReader(
     std::function<unsigned long long(char*, unsigned long long)> byte_source,
-    unsigned block_size)
-    : impl(std::unique_ptr<Impl>(new Impl)) {
+    unsigned block_size) :
+    impl(std::unique_ptr<Impl>(new Impl)) {
     assert(byte_source && "byte_source must not be 0");
 
     impl->block_size = block_size;
@@ -117,10 +119,12 @@ BufferedAsynchronousReader::BufferedAsynchronousReader(
                 if (ptr->data_end < block_size) {
                     if (new_data_end < block_size)
                         memcpy(ptr->buffer + blocks_per_buffer * block_size + ptr->data_end,
-                               ptr->buffer + ptr->data_end, bytes_read);
+                               ptr->buffer + ptr->data_end,
+                               bytes_read);
                     else
                         memcpy(ptr->buffer + blocks_per_buffer * block_size + ptr->data_end,
-                               ptr->buffer + ptr->data_end, block_size - ptr->data_end);
+                               ptr->buffer + ptr->data_end,
+                               block_size - ptr->data_end);
                 }
                 ptr->data_end = new_data_end;
 

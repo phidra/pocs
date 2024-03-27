@@ -1,6 +1,8 @@
 #include "bit_select.h"
-#include "emulate_gcc_builtin.h"
+
 #include <assert.h>
+
+#include "emulate_gcc_builtin.h"
 
 namespace RoutingKit {
 
@@ -47,7 +49,7 @@ uint32_t uint64_bit_select(uint64_t word, uint32_t n) {
     return r + x - 1;
 }
 
-uint32_t uint512_bit_select(const uint64_t* block, uint32_t n) {
+uint32_t uint512_bit_select(uint64_t const* block, uint32_t n) {
 #ifndef NDEBUG
     uint32_t i = 0;
 #endif
@@ -69,7 +71,7 @@ uint32_t uint512_bit_select(const uint64_t* block, uint32_t n) {
     }
 }
 
-uint64_t bit_select(uint64_t uint512_count, const uint64_t* uint512_rank, const uint64_t* data, uint64_t n) {
+uint64_t bit_select(uint64_t uint512_count, uint64_t const* uint512_rank, uint64_t const* data, uint64_t n) {
     assert(uint512_count != 0);
 
     uint64_t uint512_skipped = 0;

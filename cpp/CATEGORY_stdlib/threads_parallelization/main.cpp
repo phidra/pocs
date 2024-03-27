@@ -1,8 +1,8 @@
-#include <vector>
-#include <thread>
-#include <mutex>
 #include <algorithm>
 #include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -15,7 +15,7 @@ int main(void) {
         cout << "serial version :" << endl;
         for (int i = 0; i < nloop; i++) {
             {
-                const int j = i * i;
+                int const j = i * i;
                 cout << j << endl;
             }
         }
@@ -31,7 +31,7 @@ int main(void) {
         std::mutex the_mutex;
 
         for (int thread_index = 0; thread_index < nb_of_threads; thread_index++) {
-            auto worker_function = [&](const int loop_begin_for_this_thread, const int loop_end_for_this_thread) {
+            auto worker_function = [&](int const loop_begin_for_this_thread, int const loop_end_for_this_thread) {
                 // chaque thread va itérer uniquement sur une partie de l'input (la partie qui le concerne) :
                 for (int i = loop_begin_for_this_thread; i < loop_end_for_this_thread; i++) {
                     const int j = i * i;
@@ -40,8 +40,8 @@ int main(void) {
                 }
             };
 
-            const int loop_begin_for_this_thread = thread_index * nloop / nb_of_threads;
-            const int loop_end_for_this_thread =
+            int const loop_begin_for_this_thread = thread_index * nloop / nb_of_threads;
+            int const loop_end_for_this_thread =
                 (thread_index + 1) == nb_of_threads ? nloop : (thread_index + 1) * nloop / nb_of_threads;
             auto worker_with_args = std::bind(worker_function, loop_begin_for_this_thread, loop_end_for_this_thread);
 

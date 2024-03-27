@@ -1,7 +1,7 @@
-#include <iostream>
-#include <vector>
 #include <algorithm>
 #include <functional>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -22,7 +22,7 @@ vector<int> get_test_vector() {
 
 int main(void) {
     // on ne veut garder que les éléments suffisamment éloignés de notre pivot :
-    constexpr const int pivot = 42;
+    constexpr int const pivot = 42;
 
     // original vector :
     vector<int> vec1 = get_test_vector();

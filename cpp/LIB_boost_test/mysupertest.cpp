@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE this is an example of test module please note that spaces are ok
 #include <boost/test/included/unit_test.hpp>
-
 #include <iostream>
 
 using namespace std;

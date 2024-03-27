@@ -46,14 +46,14 @@ inline parse_error read_file(T& value, const sv file_name, auto&& buffer) noexce
 
     std::filesystem::path path{file_name};
 
-    const auto ec = file_to_buffer(buffer, ctx.current_file);
+    auto const ec = file_to_buffer(buffer, ctx.current_file);
 
     if (bool(ec)) {
         return {ec};
     }
 
     if (path.has_extension()) {
-        const auto extension = path.extension().string();
+        auto const extension = path.extension().string();
 
         if (extension == ".json" || extension == ".jsonc") {
             return read<opts{}>(value, buffer, ctx);
@@ -75,7 +75,7 @@ template <class T>
     std::filesystem::path path{file_name};
 
     if (path.has_extension()) {
-        const auto extension = path.extension().string();
+        auto const extension = path.extension().string();
 
         if (extension == ".json") {
             write<opts{}>(value, buffer, ctx);

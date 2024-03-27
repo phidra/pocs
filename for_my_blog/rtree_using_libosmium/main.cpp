@@ -1,12 +1,10 @@
+#include <boost/geometry.hpp>
 #include <iostream>
-#include <vector>
-
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/sparse_mmap_array.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
-#include <osmium/index/map/sparse_mmap_array.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-
-#include <boost/geometry.hpp>
+#include <vector>
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
@@ -17,7 +15,7 @@ using RTree = bgi::rtree<NodePoint, bgi::linear<8> >;
 
 struct RTreeFillingHandler : public osmium::handler::Handler {
     explicit RTreeFillingHandler(RTree& rtree) : m_rtree{rtree} {}
-    void way(const osmium::Way& w) {
+    void way(osmium::Way const& w) {
         if (w.tags()["highway"] != nullptr)  // we're only interested in highways
         {
             if (w.nodes().size() >= 2) {
@@ -32,7 +30,7 @@ struct RTreeFillingHandler : public osmium::handler::Handler {
     RTree& m_rtree;
 };
 
-RTree build_rtree_from_osm_data(const char* const osmfile) {
+RTree build_rtree_from_osm_data(char const* const osmfile) {
     RTree rtree;
     try {
         auto relevant_types = osmium::osm_entity_bits::node | osmium::osm_entity_bits::way;
@@ -48,14 +46,14 @@ RTree build_rtree_from_osm_data(const char* const osmfile) {
         osmium::apply(reader, location_handler, rtree_handler);
         reader.close();
 
-    } catch (const std::exception& e) {
+    } catch (std::exception const& e) {
         std::cerr << e.what() << '\n';
         std::exit(2);
     }
     return rtree;
 }
 
-std::tuple<Point, osmium::object_id_type, float> find_nearest(const RTree& rtree, const Point& requested_point) {
+std::tuple<Point, osmium::object_id_type, float> find_nearest(RTree const& rtree, Point const& requested_point) {
     std::vector<NodePoint> result;
     auto nb_found = rtree.query(bgi::nearest(requested_point, 1), std::back_inserter(result));
     if (nb_found == 0) {
@@ -70,7 +68,7 @@ std::tuple<Point, osmium::object_id_type, float> find_nearest(const RTree& rtree
 }
 
 void display(std::tuple<Point, osmium::object_id_type, float>& nearest, float MAX_ALLOWED_DISTANCE_IN_M) {
-    const Point& found_node = std::get<0>(nearest);
+    Point const& found_node = std::get<0>(nearest);
     osmium::object_id_type node_id = std::get<1>(nearest);
     float distance = std::get<2>(nearest);
 
@@ -94,11 +92,11 @@ int main(int argc, char* argv[]) {
         std::exit(1);
     }
 
-    const char* const osmfile = argv[1];
+    char const* const osmfile = argv[1];
     double requested_longitude = std::stod(argv[2]);
     double requested_latitude = std::stod(argv[3]);
     const Point requested_point = Point{requested_longitude, requested_latitude};
-    constexpr const float MAX_ALLOWED_DISTANCE_IN_M = 40;
+    constexpr float const MAX_ALLOWED_DISTANCE_IN_M = 40;
     std::cout << std::setprecision(8);
     std::cout << "Querying nearest node to point : " << requested_longitude << ";" << requested_latitude << std::endl;
     std::cout << "Loading file : " << osmfile << std::endl;

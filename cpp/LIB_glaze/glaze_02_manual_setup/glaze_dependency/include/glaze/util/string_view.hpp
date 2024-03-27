@@ -14,11 +14,11 @@ concept sv_convertible = std::convertible_to<std::decay_t<T>, std::string_view>;
 struct comment final {
     std::string_view value{};
 
-    constexpr comment(const char* str) noexcept : value(str) {}
-    constexpr comment(const char* str, size_t n) noexcept : value(str, n) {}
+    constexpr comment(char const* str) noexcept : value(str) {}
+    constexpr comment(char const* str, size_t n) noexcept : value(str, n) {}
 };
 
-constexpr comment operator""_c(const char* data, size_t n) noexcept {
+constexpr comment operator""_c(char const* data, size_t n) noexcept {
     return {data, n};
 }
 }  // namespace glz

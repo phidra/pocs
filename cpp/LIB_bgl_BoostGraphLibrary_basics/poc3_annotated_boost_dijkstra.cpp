@@ -6,13 +6,12 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //=======================================================================
 #include <boost/config.hpp>
-#include <iostream>
-#include <fstream>
-
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <fstream>
+#include <iostream>
 
 using namespace boost;
 
@@ -38,7 +37,7 @@ int main(int, char*[]) {
     // vertex/edges . je suppose (à confirmer) qu'on pourrait remplacer tout ça par des add_edge / add_vertex explicites
     typedef std::pair<int, int> Edge;
 
-    const int num_nodes = 5;
+    int const num_nodes = 5;
     // ceci est une simple façon de déclarer A=0, B=1, etc.
     // enum nodes { A, B, C, D, E };
     // d'ailleurs, je préfère la version explicite :
@@ -51,8 +50,8 @@ int main(int, char*[]) {
     // ceci est une simple façon de définir un tableau où l'index d'un node pointe sur son nom :
     char name[] = "ABCDE";
 
-    Edge edge_array[] = {Edge(A, C), Edge(B, B), Edge(B, D), Edge(B, E), Edge(C, B),
-                         Edge(C, D), Edge(D, E), Edge(E, A), Edge(E, B)};
+    Edge edge_array[] = {
+        Edge(A, C), Edge(B, B), Edge(B, D), Edge(B, E), Edge(C, B), Edge(C, D), Edge(D, E), Edge(E, A), Edge(E, B)};
     int weights[] = {1, 2, 1, 2, 7, 3, 1, 1, 1};
     int num_arcs = sizeof(edge_array) / sizeof(Edge);
 
@@ -81,7 +80,8 @@ int main(int, char*[]) {
     // ========================================
     // STEP 5 = lancement de l'algo à proprement parler :
     vertex_descriptor SOURCE = vertex(A, graph);
-    dijkstra_shortest_paths(graph, SOURCE,
+    dijkstra_shortest_paths(graph,
+                            SOURCE,
                             // ci-dessous, on utilise les named-parameters :
                             // https://www.boost.org/doc/libs/1_74_0/libs/graph/doc/bgl_named_params.html la liste des
                             // named-parameters acceptés par l'algo est dans la doc de l'algo :

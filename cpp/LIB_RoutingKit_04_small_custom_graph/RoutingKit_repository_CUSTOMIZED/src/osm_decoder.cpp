@@ -1,18 +1,18 @@
-#include <routingkit/timer.h>
 #include <routingkit/osm_decoder.h>
+#include <routingkit/timer.h>
+#include <string.h>
+#include <zlib.h>
+
+#include <algorithm>
+#include <atomic>
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
+#include <thread>
 
 #include "buffered_asynchronous_reader.h"
 #include "file_data_source.h"
 #include "protobuf.h"
-
-#include <zlib.h>
-#include <stdexcept>
-#include <thread>
-#include <iomanip>
-#include <sstream>
-#include <algorithm>
-#include <atomic>
-#include <string.h>
 
 // The following include is only there to get access to ntohl. Nothing else is
 // used from the networking header. If someone has a good idea of how to
@@ -50,11 +50,11 @@ namespace {
 
 template <class T>
 void unaligned_store(char* dest, const T& val) {
-    memcpy(dest, (const char*)&val, sizeof(T));
+    memcpy(dest, (char const*)&val, sizeof(T));
 }
 
 template <class T>
-T unaligned_load(const char* src) {
+T unaligned_load(char const* src) {
     T ret;
     memcpy((char*)&ret, src, sizeof(T));
     return ret;  // NVRO
@@ -68,8 +68,8 @@ const uint64_t was_header_read_bit = 8;
 class OsmPBFDecompressor {
    public:
     OsmPBFDecompressor() : status(0) {}
-    OsmPBFDecompressor(std::function<unsigned long long(char*, unsigned long long)> data_source)
-        : status(0), reader(data_source, 64 << 20) {}
+    OsmPBFDecompressor(std::function<unsigned long long(char*, unsigned long long)> data_source) :
+        status(0), reader(data_source, 64 << 20) {}
 
     unsigned long long minimum_read_size() const { return (64 << 20); }
 
@@ -94,7 +94,8 @@ class OsmPBFDecompressor {
 
                 const char* buffer = reader.read_or_throw(header_size);
                 decode_protobuf_message_with_callbacks(
-                    buffer, buffer + header_size,
+                    buffer,
+                    buffer + header_size,
                     [&](uint64_t key_id, uint64_t num) {
                         if (key_id == 3)
                             data_size = num;
@@ -128,7 +129,9 @@ class OsmPBFDecompressor {
                     bool is_ordered = false;
                     const char* buffer = reader.read_or_throw(data_size);
                     decode_protobuf_message_with_callbacks(
-                        buffer, buffer + data_size, [&](uint64_t key_id, uint64_t num) {},
+                        buffer,
+                        buffer + data_size,
+                        [&](uint64_t key_id, uint64_t num) {},
                         [&](uint64_t key_id, double num) {},
                         [&](uint64_t key_id, const char* str_begin, const char* str_end) {
                             if (key_id == 4) {  // must support
@@ -155,7 +158,8 @@ class OsmPBFDecompressor {
             uint64_t uncompressed_data_size = (uint64_t)-1;
 
             decode_protobuf_message_with_callbacks(
-                blob_begin, blob_end,
+                blob_begin,
+                blob_end,
                 [&](uint64_t key_id, uint64_t num) {
                     if (key_id == 2)
                         uncompressed_data_size = num;
@@ -237,21 +241,21 @@ class OsmPBFDecompressor {
 namespace {
 void internal_read_osm_pbf(
     BufferedAsynchronousReader& reader,
-    std::function<void(uint64_t osm_node_id, double latitude, double longitude, const TagMap& tags)> node_callback,
-    std::function<void(uint64_t osm_way_id, const std::vector<std::uint64_t>& osm_node_id_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_node_id, double latitude, double longitude, TagMap const& tags)> node_callback,
+    std::function<void(uint64_t osm_way_id, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const& tags)>
         way_callback,
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback,
-    std::function<void(const std::string& msg)> log_message) {
+    std::function<void(std::string const& msg)> log_message) {
     TagMap tag_map;
     std::vector<OSMRelationMember> member_list;
     std::vector<uint64_t> node_list;
 
-    std::vector<const char*> string_table;
+    std::vector<char const*> string_table;
     std::vector<uint32_t> key_list;
     std::vector<uint32_t> value_list;
 
-    std::vector<std::pair<const char*, const char*>> group_list;
+    std::vector<std::pair<char const*, char const*>> group_list;
 
     for (;;) {
         char *primblock_begin, *primblock_end;
@@ -272,7 +276,8 @@ void internal_read_osm_pbf(
         int64_t offset_of_longitude = 0;
 
         decode_protobuf_message_with_callbacks(
-            primblock_begin, primblock_end,
+            primblock_begin,
+            primblock_end,
             [&](uint64_t key_id, uint64_t num) {
                 if (key_id == 17)
                     latlon_granularity = num;
@@ -282,10 +287,13 @@ void internal_read_osm_pbf(
                     offset_of_longitude = zigzag_convert_uint64_to_int64(num);
             },
             [&](uint64_t key_id, double num) {},
-            [&](uint64_t key_id, const char* str_begin, const char* str_end) {
+            [&](uint64_t key_id, char const* str_begin, char const* str_end) {
                 if (key_id == 1) {
                     decode_protobuf_message_with_callbacks(
-                        str_begin, str_end, [&](uint64_t key_id, uint64_t num) {}, [&](uint64_t key_id, double num) {},
+                        str_begin,
+                        str_end,
+                        [&](uint64_t key_id, uint64_t num) {},
+                        [&](uint64_t key_id, double num) {},
                         [&](uint64_t key_id, const char* str_begin, const char* str_end) {
                             // This is ok because in the protobuf format this is the place where the length of the
                             // string stands and we will no longer need it.
@@ -306,14 +314,15 @@ void internal_read_osm_pbf(
         double primblock_lat_offset = 0.000000001 * offset_of_longitude;
         double primblock_granularity = 0.000000001 * latlon_granularity;
 
-        auto decode_sparse_node = [&](const char* begin, const char* end) {
+        auto decode_sparse_node = [&](char const* begin, char const* end) {
             uint64_t osm_node_id = (uint64_t)-1;
             double latitude = 0.0, longitude = 0.0;
 
             const char *key_begin = nullptr, *key_end = nullptr, *value_begin = nullptr, *value_end = nullptr;
 
             decode_protobuf_message_with_callbacks(
-                begin, end,
+                begin,
+                end,
                 [&](uint64_t key_id, uint64_t num) {
                     if (key_id == 1)
                         osm_node_id = num;
@@ -363,13 +372,16 @@ void internal_read_osm_pbf(
             node_callback(osm_node_id, latitude, longitude, tag_map);
         };
 
-        auto decode_dense_node = [&](const char* begin, const char* end) {
+        auto decode_dense_node = [&](char const* begin, char const* end) {
             const char *osm_node_id_begin = nullptr, *osm_node_id_end = nullptr, *key_value_pairs_begin = nullptr,
                        *key_value_pairs_end = nullptr, *latitude_begin = nullptr, *latitude_end = nullptr,
                        *longitude_begin = nullptr, *longitude_end = nullptr;
 
             decode_protobuf_message_with_callbacks(
-                begin, end, [&](uint64_t key_id, uint64_t num) {}, [&](uint64_t key_id, double num) {},
+                begin,
+                end,
+                [&](uint64_t key_id, uint64_t num) {},
+                [&](uint64_t key_id, double num) {},
                 [&](uint64_t key_id, const char* begin, const char* end) {
                     if (key_id == 1) {
                         osm_node_id_begin = begin;
@@ -448,14 +460,15 @@ void internal_read_osm_pbf(
                 throw std::runtime_error("PBF error: dense node key-value array is too long.");
         };
 
-        auto decode_way = [&](const char* begin, const char* end) {
+        auto decode_way = [&](char const* begin, char const* end) {
             uint64_t osm_way_id = (uint64_t)-1;
 
             const char *key_begin = nullptr, *key_end = nullptr, *value_begin = nullptr, *value_end = nullptr,
                        *node_list_begin = nullptr, *node_list_end = nullptr;
 
             decode_protobuf_message_with_callbacks(
-                begin, end,
+                begin,
+                end,
                 [&](uint64_t key_id, uint64_t num) {
                     if (key_id == 1) {
                         osm_way_id = num;
@@ -514,7 +527,7 @@ void internal_read_osm_pbf(
             way_callback(osm_way_id, node_list, tag_map);
         };
 
-        auto decode_relation = [&](const char* begin, const char* end) {
+        auto decode_relation = [&](char const* begin, char const* end) {
             uint64_t osm_relation_id = (uint64_t)-1;
 
             const char *key_begin = nullptr, *key_end = nullptr, *value_begin = nullptr, *value_end = nullptr,
@@ -522,7 +535,8 @@ void internal_read_osm_pbf(
                        *member_id_end = nullptr, *member_type_begin = nullptr, *member_type_end = nullptr;
 
             decode_protobuf_message_with_callbacks(
-                begin, end,
+                begin,
+                end,
                 [&](uint64_t key_id, uint64_t num) {
                     if (key_id == 1) {
                         osm_relation_id = num;
@@ -604,8 +618,11 @@ void internal_read_osm_pbf(
 
         for (auto g : group_list) {
             decode_protobuf_message_with_callbacks(
-                g.first, g.second, [&](uint64_t key_id, uint64_t num) {}, [&](uint64_t key_id, double num) {},
-                [&](uint64_t key_id, const char* begin, const char* end) {
+                g.first,
+                g.second,
+                [&](uint64_t key_id, uint64_t num) {},
+                [&](uint64_t key_id, double num) {},
+                [&](uint64_t key_id, char const* begin, char const* end) {
                     if (key_id == 1 && node_callback) {
                         decode_sparse_node(begin, end);
                     } else if (key_id == 2 && node_callback) {
@@ -622,13 +639,13 @@ void internal_read_osm_pbf(
 }  // namespace
 
 void unordered_read_osm_pbf(
-    const std::string& file_name,
-    std::function<void(uint64_t osm_node_id, double latitude, double longitude, const TagMap& tags)> node_callback,
-    std::function<void(uint64_t osm_way_id, const std::vector<std::uint64_t>& osm_node_id_list, const TagMap& tags)>
+    std::string const& file_name,
+    std::function<void(uint64_t osm_node_id, double latitude, double longitude, TagMap const& tags)> node_callback,
+    std::function<void(uint64_t osm_way_id, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const& tags)>
         way_callback,
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback,
-    std::function<void(const std::string& msg)> log_message) {
+    std::function<void(std::string const& msg)> log_message) {
     assert(node_callback || way_callback || relation_callback);
 
     FileDataSource data_source(file_name);
@@ -638,13 +655,13 @@ void unordered_read_osm_pbf(
 }
 
 void ordered_read_osm_pbf(
-    const std::string& file_name,
-    std::function<void(uint64_t osm_node_id, double latitude, double longitude, const TagMap& tags)> node_callback,
-    std::function<void(uint64_t osm_way_id, const std::vector<std::uint64_t>& osm_node_id_list, const TagMap& tags)>
+    std::string const& file_name,
+    std::function<void(uint64_t osm_node_id, double latitude, double longitude, TagMap const& tags)> node_callback,
+    std::function<void(uint64_t osm_way_id, std::vector<std::uint64_t> const& osm_node_id_list, TagMap const& tags)>
         way_callback,
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback,
-    std::function<void(const std::string& msg)> log_message,
+    std::function<void(std::string const& msg)> log_message,
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered) {
     assert(node_callback || way_callback || relation_callback);
 
@@ -691,7 +708,7 @@ void ordered_read_osm_pbf(
     }
 }
 
-void speedtest_osm_pbf_reading(const std::string& pbf_file, std::function<void(std::string)> log_message) {
+void speedtest_osm_pbf_reading(std::string const& pbf_file, std::function<void(std::string)> log_message) {
     log_message("Starting scan speedtest");
 
     uint64_t node_count = 0;
@@ -716,15 +733,15 @@ void speedtest_osm_pbf_reading(const std::string& pbf_file, std::function<void(s
 
     unordered_read_osm_pbf(
         pbf_file,
-        [&](uint64_t osm_node_id, double lat, double lon, const TagMap& tags) {
+        [&](uint64_t osm_node_id, double lat, double lon, TagMap const& tags) {
             ++node_count;
             produce_report();
         },
-        [&](uint64_t osm_way_id, const std::vector<std::uint64_t>& node_id_list, const TagMap& tags) {
+        [&](uint64_t osm_way_id, std::vector<std::uint64_t> const& node_id_list, TagMap const& tags) {
             ++way_count;
             produce_report();
         },
-        [&](uint64_t osm_rel_id, const std::vector<OSMRelationMember>& member, const TagMap& tags) {
+        [&](uint64_t osm_rel_id, std::vector<OSMRelationMember> const& member, TagMap const& tags) {
             ++rel_count;
             produce_report();
         },

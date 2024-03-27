@@ -22,13 +22,13 @@ template <auto Ptr>
     // const auto name = std::string_view{std::source_location::current().function_name()};
     const std::string_view name = GLZ_PRETTY_FUNCTION;
 #if defined(__clang__)
-    const auto split = name.substr(0, name.find("}]"));
+    auto const split = name.substr(0, name.find("}]"));
     return split.substr(split.find_last_of(".") + 1);
 #elif defined(__GNUC__)
-    const auto split = name.substr(0, name.find(")}"));
+    auto const split = name.substr(0, name.find(")}"));
     return split.substr(split.find_last_of(":") + 1);
 #elif defined(_MSC_VER)
-    const auto split = name.substr(0, name.find_last_of("}"));
+    auto const split = name.substr(0, name.find_last_of("}"));
     return split.substr(split.find_last_of(">") + 1);
 #endif
 }

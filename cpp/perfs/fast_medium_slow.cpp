@@ -1,7 +1,7 @@
-#include <iostream>
 #include <chrono>
-#include <vector>
 #include <cmath>
+#include <iostream>
+#include <vector>
 
 // EXPECTED ON FLAMEGRAPH = most of the time in 'heavy', moderate time in 'medium', almost no time in 'light'
 

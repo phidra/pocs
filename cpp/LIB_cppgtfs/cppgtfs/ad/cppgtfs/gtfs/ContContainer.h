@@ -19,11 +19,11 @@ class ContContainer {
    public:
     ContContainer() : _final(false){};
     T* add(const T& obj);
-    bool remove(const std::string& id);
-    const T* get(const std::string& id) const;
-    T* get(const std::string& id);
-    const T* getRef(const std::string& id) const;
-    T* getRef(const std::string& id);
+    bool remove(std::string const& id);
+    const T* get(std::string const& id) const;
+    T* get(std::string const& id);
+    const T* getRef(std::string const& id) const;
+    T* getRef(std::string const& id);
     size_t size() const;
 
     void finalize();
@@ -46,7 +46,7 @@ struct ContCompCmp {
 
 template <typename T>
 struct ContCompCmp2 {
-    bool operator()(const T& lh, const std::string& rh) const { return lh.getId() < rh; }
+    bool operator()(const T& lh, std::string const& rh) const { return lh.getId() < rh; }
 };
 
 #include "ContContainer.tpp"

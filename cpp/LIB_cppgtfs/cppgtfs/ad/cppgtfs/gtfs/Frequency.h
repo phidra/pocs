@@ -17,11 +17,11 @@ namespace gtfs {
 
 class Frequency {
    public:
-    Frequency(const Time& startTime, const Time& endTime, uint16_t headwaySecs, bool exactTimes)
-        : _startTime(startTime), _endTime(endTime), _headwaySecs(headwaySecs), _exactTimes(exactTimes) {}
+    Frequency(Time const& startTime, Time const& endTime, uint16_t headwaySecs, bool exactTimes) :
+        _startTime(startTime), _endTime(endTime), _headwaySecs(headwaySecs), _exactTimes(exactTimes) {}
 
-    const Time& getStartTime() const { return _startTime; }
-    const Time& getEndTime() const { return _endTime; }
+    Time const& getStartTime() const { return _startTime; }
+    Time const& getEndTime() const { return _endTime; }
     uint16_t getHeadwaySecs() const { return _headwaySecs; }
     bool hasExactTimes() const { return _exactTimes; }
 

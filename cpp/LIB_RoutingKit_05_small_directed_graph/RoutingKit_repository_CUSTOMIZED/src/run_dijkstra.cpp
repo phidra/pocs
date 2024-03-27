@@ -1,14 +1,14 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
-#include <routingkit/min_max.h>
 #include <routingkit/dijkstra.h>
 #include <routingkit/inverse_vector.h>
-
-#include "verify.h"
+#include <routingkit/min_max.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+
+#include "verify.h"
 
 using namespace RoutingKit;
 using namespace std;
@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
 
         auto tail = invert_inverse_vector(first_out);
 
-        const unsigned node_count = first_out.size() - 1;
-        const unsigned arc_count = head.size();
+        unsigned const node_count = first_out.size() - 1;
+        unsigned const arc_count = head.size();
 
         if (first_out.front() != 0)
             throw runtime_error("The first element of first out must be 0.");

@@ -18,7 +18,7 @@ void read_binary(T& value, Buffer&& buffer) {
 
 template <class T, class Buffer>
 [[nodiscard]] T read_binary(Buffer&& buffer) noexcept {
-    const auto ex = glz::read_binary<T>(std::forward<Buffer>(buffer));
+    auto const ex = glz::read_binary<T>(std::forward<Buffer>(buffer));
     if (ex) {
         throw std::runtime_error("read_binary error");
     }
@@ -27,7 +27,7 @@ template <class T, class Buffer>
 
 template <auto Opts = opts{}, class T>
 void read_file_binary(T& value, const sv file_name, auto&& buffer) {
-    const auto ec = glz::read_file_binary(value, file_name, buffer);
+    auto const ec = glz::read_file_binary(value, file_name, buffer);
     if (ec) {
         throw std::runtime_error("read_file_binary error for: " + std::string(file_name));
     }
@@ -46,7 +46,7 @@ template <class T>
 }
 
 template <class T>
-void write_file_binary(T&& value, const std::string& file_name, auto&& buffer) {
+void write_file_binary(T&& value, std::string const& file_name, auto&& buffer) {
     auto ec = glz::write_file_binary(std::forward<T>(value), file_name, buffer);
     if (ec == glz::error_code::file_open_failure) {
         throw std::runtime_error("file failed to open: " + file_name);

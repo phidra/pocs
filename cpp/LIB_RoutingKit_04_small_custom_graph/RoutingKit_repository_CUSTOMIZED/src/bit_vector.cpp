@@ -1,11 +1,11 @@
 #include <routingkit/bit_vector.h>
-
-#include "emulate_gcc_builtin.h"
-
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include <algorithm>
 #include <new>
+
+#include "emulate_gcc_builtin.h"
 
 #ifndef ROUTING_KIT_NO_ALIGNED_ALLOC
 #ifdef _MSC_VER
@@ -80,7 +80,7 @@ struct v8_uint64_t {
     }
 
     uint64_t& operator[](uint64_t i) { return v[i]; };
-    const uint64_t& operator[](uint64_t i) const { return v[i]; };
+    uint64_t const& operator[](uint64_t i) const { return v[i]; };
 };
 
 v8_uint64_t operator^(v8_uint64_t l, v8_uint64_t r) {
@@ -126,7 +126,7 @@ v8_uint64_t get_padding_mask(uint64_t size) {
     return u;
 }
 
-bool is_any_bit_set(const v8_uint64_t* x) {
+bool is_any_bit_set(v8_uint64_t const* x) {
     v8_uint64_t u = *x;
 
     u[0] |= u[1];
@@ -142,7 +142,7 @@ bool is_any_bit_set(const v8_uint64_t* x) {
     return u[0] != 0;
 }
 
-bool are_all_bits_set(const v8_uint64_t* x) {
+bool are_all_bits_set(v8_uint64_t const* x) {
     v8_uint64_t u = *x;
 
     u[0] &= u[1];
@@ -159,12 +159,12 @@ bool are_all_bits_set(const v8_uint64_t* x) {
 }
 
 #ifndef NDEBUG
-bool are_all_padding_bits_zero(const BitVector& v) {
+bool are_all_padding_bits_zero(BitVector const& v) {
     if (v.size() % 512 == 0) {
         return true;
     } else {
         auto x = get_padding_mask(v.size());
-        x = ((const v8_uint64_t*)v.data())[v.size() / 512] & ~x;
+        x = ((v8_uint64_t const*)v.data())[v.size() / 512] & ~x;
         return !is_any_bit_set(&x);
     }
 }
@@ -219,15 +219,16 @@ BitVector::~BitVector() {
     aligned_free(data_);
 }
 
-BitVector::BitVector(const BitVector& o)
-    : data_(static_cast<uint64_t*>(aligned_alloc(64, get_uint8_count(o.size_)))), size_(o.size_) {
+BitVector::BitVector(BitVector const& o) :
+    data_(static_cast<uint64_t*>(aligned_alloc(64, get_uint8_count(o.size_)))), size_(o.size_) {
     if (data_ == nullptr)
         throw std::bad_alloc();
 
     assert(are_all_padding_bits_zero(o));
 
     for (v8_uint64_t *i = (v8_uint64_t*)data_, *j = (v8_uint64_t*)o.data_;
-         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_); ++i, ++j)
+         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_);
+         ++i, ++j)
         *i = *j;
 
     assert(are_all_padding_bits_zero(*this));
@@ -442,34 +443,37 @@ bool BitVector::is_any_set() const {
     return is_any_bit_set(&x);
 }
 
-BitVector& BitVector::operator|=(const BitVector& o) {
+BitVector& BitVector::operator|=(BitVector const& o) {
     assert(are_all_padding_bits_zero(*this));
     assert(are_all_padding_bits_zero(o));
     assert(size_ == o.size_ && "can only combine bit vectors of same size");
     for (v8_uint64_t *i = (v8_uint64_t*)data_, *j = (v8_uint64_t*)o.data_;
-         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_); ++i, ++j)
+         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_);
+         ++i, ++j)
         *i |= *j;
     assert(are_all_padding_bits_zero(*this));
     return *this;
 }
 
-BitVector& BitVector::operator^=(const BitVector& o) {
+BitVector& BitVector::operator^=(BitVector const& o) {
     assert(are_all_padding_bits_zero(*this));
     assert(are_all_padding_bits_zero(o));
     assert(size_ == o.size_ && "can only combine bit vectors of same size");
     for (v8_uint64_t *i = (v8_uint64_t*)data_, *j = (v8_uint64_t*)o.data_;
-         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_); ++i, ++j)
+         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_);
+         ++i, ++j)
         *i ^= *j;
     assert(are_all_padding_bits_zero(*this));
     return *this;
 }
 
-BitVector& BitVector::operator&=(const BitVector& o) {
+BitVector& BitVector::operator&=(BitVector const& o) {
     assert(are_all_padding_bits_zero(*this));
     assert(are_all_padding_bits_zero(o));
     assert(size_ == o.size_ && "can only combine bit vectors of same size");
     for (v8_uint64_t *i = (v8_uint64_t*)data_, *j = (v8_uint64_t*)o.data_;
-         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_); ++i, ++j)
+         i < ((v8_uint64_t*)data_) + get_v8_uint64_count(size_);
+         ++i, ++j)
         *i &= *j;
     assert(are_all_padding_bits_zero(*this));
     return *this;
@@ -483,7 +487,7 @@ void BitVector::inplace_not() {
     assert(are_all_padding_bits_zero(*this));
 }
 
-bool operator==(const BitVector& l, const BitVector& r) {
+bool operator==(BitVector const& l, BitVector const& r) {
     assert(are_all_padding_bits_zero(l));
     assert(are_all_padding_bits_zero(r));
     if (__builtin_expect(l.size_ != r.size_, false))
@@ -492,14 +496,15 @@ bool operator==(const BitVector& l, const BitVector& r) {
     v8_uint64_t x = {0};
 
     for (v8_uint64_t *i = (v8_uint64_t*)l.data_, *j = (v8_uint64_t*)r.data_;
-         i < ((v8_uint64_t*)l.data_) + get_v8_uint64_count(l.size_); ++i, ++j) {
+         i < ((v8_uint64_t*)l.data_) + get_v8_uint64_count(l.size_);
+         ++i, ++j) {
         x |= (*i ^ *j);
     }
 
     return !is_any_bit_set(&x);
 }
 
-bool operator<(const BitVector& l, const BitVector& r) {
+bool operator<(BitVector const& l, BitVector const& r) {
     assert(are_all_padding_bits_zero(l));
     assert(are_all_padding_bits_zero(r));
     if (__builtin_expect(l.size_ != r.size_, false))

@@ -2,10 +2,10 @@
 #include <routingkit/id_mapper.h>
 #include <routingkit/timer.h>
 
+#include <iostream>
+
 #include "bit_select.h"
 #include "expect.h"
-
-#include <iostream>
 
 using namespace RoutingKit;
 using namespace std;
@@ -127,7 +127,7 @@ int main() {
 
             {
                 cout << "Start testing is_global_id_mapped" << endl;
-                auto test_is_global_id_mapped = [&](const BitVector& vec) {
+                auto test_is_global_id_mapped = [&](BitVector const& vec) {
                     IDMapper map(vec);
                     for (uint64_t x = 0; x < map.global_id_count(); ++x) {
                         EXPECT_CMP(vec.is_set(x), ==, map.is_global_id_mapped(x));
@@ -142,7 +142,7 @@ int main() {
 
             {
                 cout << "Start testing global_to_local" << endl;
-                auto test_global_to_local = [&](const BitVector& vec) {
+                auto test_global_to_local = [&](BitVector const& vec) {
                     IDMapper map(vec);
                     EXPECT_CMP(map.local_id_count(), !=, 0);
 
@@ -166,7 +166,7 @@ int main() {
 
             {
                 cout << "Start testing local_to_global" << endl;
-                auto test_local_to_global = [&](const BitVector& vec) {
+                auto test_local_to_global = [&](BitVector const& vec) {
                     IDMapper map(vec);
                     EXPECT_CMP(map.local_id_count(), !=, 0);
 
@@ -188,7 +188,7 @@ int main() {
 
             {
                 cout << "Start testing bijection" << endl;
-                auto test_bijection = [&](const BitVector& vec) {
+                auto test_bijection = [&](BitVector const& vec) {
                     IDMapper map(vec);
                     EXPECT(map.local_id_count() != 0);
 

@@ -1,7 +1,8 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <ncurses.h>
+
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 // see also "mazecast" project
 

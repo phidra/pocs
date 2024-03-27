@@ -1,5 +1,5 @@
-#include <iostream>
 #include <functional>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -13,7 +13,7 @@ using std::string;
 // https://fr.cppreference.com/w/cpp/utility/functional/placeholders
 
 // EXEMPLE D'USAGE 1 = simplifier l'interface d'une fonction en figeant un argument :
-void log(const string& level, const string& msg) {
+void log(string const& level, string const& msg) {
     cout << "[" << level << "] " << msg << endl;
 }
 auto log_info = std::bind(log, "INFO", std::placeholders::_1);
@@ -21,7 +21,7 @@ auto log_error = std::bind(log, "ERROR", std::placeholders::_1);
 
 // EXEMPLE D'USAGE 2 = réordonner les arguments :
 void display_country(float longitude, float latitude) {
-    const string& country = "FRANCE";  // stub
+    string const& country = "FRANCE";  // stub
     cout << "(long=" << longitude << ", lat=" << latitude << ") is in... " << country << endl;
 }
 

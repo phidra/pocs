@@ -1,7 +1,7 @@
+#include <boost/property_map/property_map.hpp>
 #include <iostream>
 #include <map>
 #include <string>
-#include <boost/property_map/property_map.hpp>
 
 // TL;DR : property_map = interface représentant un dictionnaire (i.e. une structure pouvant associer une valeur à une
 // clé)

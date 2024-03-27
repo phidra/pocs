@@ -1,14 +1,14 @@
+#include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <sys/mman.h>
-#include <assert.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define MEG 1048576  // 1024 kio = 1 Mio
 
@@ -35,9 +35,11 @@ void display_proc_self_statm() {
     sscanf(buf, "%d %d %d %d %d %d", &VmSize, &VmRSS, &shared_ie_backed_by_a_file, &text_ie_code, &ignored, &datastack);
     printf("VmSize                     = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n", VmSize, 4 * VmSize);
     printf("VmRSS                      = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n", VmRSS, 4 * VmRSS);
-    printf("shared_ie_backed_by_a_file = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n", shared_ie_backed_by_a_file,
+    printf("shared_ie_backed_by_a_file = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n",
+           shared_ie_backed_by_a_file,
            4 * shared_ie_backed_by_a_file);
-    printf("text_ie_code               = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n", text_ie_code,
+    printf("text_ie_code               = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n",
+           text_ie_code,
            4 * text_ie_code);
     printf("data_plus_stack            = %-6i |  x4 = %-6i kB  (assuming 1 page == 4 kB)\n", datastack, 4 * datastack);
 

@@ -1,14 +1,14 @@
 #include <routingkit/vector_io.h>
 
-#include <vector>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 using namespace RoutingKit;
 using namespace std;
 
 template <class T>
-void compare_num_data(const string& vector1_file, const string& vector2_file) {
+void compare_num_data(string const& vector1_file, string const& vector2_file) {
     vector<T> vector1 = load_vector<T>(vector1_file);
     vector<T> vector2 = load_vector<T>(vector2_file);
 
@@ -46,7 +46,7 @@ void compare_num_data(const string& vector1_file, const string& vector2_file) {
     }
 }
 
-void compare_string_data(const std::string& vector1_file, const std::string& vector2_file) {
+void compare_string_data(std::string const& vector1_file, std::string const& vector2_file) {
     vector<string> vector1 = load_vector<string>(vector1_file);
     vector<string> vector2 = load_vector<string>(vector2_file);
 

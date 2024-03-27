@@ -16,13 +16,13 @@ class NullContainer {
    public:
     NullContainer() {}
     std::string add(const T& obj) const { return obj.getId(); }
-    T* get(const std::string& id) const {
+    T* get(std::string const& id) const {
         do {
             (void)(id);
         } while (0);
         return 0;
     }
-    std::string getRef(const std::string& id) const { return id; }
+    std::string getRef(std::string const& id) const { return id; }
     void finalize(){};
 };
 

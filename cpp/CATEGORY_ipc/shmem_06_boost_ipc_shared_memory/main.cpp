@@ -1,11 +1,11 @@
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 using namespace std::chrono_literals;
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
-#include <boost/interprocess/sync/named_condition.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/sync/named_condition.hpp>
 
 void print_poc_description() {
     std::cout << R"DELIM(
@@ -97,23 +97,23 @@ EDIT : notes vrac complémentaires sur les message-queues :
 
 namespace bipc = boost::interprocess;
 
-static const char* CONSUMER_MUST_WORK_MUTEX = "consumer_must_work_mutex";
-static const char* CONSUMER_MUST_WORK_CV = "consumer_must_work_cv";
-static const char* PRODUCER_MUST_WORK_MUTEX = "producer_must_work_mutex";
-static const char* PRODUCER_MUST_WORK_CV = "producer_must_work_cv";
-static const char* SYNCHRONIZATION_QUEUE = "synchronization_queue";
-static const char* PAYLOAD = "my_payload";
+static char const* CONSUMER_MUST_WORK_MUTEX = "consumer_must_work_mutex";
+static char const* CONSUMER_MUST_WORK_CV = "consumer_must_work_cv";
+static char const* PRODUCER_MUST_WORK_MUTEX = "producer_must_work_mutex";
+static char const* PRODUCER_MUST_WORK_CV = "producer_must_work_cv";
+static char const* SYNCHRONIZATION_QUEUE = "synchronization_queue";
+static char const* PAYLOAD = "my_payload";
 
 struct Payload {
     char shared_data;
     bool producer_must_work_is_notified;
     bool consumer_must_work_is_notified;
 
-    Payload()
-        :  // le Payload commence avec un état déterminé = le shared_data est un caractère nul
-          shared_data{'\0'},
-          producer_must_work_is_notified{false},
-          consumer_must_work_is_notified{false} {
+    Payload() :
+        // le Payload commence avec un état déterminé = le shared_data est un caractère nul
+        shared_data{'\0'},
+        producer_must_work_is_notified{false},
+        consumer_must_work_is_notified{false} {
         std::cout << "CONSTRUCTOR CALLED !" << std::endl;
     }
 
@@ -134,7 +134,7 @@ void producer() {
         constexpr const std::size_t max_num_msg = 1;   // we need only 1 message for our synchronization
         constexpr const std::size_t max_msg_size = 0;  // an empty message is enough for our synchronization
         bipc::message_queue mq(bipc::open_or_create, SYNCHRONIZATION_QUEUE, max_num_msg, max_msg_size);
-        constexpr const unsigned int priority = 0;
+        constexpr unsigned int const priority = 0;
         std::cout << "PRODUCER> sending on mq" << std::endl;
         mq.send(nullptr, 0, priority);  // sending an empty message in the queue
         std::cout << "PRODUCER> sent on mq" << std::endl;

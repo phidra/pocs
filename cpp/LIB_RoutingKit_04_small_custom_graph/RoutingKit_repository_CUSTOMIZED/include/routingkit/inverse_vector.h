@@ -1,10 +1,10 @@
 #ifndef ROUTING_KIT_INVERSE_VECTOR_H
 #define ROUTING_KIT_INVERSE_VECTOR_H
 
-#include <routingkit/sort.h>
-#include <routingkit/min_max.h>
-
 #include <assert.h>
+#include <routingkit/min_max.h>
+#include <routingkit/sort.h>
+
 #include <algorithm>
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace RoutingKit {
 // a sorted vector of unsigned integers.
 //
 
-inline std::vector<unsigned> invert_vector(const std::vector<unsigned>& v, unsigned element_count) {
+inline std::vector<unsigned> invert_vector(std::vector<unsigned> const& v, unsigned element_count) {
     std::vector<unsigned> index(element_count + 1);
     if (v.empty()) {
         std::fill(index.begin(), index.end(), 0);
@@ -38,7 +38,7 @@ inline std::vector<unsigned> invert_vector(const std::vector<unsigned>& v, unsig
     return index;
 }
 
-inline std::vector<unsigned> invert_inverse_vector(const std::vector<unsigned>& sorted_index) {
+inline std::vector<unsigned> invert_inverse_vector(std::vector<unsigned> const& sorted_index) {
     assert(!sorted_index.empty());
 
     std::vector<unsigned> v(sorted_index.back());

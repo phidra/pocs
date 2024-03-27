@@ -2,16 +2,16 @@
 #include <sstream>
 #include <thread>
 
-void compute(const unsigned long long size, unsigned long long& result) {
+void compute(unsigned long long const size, unsigned long long& result) {
     // SLOW : directly working on the result, thus false sharing ensues
     for (int i = 0; i < size; ++i) {
         (i % 2 == 0) ? result += 3 : result -= 2;
     }
 }
 
-void check(const unsigned long long size, const unsigned long long result) {
-    const unsigned long long expected_even = size / 2;     // when input size is even
-    const unsigned long long expected_odd = size / 2 + 3;  // when input size is odd
+void check(unsigned long long const size, unsigned long long const result) {
+    unsigned long long const expected_even = size / 2;     // when input size is even
+    unsigned long long const expected_odd = size / 2 + 3;  // when input size is odd
     if (result != expected_even && result != expected_odd) {
         std::ostringstream oss;
         oss << "wrong result : " << result;
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const unsigned long long size = std::stoull(argv[1]);
+    unsigned long long const size = std::stoull(argv[1]);
     unsigned long long result = 0;
     unsigned long long result2 = 0;
     auto th = std::thread(compute, size, std::ref(result));

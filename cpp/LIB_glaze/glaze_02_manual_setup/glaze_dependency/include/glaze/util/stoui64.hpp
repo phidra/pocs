@@ -9,7 +9,7 @@
 #include "glaze/util/strod.hpp"
 
 namespace glz::detail {
-GLZ_ALWAYS_INLINE constexpr bool is_digit(const char c) noexcept {
+GLZ_ALWAYS_INLINE constexpr bool is_digit(char const c) noexcept {
     return c >= '0' && c <= '9';
 }
 
@@ -23,7 +23,7 @@ GLZ_ALWAYS_INLINE constexpr bool is_safe_multiplication10(uint64_t a) noexcept {
 }
 
 template <class T = uint64_t>
-GLZ_ALWAYS_INLINE constexpr bool stoui64(uint64_t& res, const char*& c) noexcept {
+GLZ_ALWAYS_INLINE constexpr bool stoui64(uint64_t& res, char const*& c) noexcept {
     if (!is_digit(*c)) [[unlikely]] {
         return false;
     }
@@ -129,8 +129,8 @@ GLZ_ALWAYS_INLINE constexpr bool stoui64(uint64_t& res, const char*& c) noexcept
 template <class T = uint64_t>
 GLZ_ALWAYS_INLINE constexpr bool stoui64(uint64_t& res, auto& it) noexcept {
     static_assert(sizeof(*it) == sizeof(char));
-    const char* cur = reinterpret_cast<const char*>(&*it);
-    const char* beg = cur;
+    char const* cur = reinterpret_cast<char const*>(&*it);
+    char const* beg = cur;
     if (stoui64(res, cur)) {
         it += (cur - beg);
         return true;
@@ -139,10 +139,10 @@ GLZ_ALWAYS_INLINE constexpr bool stoui64(uint64_t& res, auto& it) noexcept {
 }
 
 template <class T, bool force_conformance, class CharType>
-requires(std::is_unsigned_v<T>) inline bool parse_int(T& val, const CharType*& cur) noexcept {
-    const CharType* sig_cut{};                   // significant part cutting position for long number
-    [[maybe_unused]] const CharType* sig_end{};  // significant part ending position
-    const CharType* dot_pos{};                   // decimal point position
+requires(std::is_unsigned_v<T>) inline bool parse_int(T& val, CharType const*& cur) noexcept {
+    CharType const* sig_cut{};                   // significant part cutting position for long number
+    [[maybe_unused]] CharType const* sig_end{};  // significant part ending position
+    CharType const* dot_pos{};                   // decimal point position
     uint32_t frac_zeros = 0;
     uint64_t sig = uint64_t(*cur - '0');  // significant part of the number
     int32_t exp = 0;                      // exponent part of the number
@@ -150,7 +150,7 @@ requires(std::is_unsigned_v<T>) inline bool parse_int(T& val, const CharType*& c
     int32_t exp_sig = 0;                  // temporary exponent number from significant part
     int32_t exp_lit = 0;                  // temporary exponent number from exponent literal part
     uint64_t num_tmp;                     // temporary number for reading
-    const CharType* tmp;                  // temporary cursor for reading
+    CharType const* tmp;                  // temporary cursor for reading
 
     /* begin with non-zero digit */
     if (sig > 9) [[unlikely]] {
@@ -244,16 +244,14 @@ requires(std::is_unsigned_v<T>) inline bool parse_int(T& val, const CharType*& c
 digi_frac_more:
     sig_cut = cur;        /* too large to fit in u64, excess digits need to be cut */
     sig += (*cur >= '5'); /* round */
-    while (uint8_t(*++cur - zero) < 10) {
-    }
+    while (uint8_t(*++cur - zero) < 10) {}
     if (!dot_pos) {
         dot_pos = cur;
         if (*cur == '.') {
             if (uint8_t(*++cur - zero) > 9) [[unlikely]] {
                 return false;
             }
-            while (uint8_t(*++cur - zero) < 10) {
-            }
+            while (uint8_t(*++cur - zero) < 10) {}
         }
     }
     exp_sig = int32_t(dot_pos - sig_cut);

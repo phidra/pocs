@@ -1,9 +1,9 @@
 #include <routingkit/permutation.h>
 
-#include "expect.h"
-
-#include <vector>
 #include <random>
+#include <vector>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;

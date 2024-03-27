@@ -1,10 +1,10 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
 #include <routingkit/graph_util.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>

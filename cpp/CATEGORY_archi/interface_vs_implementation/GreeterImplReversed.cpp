@@ -1,7 +1,6 @@
 #include "GreeterImplReversed.h"
 
 #include <algorithm>
-
 #include <iostream>
 
 void GreeterImplReversed::greet_many(std::vector<std::string> persons) const {

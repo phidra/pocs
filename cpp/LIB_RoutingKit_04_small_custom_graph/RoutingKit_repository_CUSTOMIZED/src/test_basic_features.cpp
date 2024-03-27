@@ -1,14 +1,14 @@
 #include <routingkit/contraction_hierarchy.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
+#include <routingkit/nested_dissection.h>
 #include <routingkit/osm_graph_builder.h>
 #include <routingkit/osm_profile.h>
-#include <routingkit/nested_dissection.h>
 #include <routingkit/timer.h>
-
-#include "expect.h"
 
 #include <iostream>
 #include <random>
+
+#include "expect.h"
 
 using namespace std;
 using namespace RoutingKit;
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    auto log_message = [](const string& msg) { cout << msg << endl; };
+    auto log_message = [](string const& msg) { cout << msg << endl; };
 
     vector<unsigned> first_out;
     vector<unsigned> tail;
@@ -42,8 +42,9 @@ int main(int argc, char* argv[]) {
 
     {
         auto mapping = load_osm_id_mapping_from_pbf(
-            pbf_file, nullptr,
-            [&](uint64_t osm_way_id, const TagMap& tags) {
+            pbf_file,
+            nullptr,
+            [&](uint64_t osm_way_id, TagMap const& tags) {
                 return is_osm_way_used_by_cars(osm_way_id, tags, log_message);
             },
             log_message);
@@ -51,12 +52,15 @@ int main(int argc, char* argv[]) {
         vector<uint32_t> way_speed(mapping.is_routing_way.population_count());  // in km/h
 
         auto routing_graph = load_osm_routing_graph_from_pbf(
-            pbf_file, mapping,
-            [&](uint64_t osm_way_id, unsigned routing_way_id, const TagMap& way_tags) {
+            pbf_file,
+            mapping,
+            [&](uint64_t osm_way_id, unsigned routing_way_id, TagMap const& way_tags) {
                 way_speed[routing_way_id] = get_osm_way_speed(osm_way_id, way_tags, log_message);
                 return get_osm_car_direction_category(osm_way_id, way_tags, log_message);
             },
-            nullptr, log_message, false);
+            nullptr,
+            log_message,
+            false);
 
         first_out = move(routing_graph.first_out);
         tail = invert_inverse_vector(first_out);
@@ -108,8 +112,11 @@ int main(int argc, char* argv[]) {
     vector<unsigned> shortest_path_distance2(test_count);
     vector<unsigned> shortest_path_distance3(test_count);
 
-    auto check_result = [&](unsigned used_source, unsigned used_target, unsigned shortest_path_length,
-                            const vector<unsigned>& node_path, const vector<unsigned>& arc_path) {
+    auto check_result = [&](unsigned used_source,
+                            unsigned used_target,
+                            unsigned shortest_path_length,
+                            vector<unsigned> const& node_path,
+                            vector<unsigned> const& arc_path) {
         if (shortest_path_length == inf_weight) {
             EXPECT(node_path.empty());
             EXPECT(arc_path.empty());
@@ -143,8 +150,8 @@ int main(int argc, char* argv[]) {
     };
 
     ContractionHierarchy ch = ContractionHierarchy::build(node_count, tail, head, travel_time, log_message);
-    auto cch_order = compute_nested_node_dissection_order_using_inertial_flow(node_count, tail, head, latitude,
-                                                                              longitude, log_message);
+    auto cch_order = compute_nested_node_dissection_order_using_inertial_flow(
+        node_count, tail, head, latitude, longitude, log_message);
 
     {
         ContractionHierarchyQuery q(ch);
@@ -160,7 +167,10 @@ int main(int argc, char* argv[]) {
                     EXPECT_CMP(q.get_used_source(), ==, source1[i]);
                     EXPECT_CMP(q.get_used_target(), ==, target1[i]);
 
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -181,7 +191,10 @@ int main(int argc, char* argv[]) {
                     .run();
                 shortest_path_distance2[i] = q.get_distance();
                 if (q.get_distance() != inf_weight) {
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -202,7 +215,10 @@ int main(int argc, char* argv[]) {
                     .run();
                 shortest_path_distance3[i] = q.get_distance();
                 if (q.get_distance() != inf_weight) {
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -236,7 +252,10 @@ int main(int argc, char* argv[]) {
                     EXPECT_CMP(q.get_used_source(), ==, source1[i]);
                     EXPECT_CMP(q.get_used_target(), ==, target1[i]);
 
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -258,7 +277,10 @@ int main(int argc, char* argv[]) {
 
                 EXPECT_CMP(shortest_path_distance2[i], ==, q.get_distance());
                 if (q.get_distance() != inf_weight) {
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -278,8 +300,8 @@ int main(int argc, char* argv[]) {
                     .add_target(target3[i])
                     .run();
                 EXPECT_CMP(shortest_path_distance3[i], ==, q.get_distance());
-                check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
-                             q.get_arc_path());
+                check_result(
+                    q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(), q.get_arc_path());
             }
         }
     }
@@ -305,7 +327,10 @@ int main(int argc, char* argv[]) {
                     EXPECT_CMP(q.get_used_source(), ==, source1[i]);
                     EXPECT_CMP(q.get_used_target(), ==, target1[i]);
 
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -328,7 +353,10 @@ int main(int argc, char* argv[]) {
                 EXPECT_CMP(shortest_path_distance2[i], ==, q.get_distance());
 
                 if (q.get_distance() != inf_weight) {
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -350,7 +378,10 @@ int main(int argc, char* argv[]) {
                 EXPECT_CMP(shortest_path_distance3[i], ==, q.get_distance());
 
                 if (q.get_distance() != inf_weight) {
-                    check_result(q.get_used_source(), q.get_used_target(), q.get_distance(), q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance(),
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -398,8 +429,10 @@ int main(int argc, char* argv[]) {
                     EXPECT_CMP(q.get_used_source(), ==, source1[i]);
                     EXPECT_CMP(q.get_used_target(), ==, target1[i]);
 
-                    check_result(q.get_used_source(), q.get_used_target(),
-                                 q.get_distance() - source1_offset[i] - target1_offset[i], q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance() - source1_offset[i] - target1_offset[i],
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -437,20 +470,28 @@ int main(int argc, char* argv[]) {
                         EXPECT_CMP(target1[i], ==, q.get_used_target());
 
                     if (use_source1 && use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source1_offset[i] - target1_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source1_offset[i] - target1_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (use_source1 && !use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source1_offset[i] - target2_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source1_offset[i] - target2_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (!use_source1 && use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source2_offset[i] - target1_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source2_offset[i] - target1_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (!use_source1 && !use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source2_offset[i] - target2_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source2_offset[i] - target2_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -477,8 +518,10 @@ int main(int argc, char* argv[]) {
                     EXPECT_CMP(q.get_used_source(), ==, source1[i]);
                     EXPECT_CMP(q.get_used_target(), ==, target1[i]);
 
-                    check_result(q.get_used_source(), q.get_used_target(),
-                                 q.get_distance() - source1_offset[i] - target1_offset[i], q.get_node_path(),
+                    check_result(q.get_used_source(),
+                                 q.get_used_target(),
+                                 q.get_distance() - source1_offset[i] - target1_offset[i],
+                                 q.get_node_path(),
                                  q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -516,20 +559,28 @@ int main(int argc, char* argv[]) {
                         EXPECT_CMP(target1[i], ==, q.get_used_target());
 
                     if (use_source1 && use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source1_offset[i] - target1_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source1_offset[i] - target1_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (use_source1 && !use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source1_offset[i] - target2_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source1_offset[i] - target2_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (!use_source1 && use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source2_offset[i] - target1_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source2_offset[i] - target1_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                     else if (!use_source1 && !use_target1)
-                        check_result(q.get_used_source(), q.get_used_target(),
-                                     q.get_distance() - source2_offset[i] - target2_offset[i], q.get_node_path(),
+                        check_result(q.get_used_source(),
+                                     q.get_used_target(),
+                                     q.get_distance() - source2_offset[i] - target2_offset[i],
+                                     q.get_node_path(),
                                      q.get_arc_path());
                 } else {
                     EXPECT(q.get_arc_path().empty());
@@ -583,7 +634,8 @@ int main(int argc, char* argv[]) {
                                .add_target(target1[j])
                                .run()
                                .get_distance(),
-                           ==, d[j]);
+                           ==,
+                           d[j]);
                 ch_naive_one_to_many += get_micro_time();
                 cch_naive_one_to_many -= get_micro_time();
                 EXPECT_CMP(cch_ref_query.reset()
@@ -591,7 +643,8 @@ int main(int argc, char* argv[]) {
                                .add_target(target1[j])
                                .run()
                                .get_distance(),
-                           ==, d[j]);
+                           ==,
+                           d[j]);
                 cch_naive_one_to_many += get_micro_time();
             }
 
@@ -657,7 +710,8 @@ int main(int argc, char* argv[]) {
                                .add_target(target1[j])
                                .run()
                                .get_distance(),
-                           ==, d[j]);
+                           ==,
+                           d[j]);
                 ch_naive_one_to_many += get_micro_time();
             }
 
@@ -704,7 +758,8 @@ int main(int argc, char* argv[]) {
                                .add_source(source1[j])
                                .run()
                                .get_distance(),
-                           ==, d[j]);
+                           ==,
+                           d[j]);
             }
             EXPECT(d == cch_query.get_distances_to_sources());
         }

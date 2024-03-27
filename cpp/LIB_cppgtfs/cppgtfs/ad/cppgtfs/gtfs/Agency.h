@@ -6,6 +6,7 @@
 #define AD_CPPGTFS_GTFS_AGENCY_H_
 
 #include <string>
+
 #include "flat/Agency.h"
 
 using std::exception;
@@ -22,55 +23,55 @@ class Agency {
 
     Agency() {}
 
-    Agency(const std::string& id,
-           const std::string& name,
-           const std::string& url,
-           const std::string& timezone,
-           const std::string& lang,
-           const std::string& phone,
-           const std::string& fare_url,
-           const std::string& agency_email)
-        : _id(id),
-          _name(name),
-          _url(url),
-          _timezone(timezone),
-          _lang(lang),
-          _phone(phone),
-          _fare_url(fare_url),
-          _agency_email(agency_email) {}
+    Agency(std::string const& id,
+           std::string const& name,
+           std::string const& url,
+           std::string const& timezone,
+           std::string const& lang,
+           std::string const& phone,
+           std::string const& fare_url,
+           std::string const& agency_email) :
+        _id(id),
+        _name(name),
+        _url(url),
+        _timezone(timezone),
+        _lang(lang),
+        _phone(phone),
+        _fare_url(fare_url),
+        _agency_email(agency_email) {}
 
-    Agency(const char* id,
-           const char* name,
-           const char* url,
-           const char* timezone,
-           const char* lang,
-           const char* phone,
-           const char* fare_url,
-           const char* agency_email)
-        : _id(id),
-          _name(name),
-          _url(url),
-          _timezone(timezone),
-          _lang(lang),
-          _phone(phone),
-          _fare_url(fare_url),
-          _agency_email(agency_email) {}
+    Agency(char const* id,
+           char const* name,
+           char const* url,
+           char const* timezone,
+           char const* lang,
+           char const* phone,
+           char const* fare_url,
+           char const* agency_email) :
+        _id(id),
+        _name(name),
+        _url(url),
+        _timezone(timezone),
+        _lang(lang),
+        _phone(phone),
+        _fare_url(fare_url),
+        _agency_email(agency_email) {}
 
-    const std::string& getId() const { return _id; }
+    std::string const& getId() const { return _id; }
 
-    const std::string& getName() const { return _name; }
+    std::string const& getName() const { return _name; }
 
-    const std::string& getUrl() const { return _url; }
+    std::string const& getUrl() const { return _url; }
 
-    const std::string& getTimezone() const { return _timezone; }
+    std::string const& getTimezone() const { return _timezone; }
 
-    const std::string& getLang() const { return _lang; }
+    std::string const& getLang() const { return _lang; }
 
-    const std::string& getPhone() const { return _phone; }
+    std::string const& getPhone() const { return _phone; }
 
-    const std::string& getFareUrl() const { return _fare_url; }
+    std::string const& getFareUrl() const { return _fare_url; }
 
-    const std::string& getAgencyEmail() const { return _agency_email; }
+    std::string const& getAgencyEmail() const { return _agency_email; }
 
     flat::Agency getFlat() const {
         flat::Agency r;

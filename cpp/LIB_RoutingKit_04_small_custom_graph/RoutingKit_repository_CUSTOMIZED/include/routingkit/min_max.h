@@ -1,8 +1,9 @@
 #ifndef ROUTING_KIT_MIN_MAX_H
 #define ROUTING_KIT_MIN_MAX_H
 
-#include <vector>
 #include <assert.h>
+
+#include <vector>
 
 namespace RoutingKit {
 
@@ -19,7 +20,7 @@ void max_to(T& x, const T& y) {
 }
 
 template <class T>
-unsigned first_min_element_position_of(const std::vector<T>& v) {
+unsigned first_min_element_position_of(std::vector<T> const& v) {
     assert(!v.empty());
     unsigned pos = 0;
     for (unsigned i = 1; i < v.size(); ++i)
@@ -29,12 +30,12 @@ unsigned first_min_element_position_of(const std::vector<T>& v) {
 }
 
 template <class T>
-const T& min_element_of(const std::vector<T>& v) {
+const T& min_element_of(std::vector<T> const& v) {
     return v[first_min_element_position_of(v)];
 }
 
 template <class T>
-const T& min_element_of(const std::vector<T>& v, const T& empty_value) {
+const T& min_element_of(std::vector<T> const& v, const T& empty_value) {
     if (v.empty())
         return empty_value;
     else
@@ -42,7 +43,7 @@ const T& min_element_of(const std::vector<T>& v, const T& empty_value) {
 }
 
 template <class T>
-unsigned first_max_element_position_of(const std::vector<T>& v) {
+unsigned first_max_element_position_of(std::vector<T> const& v) {
     assert(!v.empty());
     unsigned pos = 0;
     for (unsigned i = 1; i < v.size(); ++i)
@@ -52,12 +53,12 @@ unsigned first_max_element_position_of(const std::vector<T>& v) {
 }
 
 template <class T>
-const T& max_element_of(const std::vector<T>& v) {
+const T& max_element_of(std::vector<T> const& v) {
     return v[first_max_element_position_of(v)];
 }
 
 template <class T>
-const T& max_element_of(const std::vector<T>& v, const T& empty_value) {
+const T& max_element_of(std::vector<T> const& v, const T& empty_value) {
     if (v.empty())
         return empty_value;
     else

@@ -34,8 +34,8 @@ std::string file_to_buffer(T&& file_name) noexcept {
     return buffer;
 }
 
-inline std::filesystem::path relativize_if_not_absolute(const std::filesystem::path& working_directory,
-                                                        const std::filesystem::path& filepath) noexcept {
+inline std::filesystem::path relativize_if_not_absolute(std::filesystem::path const& working_directory,
+                                                        std::filesystem::path const& filepath) noexcept {
     if (filepath.is_absolute()) {
         return filepath;
     }

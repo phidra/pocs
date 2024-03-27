@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "lib.h"
 #include "animals.h"
+#include "lib.h"
 
 using std::cout;
 using std::endl;

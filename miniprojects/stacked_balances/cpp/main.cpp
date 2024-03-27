@@ -1,9 +1,9 @@
-#include <iostream>
-#include <vector>
-#include <numeric>
-#include <fstream>
-#include <sstream>
 #include <cassert>
+#include <fstream>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <vector>
 
 // REPRISE :
 // faire une passe de ménage, notamment vis-à-vis des copies
@@ -29,8 +29,10 @@ struct Plate {
     int mass() const;
 
     string stacked_balances_indexes_as_str() const {
-        return accumulate(balances_indexes.begin(), balances_indexes.end(), string(""),
-                          [](const string& s, const int& b) { return string(s) + " " + to_string(b); });
+        return accumulate(
+            balances_indexes.begin(), balances_indexes.end(), string(""), [](string const& s, int const& b) {
+                return string(s) + " " + to_string(b);
+            });
     }
 };
 
@@ -67,16 +69,17 @@ struct Balance {
     int mass() const { return BALANCE_MASS + left.mass() + right.mass(); }
     Plate left;
     Plate right;
-    static const int BALANCE_MASS = 10;
+    static int const BALANCE_MASS = 10;
 };
 
 int Plate::mass() const {
-    int balances_mass = accumulate(balances.begin(), balances.end(), 0,
-                                   [](int current_mass, const Balance* b) { return current_mass + b->mass(); });
+    int balances_mass = accumulate(balances.begin(), balances.end(), 0, [](int current_mass, Balance const* b) {
+        return current_mass + b->mass();
+    });
     return initial_weight + added_weight + balances_mass;
 }
 
-vector<Balance> parse(const string& fpath) {
+vector<Balance> parse(string const& fpath) {
     ifstream f(fpath);
     assert(f.good());
     string s = get_beginning_of_first_non_commented_line(f);
@@ -161,7 +164,7 @@ int main(int argc, char* argv[]) {
     EquilibratingVisitor visitor;
     root.accept(visitor);
     unsigned int counter = 0;
-    for (const auto& b : balances) {
+    for (auto const& b : balances) {
         cout << counter++ << ": " << b.left.added_weight << " " << b.right.added_weight << endl;
     }
     return 0;

@@ -1,5 +1,5 @@
-#include <iostream>
 #include <bitset>
+#include <iostream>
 #include <sstream>
 
 // This POC shows the effect of bitwise operators

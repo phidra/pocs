@@ -1,9 +1,9 @@
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 using namespace std::chrono_literals;
-#include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/sync/named_condition.hpp>
 
 void print_poc_description() {
@@ -36,16 +36,16 @@ Au final, la POC est beaucoup plus simple, les seules structures interprocess n�
 
 namespace bipc = boost::interprocess;
 
-static const char* MUTEX_NAME = "shared_mutex";
-static const char* CV_NAME = "shared_cv";
-static const char* PAYLOAD_NAME = "my_payload";
+static char const* MUTEX_NAME = "shared_mutex";
+static char const* CV_NAME = "shared_cv";
+static char const* PAYLOAD_NAME = "my_payload";
 
 struct Payload {
     char shared_data;
 
-    Payload()
-        :  // le Payload commence avec un état déterminé = le shared_data est un caractère nul
-          shared_data{'\0'} {
+    Payload() :
+        // le Payload commence avec un état déterminé = le shared_data est un caractère nul
+        shared_data{'\0'} {
         std::cout << "PAYLOAD CONSTRUCTOR CALLED !" << std::endl;
     }
 

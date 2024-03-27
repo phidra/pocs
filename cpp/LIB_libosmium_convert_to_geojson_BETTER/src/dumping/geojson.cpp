@@ -1,10 +1,11 @@
+#include "geojson.h"
+
+#include <rapidjson/document.h>
+#include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
+
 #include <fstream>
 #include <iomanip>
-
-#include "geojson.h"
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/ostreamwrapper.h>
 
 using namespace std;
 

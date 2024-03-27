@@ -2,7 +2,7 @@
 
 namespace RoutingKit {
 
-uint64_t decode_varint_as_uint64_and_advance_first_parameter(const char*& begin, const char* end) {
+uint64_t decode_varint_as_uint64_and_advance_first_parameter(char const*& begin, char const* end) {
     if (begin == end)
         throw std::runtime_error("Protobuf message is corrupt because varint was expected at the end of the message.");
 

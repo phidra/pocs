@@ -1,9 +1,9 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 
         cout << "done" << endl;
 
-        const unsigned query_count = source.size();
+        unsigned const query_count = source.size();
 
         cout << "Loaded " << query_count << " test queries" << endl;
 

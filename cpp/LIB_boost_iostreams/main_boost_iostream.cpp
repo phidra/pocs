@@ -1,13 +1,11 @@
-#include <iostream>
-#include <fstream>
+#include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/device/file.hpp>
-#include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
-
 #include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 namespace io = boost::iostreams;

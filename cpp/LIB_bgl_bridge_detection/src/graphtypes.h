@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <osmium/osm/location.hpp>
-#include <osmium/osm/types.hpp>
-
 #include <boost/geometry.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <osmium/osm/location.hpp>
+#include <osmium/osm/types.hpp>
+#include <string>
+#include <vector>
 
 using Point = boost::geometry::model::point<double, 2, boost::geometry::cs::cartesian>;
 using MultiPoint = boost::geometry::model::multi_point<Point>;

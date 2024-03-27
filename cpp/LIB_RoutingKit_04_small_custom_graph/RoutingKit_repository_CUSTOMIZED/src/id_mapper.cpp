@@ -1,17 +1,17 @@
 #include <routingkit/id_mapper.h>
 
-#include "emulate_gcc_builtin.h"
 #include "bit_select.h"
+#include "emulate_gcc_builtin.h"
 
 namespace RoutingKit {
 
 namespace {
-const int select_bits = 8;
+int const select_bits = 8;
 
 }
 
-LocalIDMapper::LocalIDMapper(uint64_t bit_count, const uint64_t* bits)
-    : bits_(bits), bit_count_(bit_count), rank_((bit_count_ + 511) / 512 + 1) {
+LocalIDMapper::LocalIDMapper(uint64_t bit_count, uint64_t const* bits) :
+    bits_(bits), bit_count_(bit_count), rank_((bit_count_ + 511) / 512 + 1) {
     uint64_t i = 0;
     uint64_t s = 0;
 
@@ -39,7 +39,7 @@ LocalIDMapper::LocalIDMapper(uint64_t bit_count, const uint64_t* bits)
     rank_.back() = s;
 }
 
-IDMapper::IDMapper(uint64_t bit_count, const uint64_t* bits) : LocalIDMapper(bit_count, bits) {
+IDMapper::IDMapper(uint64_t bit_count, uint64_t const* bits) : LocalIDMapper(bit_count, bits) {
     uint32_t select_query = 0, select_value = 0;
     select_.resize((local_id_count() + ((1 << select_bits) - 1)) / (1 << select_bits));
     for (uint64_t block = 0; block < rank_.size() - 1; ++block) {
@@ -105,8 +105,10 @@ uint64_t IDMapper::to_global(uint64_t local_id) const {
 
     assert(rank_[start_uint512] <= local_id);
 
-    uint64_t global_id = bit_select((bit_count_ + 511) / 512 - start_uint512, rank_.data() + start_uint512,
-                                    bits_ + 8 * start_uint512, local_id) +
+    uint64_t global_id = bit_select((bit_count_ + 511) / 512 - start_uint512,
+                                    rank_.data() + start_uint512,
+                                    bits_ + 8 * start_uint512,
+                                    local_id) +
                          512 * start_uint512;
 
     assert(is_global_id_mapped(global_id));

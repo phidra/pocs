@@ -1,14 +1,17 @@
 #include "file_data_source.h"
-#include <stdexcept>
-#include <string>
+
 #include <assert.h>
 
+#include <stdexcept>
+#include <string>
+
 #ifndef ROUTING_KIT_NO_POSIX
-#include <cerrno>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <cerrno>
 #endif
 
 #include <string.h>
@@ -19,11 +22,11 @@ namespace RoutingKit {
 
 FileDataSource::FileDataSource() : file_descriptor(-1) {}
 
-FileDataSource::FileDataSource(const char* file_name) : file_descriptor(-1) {
+FileDataSource::FileDataSource(char const* file_name) : file_descriptor(-1) {
     open(file_name);
 }
 
-FileDataSource::FileDataSource(const std::string& file_name) : file_descriptor(-1) {
+FileDataSource::FileDataSource(std::string const& file_name) : file_descriptor(-1) {
     open(file_name);
 }
 
@@ -31,13 +34,13 @@ FileDataSource::FileDataSource(FileDataSource&& o) : file_descriptor(o.file_desc
     o.file_descriptor = -1;
 }
 
-const FileDataSource& FileDataSource::operator=(FileDataSource&& o) {
+FileDataSource const& FileDataSource::operator=(FileDataSource&& o) {
     file_descriptor = o.file_descriptor;
     o.file_descriptor = -1;
     return *this;
 }
 
-void FileDataSource::open(const char* file_name) {
+void FileDataSource::open(char const* file_name) {
     int new_file_descriptor = ::open(file_name, O_RDONLY);
     if (new_file_descriptor == -1) {
         int error = errno;
@@ -95,11 +98,11 @@ unsigned long long my_read(int file_descriptor, char* buffer, unsigned long long
 
 FileDataSource::FileDataSource() : file_descriptor(nullptr) {}
 
-FileDataSource::FileDataSource(const char* file_name) : file_descriptor(nullptr) {
+FileDataSource::FileDataSource(char const* file_name) : file_descriptor(nullptr) {
     open(file_name);
 }
 
-FileDataSource::FileDataSource(const std::string& file_name) : file_descriptor(nullptr) {
+FileDataSource::FileDataSource(std::string const& file_name) : file_descriptor(nullptr) {
     open(file_name);
 }
 
@@ -107,13 +110,13 @@ FileDataSource::FileDataSource(FileDataSource&& o) : file_descriptor(o.file_desc
     o.file_descriptor = nullptr;
 }
 
-const FileDataSource& FileDataSource::operator=(FileDataSource&& o) {
+FileDataSource const& FileDataSource::operator=(FileDataSource&& o) {
     file_descriptor = o.file_descriptor;
     o.file_descriptor = nullptr;
     return *this;
 }
 
-void FileDataSource::open(const char* file_name) {
+void FileDataSource::open(char const* file_name) {
     FILE* new_file_descriptor = fopen(file_name, "rb");
     if (new_file_descriptor == nullptr)
         throw std::runtime_error(std::string("Could not open file \"") + file_name + "\" for reading.");

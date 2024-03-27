@@ -1,6 +1,6 @@
-#include <iostream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <thread>
 
 #include "nanobench.h"

@@ -1,9 +1,9 @@
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/property_map/property_map.hpp>
 #include <iostream>
 #include <map>
 #include <string>
-#include <boost/property_map/property_map.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
 
 // Doc générale = https://www.boost.org/doc/libs/1_74_0/libs/property_map/doc/property_map.html
 //

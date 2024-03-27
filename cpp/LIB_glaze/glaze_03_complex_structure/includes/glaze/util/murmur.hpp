@@ -11,7 +11,7 @@
 // Modified from: https://en.wikipedia.org/wiki/MurmurHash
 
 namespace glz {
-constexpr uint32_t to_uint32(const auto* bytes) noexcept {
+constexpr uint32_t to_uint32(auto const* bytes) noexcept {
     uint32_t res{};
     if (std::is_constant_evaluated()) {
         for (size_t i = 0; i < 4; ++i) {
@@ -34,7 +34,7 @@ inline constexpr uint32_t murmur_32_scramble(uint32_t k) noexcept {
 inline constexpr uint32_t murmur3_32(auto&& value) noexcept {
     uint32_t h = 31;  // We always use a seed of 31 for Crusher
     uint32_t k;
-    const auto n = value.size();
+    auto const n = value.size();
     auto* key = value.data();
     /* Read in groups of 4. */
     for (size_t i = n >> 2; i; i--) {

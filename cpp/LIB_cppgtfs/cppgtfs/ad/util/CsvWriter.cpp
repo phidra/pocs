@@ -2,20 +2,22 @@
 // Chair of Algorithms and Data Structures.
 // Authors: Patrick Brosi <brosi@informatik.uni-freiburg.de>
 
+#include "CsvWriter.h"
+
 #include <algorithm>
 #include <cstring>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include "CsvWriter.h"
+
 #include "dtoa_milo.h"
 
 using ad::util::CsvWriter;
 
 // _____________________________________________________________________________
-CsvWriter::CsvWriter(std::ostream* str, const HeaderList& headers)
-    : _stream(str), _headers(headers), _hWritten(false), _first(true), _delim(',') {}
+CsvWriter::CsvWriter(std::ostream* str, HeaderList const& headers) :
+    _stream(str), _headers(headers), _hWritten(false), _first(true), _delim(',') {}
 
 // _____________________________________________________________________________
 void CsvWriter::writeDouble(double d) {
@@ -34,7 +36,7 @@ void CsvWriter::skip() {
 }
 
 // _____________________________________________________________________________
-void CsvWriter::writeString(const std::string& str) {
+void CsvWriter::writeString(std::string const& str) {
     if (!_first)
         _stream->write(&_delim, 1);
     _first = false;
@@ -51,7 +53,7 @@ void CsvWriter::writeString(const std::string& str) {
 }
 
 // _____________________________________________________________________________
-std::string CsvWriter::escStr(const std::string& str) const {
+std::string CsvWriter::escStr(std::string const& str) const {
     std::stringstream ret;
     for (size_t i = 0; i < str.size(); i++) {
         if (str[i] == '\"')
@@ -64,7 +66,7 @@ std::string CsvWriter::escStr(const std::string& str) const {
 }
 
 // _____________________________________________________________________________
-void CsvWriter::writeRawString(const std::string& str) {
+void CsvWriter::writeRawString(std::string const& str) {
     if (!_first)
         _stream->write(&_delim, 1);
     _first = false;
@@ -101,11 +103,11 @@ void CsvWriter::writeHeader() {
 }
 
 // _____________________________________________________________________________
-void CsvWriter::writeStrArr(const std::vector<std::string>& arr) {
+void CsvWriter::writeStrArr(std::vector<std::string> const& arr) {
     if (!arr.size())
         return;
     bool first = false;
-    for (const auto& str : arr) {
+    for (auto const& str : arr) {
         if (first)
             (*_stream) << _delim;
         first = true;

@@ -1,8 +1,8 @@
-#include <vector>
+#include <routingkit/contraction_hierarchy.h>
+
 #include <fstream>
 #include <string>
-
-#include <routingkit/contraction_hierarchy.h>
+#include <vector>
 
 // returns the written file
 template <typename Integer>

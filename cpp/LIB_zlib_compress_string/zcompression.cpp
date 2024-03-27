@@ -1,17 +1,18 @@
 #include "zcompression.h"
 
-#include <iostream>
 #include <string.h>
-#include <stdexcept>
-#include <iomanip>
-#include <sstream>
 #include <zlib.h>
+
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 // Les fonctions depuis/vers une string sont directement copiées depuis :
 //      https://gist.github.com/halloweeks/8bb0a745229b4674aaacffc7a23e5956
 // Celles depuis/vers un stream remplacent juste outstring.append(...) par out.write(...)
 
-std::string compress_to_string(const std::string& str, int compressionlevel) {
+std::string compress_to_string(std::string const& str, int compressionlevel) {
     z_stream zs;  // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
@@ -49,7 +50,7 @@ std::string compress_to_string(const std::string& str, int compressionlevel) {
     return outstring;
 }
 
-std::string decompress_to_string(const std::string& str) {
+std::string decompress_to_string(std::string const& str) {
     z_stream zs;  // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
@@ -87,7 +88,7 @@ std::string decompress_to_string(const std::string& str) {
     return outstring;
 }
 
-void compress_to_stream(const std::string& input_str, std::ostream& out, int compressionlevel) {
+void compress_to_stream(std::string const& input_str, std::ostream& out, int compressionlevel) {
     z_stream zs;  // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
@@ -124,7 +125,7 @@ void compress_to_stream(const std::string& input_str, std::ostream& out, int com
     }
 }
 
-void decompress_to_stream(const std::string& str, std::ostream& out) {
+void decompress_to_stream(std::string const& str, std::ostream& out) {
     z_stream zs;  // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 

@@ -1,14 +1,14 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
 #include <routingkit/contraction_hierarchy.h>
-#include <routingkit/min_max.h>
 #include <routingkit/inverse_vector.h>
-
-#include "verify.h"
+#include <routingkit/min_max.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+
+#include "verify.h"
 
 using namespace RoutingKit;
 using namespace std;
@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
         check_if_graph_is_valid(first_out, head);
         cout << "done" << endl;
 
-        const unsigned node_count = first_out.size() - 1;
-        const unsigned arc_count = head.size();
+        unsigned const node_count = first_out.size() - 1;
+        unsigned const arc_count = head.size();
 
         if (first_out.front() != 0)
             throw runtime_error("The first element of first out must be 0.");
@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
         if (weight.size() != arc_count)
             throw runtime_error("The weight vector must be as long as the number of arcs");
 
-        auto ch = ContractionHierarchy::build(node_count, invert_inverse_vector(first_out), head, weight,
-                                              [](string msg) { cout << msg << endl; });
+        auto ch = ContractionHierarchy::build(
+            node_count, invert_inverse_vector(first_out), head, weight, [](string msg) { cout << msg << endl; });
         check_contraction_hierarchy_for_errors(ch);
         ch.save_file(ch_file);
 

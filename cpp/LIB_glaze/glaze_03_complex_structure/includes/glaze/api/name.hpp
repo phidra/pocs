@@ -18,7 +18,7 @@ struct make_static {
     static constexpr auto value = V;
 };
 
-template <const std::string_view&... Strs>
+template <std::string_view const&... Strs>
 inline constexpr std::string_view join() {
     constexpr auto joined_arr = []() {
         constexpr size_t len = (Strs.size() + ... + 0);
@@ -35,7 +35,7 @@ inline constexpr std::string_view join() {
     return {static_arr.data(), static_arr.size() - 1};
 }
 // Helper to get the value out
-template <const std::string_view&... Strs>
+template <std::string_view const&... Strs>
 constexpr auto join_v = join<Strs...>();
 }  // namespace detail
 

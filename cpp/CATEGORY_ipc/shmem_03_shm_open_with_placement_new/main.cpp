@@ -1,10 +1,11 @@
-#include <atomic>
-#include <iostream>
-#include <cstring>
-#include <mqueue.h>
-#include <chrono>
-#include <thread>
 #include <dirent.h>
+#include <mqueue.h>
+
+#include <atomic>
+#include <chrono>
+#include <cstring>
+#include <iostream>
+#include <thread>
 
 #include "shared_mem.h"
 #include "utils.h"
@@ -122,8 +123,7 @@ void producer(SharedMem<Payload> const& writer, mqd_t queue_descriptor) {
         payload.consumer_has_work_to_do.store(true);
 
         payload.producer_has_work_to_do.store(false);
-        while (!payload.producer_has_work_to_do.load()) {
-        }
+        while (!payload.producer_has_work_to_do.load()) {}
     }
 
     std::cout << "=== End of emission, PRODUCER will now close ===" << std::endl;
@@ -142,8 +142,7 @@ void consumer(SharedMem<Payload> const& reader, mqd_t queue_descriptor) {
     char received_char;
 
     do {
-        while (!payload.consumer_has_work_to_do.load()) {
-        }
+        while (!payload.consumer_has_work_to_do.load()) {}
         payload.consumer_has_work_to_do.store(false);
 
         received_char = payload.shared_data;

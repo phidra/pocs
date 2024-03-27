@@ -1,6 +1,7 @@
 #include <routingkit/contraction_hierarchy.h>
-#include <iostream>
+
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 

@@ -18,8 +18,8 @@ template <>
 struct write<csv> {
     template <auto Opts, class T, is_context Ctx, class B, class IX>
     static void op(T&& value, Ctx&& ctx, B&& b, IX&& ix) noexcept {
-        to_csv<std::decay_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b),
-                                                   std::forward<IX>(ix));
+        to_csv<std::decay_t<T>>::template op<Opts>(
+            std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
     }
 };
 
@@ -28,8 +28,8 @@ struct to_csv<T> {
     template <auto Opts, is_context Ctx, class B, class IX>
     static void op(auto&& value, Ctx&& ctx, B&& b, IX&& ix) noexcept {
         using V = decltype(get_member(std::declval<T>(), meta_wrapper_v<T>));
-        to_csv<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx), std::forward<B>(b),
-                                     std::forward<IX>(ix));
+        to_csv<V>::template op<Opts>(
+            get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
     }
 };
 
@@ -59,7 +59,7 @@ struct to_csv<T> {
     static void op(auto&& value, is_context auto&& ctx, B&& b, auto&& ix) noexcept {
         if constexpr (resizeable<T>) {
             if constexpr (Opts.layout == rowwise) {
-                const auto n = value.size();
+                auto const n = value.size();
                 for (size_t i = 0; i < n; ++i) {
                     write<csv>::op<Opts>(value[i], ctx, b, ix);
 
@@ -71,7 +71,7 @@ struct to_csv<T> {
                 static_assert(false_v<T>, "Dynamic arrays within dynamic arrays are unsupported");
             }
         } else {
-            const auto n = value.size();
+            auto const n = value.size();
             for (size_t i = 0; i < n; ++i) {
                 write<csv>::op<Opts>(value[i], ctx, b, ix);
 
@@ -100,7 +100,7 @@ struct to_csv<T> {
             for (auto& [name, data] : value) {
                 dump(name, b, ix);
                 dump<','>(b, ix);
-                const auto n = data.size();
+                auto const n = data.size();
                 for (size_t i = 0; i < n; ++i) {
                     write<csv>::op<Opts>(data[i], ctx, b, ix);
                     if (i < n - 1) {
@@ -111,7 +111,7 @@ struct to_csv<T> {
             }
         } else {
             // dump titles
-            const auto n = value.size();
+            auto const n = value.size();
             size_t i = 0;
             for (auto& [name, data] : value) {
                 dump(name, b, ix);
@@ -304,7 +304,7 @@ GLZ_ALWAYS_INLINE auto write_csv(T&& value) noexcept {
 }
 
 template <uint32_t layout = rowwise, class T>
-[[nodiscard]] inline write_error write_file_csv(T&& value, const std::string& file_name, auto&& buffer) noexcept {
+[[nodiscard]] inline write_error write_file_csv(T&& value, std::string const& file_name, auto&& buffer) noexcept {
     write<opts{.format = csv, .layout = layout}>(std::forward<T>(value), buffer);
     return {buffer_to_file(buffer, file_name)};
 }

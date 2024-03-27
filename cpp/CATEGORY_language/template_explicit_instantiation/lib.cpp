@@ -1,5 +1,7 @@
-#include <iostream>
 #include "lib.h"
+
+#include <iostream>
+
 #include "animals.h"
 
 template <typename Animal>

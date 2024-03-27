@@ -1,6 +1,6 @@
+#include <cstring>
 #include <iostream>
 #include <vector>
-#include <cstring>
 
 void print_poc_description() {
     std::cout << R"DELIM(
@@ -42,7 +42,8 @@ using remove_const_t = typename std::remove_const<T>::type;
 template <class InIt, class OutIt>
 void copy(InIt debutSrc, InIt finSrc, OutIt debutDest, raw_copying) {
     std::cout << "---> RAW" << std::endl;
-    std::memcpy(reinterpret_cast<char*>(debutDest), reinterpret_cast<const char*>(debutSrc),
+    std::memcpy(reinterpret_cast<char*>(debutDest),
+                reinterpret_cast<char const*>(debutSrc),
                 std::distance(debutSrc, finSrc));  // dans ce cas, distance() est O(1)
 }
 template <class InIt, class OutIt>
@@ -53,12 +54,15 @@ void copy(InIt debutSrc, InIt finSrc, OutIt debutDest, per_element_copying) {
 }
 template <class InIt, class OutIt>
 void copy(InIt debutSrc, InIt finSrc, OutIt debutDest) {
-    copy(debutSrc, finSrc, debutDest,
+    copy(debutSrc,
+         finSrc,
+         debutDest,
          std::conditional_t < std::is_same<iter_categ_t<InIt>, std::random_access_iterator_tag>::value &&
              std::is_same<iter_categ_t<OutIt>, std::random_access_iterator_tag>::value &&
              std::is_same<remove_const_t<iter_value_t<InIt>>, char>::value &&
              std::is_same<remove_const_t<iter_value_t<OutIt>>, char>::value,
-         raw_copying, per_element_copying > {});
+         raw_copying,
+         per_element_copying > {});
 }
 // ...
 }  // namespace my

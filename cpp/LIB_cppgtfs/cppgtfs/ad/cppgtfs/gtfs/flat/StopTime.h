@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include "Stop.h"
 
 using std::exception;
@@ -50,27 +51,27 @@ struct Time {
     uint8_t h : 8;
 };
 
-inline bool operator>(const Time& lh, const Time& rh) {
+inline bool operator>(Time const& lh, Time const& rh) {
     return lh.h * 3600 + lh.m * 60 + lh.s > rh.h * 3600 + rh.m * 60 + rh.s;
 }
 
-inline bool operator<(const Time& lh, const Time& rh) {
+inline bool operator<(Time const& lh, Time const& rh) {
     return rh > lh;
 }
 
-inline bool operator==(const Time& lh, const Time& rh) {
+inline bool operator==(Time const& lh, Time const& rh) {
     return !(rh > lh) && !(rh < lh);
 }
 
-inline bool operator!=(const Time& lh, const Time& rh) {
+inline bool operator!=(Time const& lh, Time const& rh) {
     return !(rh == lh);
 }
 
-inline bool operator>=(const Time& lh, const Time& rh) {
+inline bool operator>=(Time const& lh, Time const& rh) {
     return lh > rh || lh == rh;
 }
 
-inline bool operator<=(const Time& lh, const Time& rh) {
+inline bool operator<=(Time const& lh, Time const& rh) {
     return lh < rh || lh == rh;
 }
 

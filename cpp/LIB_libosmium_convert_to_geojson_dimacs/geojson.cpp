@@ -1,7 +1,7 @@
+#include "geojson.h"
+
 #include <fstream>
 #include <iomanip>
-
-#include "geojson.h"
 
 void create_geojson(std::string output_dir,
                     std::map<int, double> const& way_index_to_length,

@@ -56,7 +56,7 @@ struct meta<study::design> {
 };
 
 namespace study {
-void overwrite(auto& state, const std::unordered_map<std::string, raw_json>& overwrites) {
+void overwrite(auto& state, std::unordered_map<std::string, raw_json> const& overwrites) {
     for (auto&& [json_ptr, raw_json_str] : overwrites) {
         read_as_json(state, json_ptr, raw_json_str.str);
     }
@@ -74,16 +74,16 @@ struct full_factorial {
     std::size_t index{};
     std::size_t max_index{};
 
-    full_factorial(State _state, const design& design) : state(std::move(_state)) {
+    full_factorial(State _state, design const& design) : state(std::move(_state)) {
         max_index = design.params.empty() ? 0 : 1;
 
         overwrite(state, design.overwrite);
 
         for (auto& param : design.params) {
-            const auto pe = param_set_from_dist(param);
+            auto const pe = param_set_from_dist(param);
             // TODO: handle potential errors
             auto& ps = param_sets.emplace_back(*pe);
-            const auto num_elements = ps.elements.size();
+            auto const num_elements = ps.elements.size();
             if (num_elements != 0) {
                 max_index *= num_elements;
             }
@@ -97,10 +97,10 @@ struct full_factorial {
     [[nodiscard]] expected<State, error_code> generate(const size_t i) noexcept {
         size_t deconst_index = i;
         for (auto& param_set : param_sets) {
-            const auto this_size = (std::max)(param_set.elements.size(), size_t{1});
-            const auto this_index = deconst_index % this_size;
+            auto const this_size = (std::max)(param_set.elements.size(), size_t{1});
+            auto const this_index = deconst_index % this_size;
             deconst_index /= this_size;
-            const auto ec = std::visit(
+            auto const ec = std::visit(
                 [&](auto&& param_ptr) {
                     using V = std::remove_pointer_t<std::decay_t<decltype(param_ptr)>>;
 
@@ -129,7 +129,7 @@ struct full_factorial {
 
     [[nodiscard]] expected<State, error_code> generate() { return generate(index++); }
 
-    expected<param_set, parse_error> param_set_from_dist(const param& dist) {
+    expected<param_set, parse_error> param_set_from_dist(param const& dist) {
         param_set param_set;
 
         parse_error pe{};
@@ -142,7 +142,8 @@ struct full_factorial {
                                                                    // double, int, bool, or std::string
                 }
             },
-            state, dist.ptr);
+            state,
+            dist.ptr);
         if (!found) {
             pe.ec = error_code::get_nonexistent_json_ptr;
             return unexpected(pe);
@@ -216,7 +217,7 @@ void run_study(generator auto& g, auto&& f) {
     while (!g.done()) {
         // generate mutates
         // TODO: maybe save states and mutate them across threads
-        pool.emplace_back([=, state = g.generate()](const auto) { f(std::move(state), job_num); });
+        pool.emplace_back([=, state = g.generate()](auto const) { f(std::move(state), job_num); });
         ++job_num;
     }
     pool.wait();
@@ -226,9 +227,9 @@ template <class T>
 requires range<T>
 void run_study(T& states, auto&& f) {
     glz::pool pool{};
-    const auto n = states.size();
+    auto const n = states.size();
     for (size_t i = 0; i < n; ++i) {
-        pool.emplace_back([=, state = states[i]](const auto) { f(std::move(state), i); });
+        pool.emplace_back([=, state = states[i]](auto const) { f(std::move(state), i); });
     }
     pool.wait();
 }
@@ -256,7 +257,7 @@ struct random_doe {
 
     std::vector<std::vector<random_param>> params_per_state{};
 
-    random_doe(State _state, const design& design) : state(std::move(_state)) {
+    random_doe(State _state, design const& design) : state(std::move(_state)) {
         overwrite(state, design.overwrite);
 
         engine.seed(seed);
@@ -280,7 +281,7 @@ struct random_doe {
 
     bool done() const { return index >= params_per_state.size(); }
 
-    const State& generate(const size_t i) {
+    State const& generate(const size_t i) {
         auto& params = params_per_state[i];
         for (auto& param : params) {
             param.apply();
@@ -289,7 +290,7 @@ struct random_doe {
         return state;
     }
 
-    const State& generate() { return generate(index++); }
+    State const& generate() { return generate(index++); }
 
     void reset() { index = 0; }
 
@@ -309,7 +310,7 @@ struct random_doe {
         reset();
     }
 
-    expected<random_param, parse_error> param_from_dist(const param& dist) {
+    expected<random_param, parse_error> param_from_dist(param const& dist) {
         random_param result{};
 
         parse_error pe{};
@@ -322,7 +323,8 @@ struct random_doe {
                                                                    // double, int, bool, or std::string
                 }
             },
-            state, dist.ptr);
+            state,
+            dist.ptr);
         if (!found) {
             pe.ec = error_code::get_nonexistent_json_ptr;
             return unexpected(pe);
@@ -346,7 +348,8 @@ struct random_doe {
                     }
                 },
                 result.param_ptr);
-            result.gen = [this, dist = std::uniform_int_distribution<std::size_t>(0, dist.range.size() - 1),
+            result.gen = [this,
+                          dist = std::uniform_int_distribution<std::size_t>(0, dist.range.size() - 1),
                           elements = std::move(elements)]() mutable {
                 std::size_t element_index = dist(this->engine);
                 return elements[element_index];

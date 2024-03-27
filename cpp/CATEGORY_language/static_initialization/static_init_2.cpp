@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <typeinfo>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -22,7 +22,7 @@ struct Storage {
     }
     static void display() {
         cout << "contendu de storage<" << typeid(T).name() << ">   : " << endl;
-        for (const auto& x : _data) {
+        for (auto const& x : _data) {
             cout << "\t - " << x << endl;
         }
     }

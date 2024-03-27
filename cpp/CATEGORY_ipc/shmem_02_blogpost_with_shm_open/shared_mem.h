@@ -1,9 +1,9 @@
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 #include <iostream>
 #include <stdexcept>
-
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 template <class T>
 class SharedMem {
@@ -16,10 +16,10 @@ class SharedMem {
     // NDM : parmi les différentes SharedMem dupliquées entre tous les process, l'une d'elle sera considérée
     //       comme "owner", elle sera en charge de shm_unlink(name) la mémoire partagée.
     //       On la reconnaît car c'est la seule pour laquelle 'name' n'est pas nullptr.
-    const char* name;
+    char const* name;
 
    public:
-    SharedMem(const char* shared_mem_name, bool owner = false) {
+    SharedMem(char const* shared_mem_name, bool owner = false) {
         // NDM : comme on passe O_CREAT, peu importe que la shared-memory existe déjà ou pas.
         //       conséquence un peu contre-intuitive = ce n'est pas nécessairement l'owner qui va créer la shared-mem !
         file_descriptor = shm_open(shared_mem_name, O_RDWR | O_CREAT, 0600);

@@ -6,9 +6,11 @@
 #define AD_CPPGTFS_GTFS_TRIP_H_
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <set>
 #include <string>
+
 #include "Frequency.h"
 #include "Route.h"
 #include "Service.h"
@@ -38,42 +40,48 @@ class TripB {
     typedef flat::Trip::DIRECTION DIRECTION;
 
     TripB() {}
-    TripB(const std::string& id,
+    TripB(std::string const& id,
           typename RouteT::Ref r,
           typename ServiceT::Ref s,
-          const std::string& hs,
-          const std::string& short_name,
+          std::string const& hs,
+          std::string const& short_name,
           DIRECTION dir,
-          const std::string& blockid,
+          std::string const& blockid,
           typename ShapeT::Ref shp,
           WC_BIKE_ACCESSIBLE wc,
           WC_BIKE_ACCESSIBLE ba);
 
-    const std::string& getId() const;
+    std::string const& getId() const;
     const typename RouteT::Ref getRoute() const;
     typename RouteT::Ref getRoute();
     typename ServiceT::Ref getService();
     const typename ServiceT::Ref getService() const;
-    const std::string& getHeadsign() const;
-    const std::string& getShortname() const;
+    std::string const& getHeadsign() const;
+    std::string const& getShortname() const;
     DIRECTION getDirection() const;
-    const std::string& getBlockId() const;
+    std::string const& getBlockId() const;
     const typename ShapeT::Ref getShape() const;
     typename ShapeT::Ref getShape();
     void setShape(typename ShapeT::Ref shp);
     WC_BIKE_ACCESSIBLE getWheelchairAccessibility() const;
     WC_BIKE_ACCESSIBLE getBikesAllowed() const;
-    const StopTimes& getStopTimes() const;
+    StopTimes const& getStopTimes() const;
     StopTimes& getStopTimes();
     Frequencies& getFrequencies();
-    const Frequencies& getFrequencies() const;
-    bool addStopTime(const StopTimeT& t);
-    void addFrequency(const Frequency& t);
+    Frequencies const& getFrequencies() const;
+    bool addStopTime(StopTimeT const& t);
+    void addFrequency(Frequency const& t);
 
     gtfs::flat::Trip getFlat() const {
-        return gtfs::flat::Trip{_id,       RouteT::getId(_route), ServiceT::getId(_service),
-                                _headsign, _short_name,           _dir,
-                                _block_id, ShapeT::getId(_shape), _wc,
+        return gtfs::flat::Trip{_id,
+                                RouteT::getId(_route),
+                                ServiceT::getId(_service),
+                                _headsign,
+                                _short_name,
+                                _dir,
+                                _block_id,
+                                ShapeT::getId(_shape),
+                                _wc,
                                 _ba};
     };
 

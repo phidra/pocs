@@ -22,9 +22,9 @@ using func_return_t = std::conditional_t<std::is_lvalue_reference_v<R>, std::ref
 
 struct api {
     api() noexcept = default;
-    api(const api&) noexcept = default;
+    api(api const&) noexcept = default;
     api(api&&) noexcept = default;
-    api& operator=(const api&) noexcept = default;
+    api& operator=(api const&) noexcept = default;
     api& operator=(api&&) noexcept = default;
     virtual ~api() noexcept {}
 
@@ -95,21 +95,21 @@ expected<func_return_t<Ret>, error_code> api::call(const sv path, Args&&... args
 
     if constexpr (std::is_pointer_v<Ret>) {
         void* ptr{};
-        const auto success = caller(path, hash, ptr, arguments);
+        auto const success = caller(path, hash, ptr, arguments);
 
         if (success) {
             return static_cast<Ret>(ptr);
         }
     } else if constexpr (std::is_void_v<Ret>) {
         void* ptr = nullptr;
-        const auto success = caller(path, hash, ptr, arguments);
+        auto const success = caller(path, hash, ptr, arguments);
 
         if (success) {
             return expected<void, error_code>{};
         }
     } else if constexpr (std::is_lvalue_reference_v<Ret>) {
         void* ptr{};
-        const auto success = caller(path, hash, ptr, arguments);
+        auto const success = caller(path, hash, ptr, arguments);
 
         if (success) {
             return std::ref(*static_cast<std::decay_t<Ret>*>(ptr));
@@ -117,7 +117,7 @@ expected<func_return_t<Ret>, error_code> api::call(const sv path, Args&&... args
     } else {
         Ret value{};
         void* ptr = &value;
-        const auto success = caller(path, hash, ptr, arguments);
+        auto const success = caller(path, hash, ptr, arguments);
 
         if (success) {
             return value;

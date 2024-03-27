@@ -6,6 +6,7 @@
 #define AD_UTIL_CSVWRITER_H_
 
 #include <stdint.h>
+
 #include <exception>
 #include <iostream>
 #include <sstream>
@@ -28,10 +29,10 @@ typedef std::vector<std::string> HeaderList;
 class CsvWriter {
    public:
     // Initializes the parser by opening the file
-    CsvWriter(std::ostream* str, const HeaderList& headers);
+    CsvWriter(std::ostream* str, HeaderList const& headers);
 
     void writeDouble(double d);
-    void writeString(const std::string& str);
+    void writeString(std::string const& str);
     void writeInt(int i);
     void skip();
 
@@ -46,11 +47,11 @@ class CsvWriter {
 
     char _dblBuf[25];
 
-    void writeRawString(const std::string& str);
-    void writeStrArr(const std::vector<std::string>& arr);
+    void writeRawString(std::string const& str);
+    void writeStrArr(std::vector<std::string> const& arr);
     void writeHeader();
 
-    std::string escStr(const std::string& str) const;
+    std::string escStr(std::string const& str) const;
 };
 }  // namespace util
 }  // namespace ad

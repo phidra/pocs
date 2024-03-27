@@ -1,8 +1,9 @@
-#include <iostream>
+#include <google/protobuf/util/json_util.h>
+
 #include <fstream>
+#include <iostream>
 
 #include "addressbook.pb.h"
-#include <google/protobuf/util/json_util.h>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ void display_person(tutorial::Person const& person) {
     }
     cout << "    nb of phones = " << person.phones_size() << endl;
     for (int j = 0; j != person.phones_size(); ++j) {
-        const tutorial::Person::PhoneNumber& phone_number = person.phones(j);
+        tutorial::Person::PhoneNumber const& phone_number = person.phones(j);
         switch (phone_number.type()) {
             case tutorial::Person::MOBILE:
                 cout << "        (mobile) " << phone_number.number() << endl;
@@ -46,7 +47,7 @@ int main(int argc, char* argv[]) {
     cout << "Nombre de personnes dans le book : " << book.people_size() << endl;
 
     for (int i = 0; i < book.people_size(); i++) {
-        const tutorial::Person& person = book.people(i);
+        tutorial::Person const& person = book.people(i);
         display_person(person);
     }
 

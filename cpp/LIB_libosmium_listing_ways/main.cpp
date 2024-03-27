@@ -1,14 +1,13 @@
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
-#include <chrono>
-
-#include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/sparse_mmap_array.hpp>
+#include <osmium/io/any_input.hpp>
 #include <osmium/util/memory.hpp>
 #include <osmium/visitor.hpp>
-#include <osmium/index/map/sparse_mmap_array.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
 
 struct MyHandler : public osmium::handler::Handler {
     std::uint64_t total_nb_ways = 0;
@@ -16,7 +15,7 @@ struct MyHandler : public osmium::handler::Handler {
     std::uint64_t nb_non_area = 0;
     std::uint64_t nb_area = 0;
 
-    void way(const osmium::Way& w) noexcept {
+    void way(osmium::Way const& w) noexcept {
         ++total_nb_ways;
 
         // displaying first 10 ways :
@@ -85,7 +84,7 @@ int main(int argc, char* argv[]) {
         osmium::MemoryUsage memory;
         std::cout << "\nMemory used: " << memory.peak() << " MBytes\n";
 
-    } catch (const std::exception& e) {
+    } catch (std::exception const& e) {
         std::cerr << e.what() << '\n';
         std::exit(1);
     }

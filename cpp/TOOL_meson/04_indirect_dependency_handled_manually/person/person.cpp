@@ -1,6 +1,6 @@
-#include <string>
-
 #include "person.h"
+
+#include <string>
 
 Person::Person(std::string _name, unsigned int _age) : name{_name}, age{_age} {}
 

@@ -1,15 +1,15 @@
 #include <routingkit/contraction_hierarchy.h>
-#include <routingkit/id_queue.h>
-#include <routingkit/sort.h>
-#include <routingkit/inverse_vector.h>
-#include <routingkit/timer.h>
 #include <routingkit/graph_util.h>
+#include <routingkit/id_queue.h>
+#include <routingkit/inverse_vector.h>
+#include <routingkit/sort.h>
+#include <routingkit/timer.h>
 #include <routingkit/vector_io.h>
 
-#include <vector>
 #include <fstream>
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -20,7 +20,7 @@ void sort_arcs_and_remove_multi_and_loop_arcs(unsigned node_count,
                                               std::vector<unsigned>& head,
                                               std::vector<unsigned>& weight,
                                               std::vector<unsigned>& input_arc_id,
-                                              const std::function<void(std::string)>& log_message) {
+                                              std::function<void(std::string)> const& log_message) {
     long long timer = 0;  // initialize to avoid warning, not needed
     if (log_message) {
         timer = -get_micro_time();
@@ -87,10 +87,10 @@ class Graph {
     Graph() {}
 
     Graph(unsigned node_count,
-          const std::vector<unsigned>& tail,
-          const std::vector<unsigned>& head,
-          const std::vector<unsigned>& weight)
-        : out_(node_count), in_(node_count), level_(node_count, 0) {
+          std::vector<unsigned> const& tail,
+          std::vector<unsigned> const& head,
+          std::vector<unsigned> const& weight) :
+        out_(node_count), in_(node_count), level_(node_count, 0) {
         for (unsigned a = 0; a < head.size(); ++a) {
             unsigned x = tail[a];
             unsigned y = head[a];
@@ -109,8 +109,8 @@ class Graph {
         assert(x < node_count());
         assert(y < node_count());
 
-        auto reduce_arc_if_exists = [weight, hop_length, mid_node](unsigned x, std::vector<Arc>& x_out, unsigned y,
-                                                                   std::vector<Arc>& y_in) {
+        auto reduce_arc_if_exists = [weight, hop_length, mid_node](
+                                        unsigned x, std::vector<Arc>& x_out, unsigned y, std::vector<Arc>& y_in) {
             // Does arc exist?
             for (unsigned out_arc = 0; out_arc < x_out.size(); ++out_arc) {
                 if (x_out[out_arc].node == y) {
@@ -152,7 +152,7 @@ class Graph {
     void remove_all_incident_arcs(unsigned x) {
         assert(x < node_count());
 
-        auto remove_back_arcs = [&](unsigned x, const std::vector<Arc>& x_out, std::vector<std::vector<Arc>>& in) {
+        auto remove_back_arcs = [&](unsigned x, std::vector<Arc> const& x_out, std::vector<std::vector<Arc>>& in) {
             for (unsigned out_arc = 0; out_arc < x_out.size(); ++out_arc) {
                 unsigned y = x_out[out_arc].node;
                 for (auto in_arc = in[y].begin();; ++in_arc) {
@@ -228,15 +228,15 @@ class Graph {
 class ShorterPathTest {
    public:
     ShorterPathTest() {}
-    ShorterPathTest(const Graph& graph, unsigned max_pop_count)
-        : max_pop_count(max_pop_count),
-          graph(&graph),
-          forward_tentative_distance(graph.node_count()),
-          backward_tentative_distance(graph.node_count()),
-          forward_queue(graph.node_count()),
-          backward_queue(graph.node_count()),
-          was_forward_pushed(graph.node_count()),
-          was_backward_pushed(graph.node_count()) {}
+    ShorterPathTest(Graph const& graph, unsigned max_pop_count) :
+        max_pop_count(max_pop_count),
+        graph(&graph),
+        forward_tentative_distance(graph.node_count()),
+        backward_tentative_distance(graph.node_count()),
+        forward_queue(graph.node_count()),
+        backward_queue(graph.node_count()),
+        was_forward_pushed(graph.node_count()),
+        was_backward_pushed(graph.node_count()) {}
 
    private:
     // Uncomment the following lines to get some very expensive but very detailed asserts
@@ -302,11 +302,11 @@ class ShorterPathTest {
     template <class GetOutDeg, class GetOutArc>
     bool forward_settle(MinIDQueue& forward_queue,
                         TimestampFlags& was_forward_pushed,
-                        const TimestampFlags& was_backward_pushed,
+                        TimestampFlags const& was_backward_pushed,
                         std::vector<unsigned>& forward_tentative_distance,
-                        const std::vector<unsigned>& backward_tentative_distance,
-                        const GetOutDeg& graph_out_deg,
-                        const GetOutArc& graph_out,
+                        std::vector<unsigned> const& backward_tentative_distance,
+                        GetOutDeg const& graph_out_deg,
+                        GetOutArc const& graph_out,
                         unsigned bypass,
                         unsigned len) {
         auto p = forward_queue.pop();
@@ -398,9 +398,15 @@ class ShorterPathTest {
 
             if (forward_queue.peek().key <= backward_queue.peek().key) {
                 if (forward_settle(
-                        forward_queue, was_forward_pushed, was_backward_pushed, forward_tentative_distance,
-                        backward_tentative_distance, [&](unsigned x) { return graph->out_deg(x); },
-                        [&](unsigned x, unsigned a) { return graph->out(x, a); }, bypass_node, len)) {
+                        forward_queue,
+                        was_forward_pushed,
+                        was_backward_pushed,
+                        forward_tentative_distance,
+                        backward_tentative_distance,
+                        [&](unsigned x) { return graph->out_deg(x); },
+                        [&](unsigned x, unsigned a) { return graph->out(x, a); },
+                        bypass_node,
+                        len)) {
                     assert_witness_found(len);
                     return true;
                 } else {
@@ -408,9 +414,15 @@ class ShorterPathTest {
                 }
             } else {
                 if (forward_settle(
-                        backward_queue, was_backward_pushed, was_forward_pushed, backward_tentative_distance,
-                        forward_tentative_distance, [&](unsigned x) { return graph->in_deg(x); },
-                        [&](unsigned x, unsigned a) { return graph->in(x, a); }, bypass_node, len)) {
+                        backward_queue,
+                        was_backward_pushed,
+                        was_forward_pushed,
+                        backward_tentative_distance,
+                        forward_tentative_distance,
+                        [&](unsigned x) { return graph->in_deg(x); },
+                        [&](unsigned x, unsigned a) { return graph->in(x, a); },
+                        bypass_node,
+                        len)) {
                     assert_witness_found(len);
                     return true;
                 } else {
@@ -457,9 +469,15 @@ class ShorterPathTest {
 
             if (forward_queue.peek().key <= backward_queue.peek().key) {
                 if (forward_settle(
-                        forward_queue, was_forward_pushed, was_backward_pushed, forward_tentative_distance,
-                        backward_tentative_distance, [&](unsigned x) { return graph->out_deg(x); },
-                        [&](unsigned x, unsigned a) { return graph->out(x, a); }, bypass, len)) {
+                        forward_queue,
+                        was_forward_pushed,
+                        was_backward_pushed,
+                        forward_tentative_distance,
+                        backward_tentative_distance,
+                        [&](unsigned x) { return graph->out_deg(x); },
+                        [&](unsigned x, unsigned a) { return graph->out(x, a); },
+                        bypass,
+                        len)) {
                     assert_witness_found(len);
                     return true;
                 } else {
@@ -467,9 +485,15 @@ class ShorterPathTest {
                 }
             } else {
                 if (forward_settle(
-                        backward_queue, was_backward_pushed, was_forward_pushed, backward_tentative_distance,
-                        forward_tentative_distance, [&](unsigned x) { return graph->in_deg(x); },
-                        [&](unsigned x, unsigned a) { return graph->in(x, a); }, bypass, len)) {
+                        backward_queue,
+                        was_backward_pushed,
+                        was_forward_pushed,
+                        backward_tentative_distance,
+                        forward_tentative_distance,
+                        [&](unsigned x) { return graph->in_deg(x); },
+                        [&](unsigned x, unsigned a) { return graph->in(x, a); },
+                        bypass,
+                        len)) {
                     assert_witness_found(len);
                     return true;
                 } else {
@@ -489,7 +513,7 @@ class ShorterPathTest {
 
    private:
     unsigned max_pop_count;
-    const Graph* graph;
+    Graph const* graph;
     std::vector<unsigned> forward_tentative_distance;
     std::vector<unsigned> backward_tentative_distance;
     MinIDQueue forward_queue;
@@ -498,7 +522,7 @@ class ShorterPathTest {
     TimestampFlags was_backward_pushed;
 };
 
-unsigned estimate_node_importance(const Graph& graph, ShorterPathTest& shorter_path_test, unsigned node) {
+unsigned estimate_node_importance(Graph const& graph, ShorterPathTest& shorter_path_test, unsigned node) {
     unsigned level = graph.level(node);
 
     unsigned added_arc_count = 0;
@@ -542,9 +566,12 @@ void contract_node(Graph& graph, ShorterPathTest& shorter_path_test, unsigned no
             unsigned out_node = graph.out(node_being_contracted, out_arc).node;
             if (in_node != out_node) {
                 if (!shorter_path_test.does_shorter_or_equal_path_to_target_exist(
-                        out_node, graph.in(node_being_contracted, in_arc).weight +
-                                      graph.out(node_being_contracted, out_arc).weight)) {
-                    graph.add_arc_or_reduce_arc_weight(in_node, node_being_contracted, out_node,
+                        out_node,
+                        graph.in(node_being_contracted, in_arc).weight +
+                            graph.out(node_being_contracted, out_arc).weight)) {
+                    graph.add_arc_or_reduce_arc_weight(in_node,
+                                                       node_being_contracted,
+                                                       out_node,
                                                        graph.in(node_being_contracted, in_arc).weight +
                                                            graph.out(node_being_contracted, out_arc).weight,
                                                        graph.in(node_being_contracted, in_arc).hop_length +
@@ -577,7 +604,7 @@ void build_ch_and_order(Graph& graph,
                         ContractionHierarchy& ch,
                         ContractionHierarchyExtraInfo& ch_extra,
                         unsigned max_pop_count,
-                        const std::function<void(std::string)>& log_message) {
+                        std::function<void(std::string)> const& log_message) {
     long long timer = 0;                  // initialize to avoid warning, not needed
     long long last_log_message_time = 0;  // initialize to avoid warning, not needed
     if (log_message) {
@@ -586,7 +613,7 @@ void build_ch_and_order(Graph& graph,
         log_message("Start building queue.");
     }
 
-    const unsigned node_count = graph.node_count();
+    unsigned const node_count = graph.node_count();
 
     ShorterPathTest shorter_path_test(graph, max_pop_count);
 
@@ -655,7 +682,7 @@ void build_ch_and_order(Graph& graph,
         for (unsigned out_arc = 0; out_arc < graph.out_deg(node_being_contracted); ++out_arc) {
             ch_extra.forward.tail.push_back(node_being_contracted);
 
-            const auto& a = graph.out(node_being_contracted, out_arc);
+            auto const& a = graph.out(node_being_contracted, out_arc);
             if (ch.forward.head.size() == invalid_id)
                 throw std::runtime_error("CH may contain at most 2^32-1 shortcuts per direction");
             std::cout << "\t- adding FORWARD arc between " << nameof[node_being_contracted] << " and " << nameof[a.node]
@@ -668,7 +695,7 @@ void build_ch_and_order(Graph& graph,
         for (unsigned in_arc = 0; in_arc < graph.in_deg(node_being_contracted); ++in_arc) {
             ch_extra.backward.tail.push_back(node_being_contracted);
 
-            const auto& a = graph.in(node_being_contracted, in_arc);
+            auto const& a = graph.in(node_being_contracted, in_arc);
             if (ch.backward.head.size() == invalid_id)
                 throw std::runtime_error("CH may contain at most 2^32-1 shortcuts per direction");
             std::cout << "\t- adding BACKWARD arc between " << nameof[a.node] << " and "
@@ -732,9 +759,9 @@ void build_ch_and_order(Graph& graph,
 void build_ch_given_rank(Graph& graph,
                          ContractionHierarchy& ch,
                          ContractionHierarchyExtraInfo& ch_extra,
-                         const std::vector<unsigned>& rank,
+                         std::vector<unsigned> const& rank,
                          unsigned max_pop_count,
-                         const std::function<void(std::string)>& log_message) {
+                         std::function<void(std::string)> const& log_message) {
     unsigned node_count = graph.node_count();
 
     long long timer = 0;                  // initialize to avoid warning, not needed
@@ -756,7 +783,7 @@ void build_ch_given_rank(Graph& graph,
         for (unsigned out_arc = 0; out_arc < graph.out_deg(node_being_contracted); ++out_arc) {
             ch_extra.forward.tail.push_back(node_being_contracted);
 
-            const auto& a = graph.out(node_being_contracted, out_arc);
+            auto const& a = graph.out(node_being_contracted, out_arc);
             if (ch.forward.head.size() == invalid_id)
                 throw std::runtime_error("CH may contain at most 2^32-1 shortcuts per direction");
             ch.forward.head.push_back(a.node);
@@ -767,7 +794,7 @@ void build_ch_given_rank(Graph& graph,
         for (unsigned in_arc = 0; in_arc < graph.in_deg(node_being_contracted); ++in_arc) {
             ch_extra.backward.tail.push_back(node_being_contracted);
 
-            const auto& a = graph.in(node_being_contracted, in_arc);
+            auto const& a = graph.in(node_being_contracted, in_arc);
             if (ch.backward.head.size() == invalid_id)
                 throw std::runtime_error("CH may contain at most 2^32-1 shortcuts per direction");
             ch.backward.head.push_back(a.node);
@@ -810,7 +837,7 @@ void build_ch_given_rank(Graph& graph,
 
 void make_internal_nodes_and_rank_coincide(ContractionHierarchy& ch,
                                            ContractionHierarchyExtraInfo& ch_extra,
-                                           const std::function<void(std::string)>& log_message) {
+                                           std::function<void(std::string)> const& log_message) {
     long long timer = 0;  // initialize to avoid warning, not needed
     if (log_message) {
         timer = -get_micro_time();
@@ -839,7 +866,7 @@ void make_internal_nodes_and_rank_coincide(ContractionHierarchy& ch,
 
 void sort_ch_arcs_and_build_first_out_arrays(ContractionHierarchy& ch,
                                              ContractionHierarchyExtraInfo& ch_extra,
-                                             const std::function<void(std::string)>& log_message) {
+                                             std::function<void(std::string)> const& log_message) {
     long long timer = 0;  // initialize to avoid warning, not needed
     if (log_message) {
         timer = -get_micro_time();
@@ -876,8 +903,8 @@ void sort_ch_arcs_and_build_first_out_arrays(ContractionHierarchy& ch,
 }
 
 void optimize_order_for_cache(ContractionHierarchy& ch,
-                              const ContractionHierarchyExtraInfo& ch_extra,
-                              const std::function<void(std::string)>& log_message) {
+                              ContractionHierarchyExtraInfo const& ch_extra,
+                              std::function<void(std::string)> const& log_message) {
     long long timer = 0;  // initialize to avoid warning, not needed
     if (log_message) {
         timer = -get_micro_time();
@@ -959,12 +986,12 @@ void optimize_order_for_cache(ContractionHierarchy& ch,
 }
 
 void build_unpacking_information(unsigned node_count,
-                                 const std::vector<unsigned>& tail,
-                                 const std::vector<unsigned>& head,
-                                 const std::vector<unsigned>& input_arc_id,
+                                 std::vector<unsigned> const& tail,
+                                 std::vector<unsigned> const& head,
+                                 std::vector<unsigned> const& input_arc_id,
                                  ContractionHierarchy& ch,
-                                 const ContractionHierarchyExtraInfo& ch_extra,
-                                 const std::function<void(std::string)>& log_message) {
+                                 ContractionHierarchyExtraInfo const& ch_extra,
+                                 std::function<void(std::string)> const& log_message) {
     assert(is_sorted_using_less(tail));
 
     long long timer = 0;  // initialize to avoid warning, not needed
@@ -1055,9 +1082,9 @@ void build_unpacking_information(unsigned node_count,
 }
 
 void log_input_graph_statistics(unsigned node_count,
-                                const std::vector<unsigned>& tail,
-                                const std::vector<unsigned>& head,
-                                const std::function<void(std::string)>& log_message) {
+                                std::vector<unsigned> const& tail,
+                                std::vector<unsigned> const& head,
+                                std::function<void(std::string)> const& log_message) {
     if (log_message) {
         log_message("Input graph has " + std::to_string(node_count) + " nodes and " + std::to_string(tail.size()) +
                     " arcs.");
@@ -1074,8 +1101,8 @@ void log_input_graph_statistics(unsigned node_count,
     }
 }
 
-void log_contraction_hierarchy_statistics(const ContractionHierarchy& ch,
-                                          const std::function<void(std::string)>& log_message) {
+void log_contraction_hierarchy_statistics(ContractionHierarchy const& ch,
+                                          std::function<void(std::string)> const& log_message) {
     if (log_message) {
         log_message("CH has " + std::to_string(ch.forward.head.size()) + " forward arcs.");
         log_message("CH has " + std::to_string(ch.backward.head.size()) + " backward arcs.");
@@ -1087,7 +1114,7 @@ ContractionHierarchy ContractionHierarchy::build(unsigned node_count,
                                                  std::vector<unsigned> tail,
                                                  std::vector<unsigned> head,
                                                  std::vector<unsigned> weight,
-                                                 const std::function<void(std::string)>& log_message,
+                                                 std::function<void(std::string)> const& log_message,
                                                  unsigned max_pop_count) {
     assert(tail.size() == head.size());
     assert(tail.size() == weight.size());
@@ -1130,7 +1157,7 @@ ContractionHierarchy ContractionHierarchy::build_given_rank(std::vector<unsigned
                                                             std::vector<unsigned> tail,
                                                             std::vector<unsigned> head,
                                                             std::vector<unsigned> weight,
-                                                            const std::function<void(std::string)>& log_message,
+                                                            std::function<void(std::string)> const& log_message,
                                                             unsigned max_pop_count) {
     unsigned node_count = rank.size();
 
@@ -1169,12 +1196,12 @@ ContractionHierarchy ContractionHierarchy::build_given_order(std::vector<unsigne
                                                              std::vector<unsigned> tail,
                                                              std::vector<unsigned> head,
                                                              std::vector<unsigned> weight,
-                                                             const std::function<void(std::string)>& log_message,
+                                                             std::function<void(std::string)> const& log_message,
                                                              unsigned max_pop_count) {
     return build_given_rank(invert_permutation(order), tail, head, weight, log_message, max_pop_count);
 }
 
-void check_contraction_hierarchy_for_errors(const ContractionHierarchy& ch) {
+void check_contraction_hierarchy_for_errors(ContractionHierarchy const& ch) {
     unsigned node_count = ch.rank.size();
 
     if (ch.rank != invert_permutation(ch.order))
@@ -1298,7 +1325,7 @@ void check_contraction_hierarchy_for_errors(const ContractionHierarchy& ch) {
 }
 
 namespace {
-const unsigned long long ch_magic_number = 0x436f6e7448696572ull;
+unsigned long long const ch_magic_number = 0x436f6e7448696572ull;
 
 struct CHFileHeader {
     unsigned long long magic_number;
@@ -1325,19 +1352,19 @@ ContractionHierarchy ContractionHierarchy::read(std::istream& in, unsigned long 
 }
 
 void ContractionHierarchy::write(std::ostream& out) const {
-    write([&](const char* p, unsigned long long l) {
+    write([&](char const* p, unsigned long long l) {
         if (!out.write(p, l))
             throw std::runtime_error("std::ostream::write failed while reading a contraction hierarchy");
     });
 }
 
-ContractionHierarchy ContractionHierarchy::load_file(const std::string& file_name) {
+ContractionHierarchy ContractionHierarchy::load_file(std::string const& file_name) {
     ContractionHierarchy ch;
     open_file_for_loading(file_name, [&](std::istream& in, unsigned long long file_size) { ch = read(in, file_size); });
     return ch;
 }
 
-void ContractionHierarchy::save_file(const std::string& file_name) const {
+void ContractionHierarchy::save_file(std::string const& file_name) const {
     open_file_for_saving(file_name, [&](std::ostream& out) { write(out); });
 }
 
@@ -1395,7 +1422,7 @@ ContractionHierarchy ContractionHierarchy::read(std::function<void(char*, unsign
     return finish_read(in, header);
 }
 
-void ContractionHierarchy::write(std::function<void(const char*, unsigned long long)> out) const {
+void ContractionHierarchy::write(std::function<void(char const*, unsigned long long)> out) const {
     CHFileHeader header;
     header.magic_number = ch_magic_number;
     header.node_count = forward.first_out.size() - 1;
@@ -1420,20 +1447,20 @@ void ContractionHierarchy::write(std::function<void(const char*, unsigned long l
     write_vector(out, backward.shortcut_second_arc);
 }
 
-ContractionHierarchyQuery::ContractionHierarchyQuery(const ContractionHierarchy& ch)
-    : ch(&ch),
-      was_forward_pushed(ch.node_count()),
-      was_backward_pushed(ch.node_count()),
-      forward_queue(ch.node_count()),
-      backward_queue(ch.node_count()),
-      forward_tentative_distance(ch.node_count()),
-      backward_tentative_distance(ch.node_count()),
-      forward_predecessor_node(ch.node_count()),
-      backward_predecessor_node(ch.node_count()),
-      forward_predecessor_arc(ch.node_count()),
-      backward_predecessor_arc(ch.node_count()),
-      shortest_path_meeting_node(invalid_id),
-      state(ContractionHierarchyQuery::InternalState::initialized)
+ContractionHierarchyQuery::ContractionHierarchyQuery(ContractionHierarchy const& ch) :
+    ch(&ch),
+    was_forward_pushed(ch.node_count()),
+    was_backward_pushed(ch.node_count()),
+    forward_queue(ch.node_count()),
+    backward_queue(ch.node_count()),
+    forward_tentative_distance(ch.node_count()),
+    backward_tentative_distance(ch.node_count()),
+    forward_predecessor_node(ch.node_count()),
+    backward_predecessor_node(ch.node_count()),
+    forward_predecessor_arc(ch.node_count()),
+    backward_predecessor_arc(ch.node_count()),
+    shortest_path_meeting_node(invalid_id),
+    state(ContractionHierarchyQuery::InternalState::initialized)
 
 {}
 
@@ -1451,7 +1478,7 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::reset() {
     return *this;
 }
 
-ContractionHierarchyQuery& ContractionHierarchyQuery::reset(const ContractionHierarchy& new_ch) {
+ContractionHierarchyQuery& ContractionHierarchyQuery::reset(ContractionHierarchy const& new_ch) {
     if (forward_tentative_distance.size() == new_ch.node_count()) {
         reset();
         ch = &new_ch;
@@ -1511,13 +1538,13 @@ namespace {
 template <class SetPred>
 void forward_expand_upward_ch_arcs_of_node(unsigned node,
                                            unsigned distance_to_node,
-                                           const std::vector<unsigned>& forward_first_out,
-                                           const std::vector<unsigned>& forward_head,
-                                           const std::vector<unsigned>& forward_weight,
+                                           std::vector<unsigned> const& forward_first_out,
+                                           std::vector<unsigned> const& forward_head,
+                                           std::vector<unsigned> const& forward_weight,
                                            TimestampFlags& was_forward_pushed,
                                            MinIDQueue& forward_queue,
                                            std::vector<unsigned>& forward_tentative_distance,
-                                           const SetPred& set_predecessor) {
+                                           SetPred const& set_predecessor) {
     for (unsigned arc = forward_first_out[node]; arc < forward_first_out[node + 1]; ++arc) {
         unsigned h = forward_head[arc], d = distance_to_node + forward_weight[arc];
         if (was_forward_pushed.is_set(h)) {
@@ -1536,12 +1563,12 @@ void forward_expand_upward_ch_arcs_of_node(unsigned node,
 }
 
 bool forward_can_stall_at_node(unsigned node,
-                               const std::vector<unsigned>& backward_first_out,
-                               const std::vector<unsigned>& backward_head,
-                               const std::vector<unsigned>& backward_weight,
-                               const TimestampFlags& was_forward_pushed,
+                               std::vector<unsigned> const& backward_first_out,
+                               std::vector<unsigned> const& backward_head,
+                               std::vector<unsigned> const& backward_weight,
+                               TimestampFlags const& was_forward_pushed,
                                std::vector<unsigned>& forward_tentative_distance,
-                               const std::vector<unsigned>& backward_tentative_distance) {
+                               std::vector<unsigned> const& backward_tentative_distance) {
     for (unsigned arc = backward_first_out[node]; arc < backward_first_out[node + 1]; ++arc) {
         unsigned x = backward_head[arc];
         if (was_forward_pushed.is_set(x)) {
@@ -1554,17 +1581,17 @@ bool forward_can_stall_at_node(unsigned node,
 
 void forward_settle_node(unsigned& shortest_path_length,
                          unsigned& shortest_path_meeting_node,
-                         const std::vector<unsigned>& forward_first_out,
-                         const std::vector<unsigned>& forward_head,
-                         const std::vector<unsigned>& forward_weight,
-                         const std::vector<unsigned>& backward_first_out,
-                         const std::vector<unsigned>& backward_head,
-                         const std::vector<unsigned>& backward_weight,
+                         std::vector<unsigned> const& forward_first_out,
+                         std::vector<unsigned> const& forward_head,
+                         std::vector<unsigned> const& forward_weight,
+                         std::vector<unsigned> const& backward_first_out,
+                         std::vector<unsigned> const& backward_head,
+                         std::vector<unsigned> const& backward_weight,
                          TimestampFlags& was_forward_pushed,
-                         const TimestampFlags& was_backward_pushed,
+                         TimestampFlags const& was_backward_pushed,
                          MinIDQueue& forward_queue,
                          std::vector<unsigned>& forward_tentative_distance,
-                         const std::vector<unsigned>& backward_tentative_distance,
+                         std::vector<unsigned> const& backward_tentative_distance,
                          std::vector<unsigned>& forward_predecessor_node,
                          std::vector<unsigned>& forward_predecessor_arc) {
     auto p = forward_queue.pop();
@@ -1580,19 +1607,30 @@ void forward_settle_node(unsigned& shortest_path_length,
         }
     }
 
-    if (!forward_can_stall_at_node(popped_node, backward_first_out, backward_head, backward_weight, was_forward_pushed,
-                                   forward_tentative_distance, backward_tentative_distance))
-        forward_expand_upward_ch_arcs_of_node(
-            popped_node, distance_to_popped_node, forward_first_out, forward_head, forward_weight, was_forward_pushed,
-            forward_queue, forward_tentative_distance, [&](unsigned x, unsigned pred_node, unsigned pred_arc) {
-                forward_predecessor_node[x] = pred_node;
-                forward_predecessor_arc[x] = pred_arc;
-            });
+    if (!forward_can_stall_at_node(popped_node,
+                                   backward_first_out,
+                                   backward_head,
+                                   backward_weight,
+                                   was_forward_pushed,
+                                   forward_tentative_distance,
+                                   backward_tentative_distance))
+        forward_expand_upward_ch_arcs_of_node(popped_node,
+                                              distance_to_popped_node,
+                                              forward_first_out,
+                                              forward_head,
+                                              forward_weight,
+                                              was_forward_pushed,
+                                              forward_queue,
+                                              forward_tentative_distance,
+                                              [&](unsigned x, unsigned pred_node, unsigned pred_arc) {
+                                                  forward_predecessor_node[x] = pred_node;
+                                                  forward_predecessor_arc[x] = pred_arc;
+                                              });
 }
 
-void full_forward_search(const std::vector<unsigned>& forward_first_out,
-                         const std::vector<unsigned>& forward_head,
-                         const std::vector<unsigned>& forward_weight,
+void full_forward_search(std::vector<unsigned> const& forward_first_out,
+                         std::vector<unsigned> const& forward_head,
+                         std::vector<unsigned> const& forward_weight,
                          TimestampFlags& was_forward_pushed,
                          MinIDQueue& forward_queue,
                          std::vector<unsigned>& forward_tentative_distance,
@@ -1603,12 +1641,18 @@ void full_forward_search(const std::vector<unsigned>& forward_first_out,
         auto popped_node = p.id;
         auto distance_to_popped_node = p.key;
 
-        forward_expand_upward_ch_arcs_of_node(
-            popped_node, distance_to_popped_node, forward_first_out, forward_head, forward_weight, was_forward_pushed,
-            forward_queue, forward_tentative_distance, [&](unsigned x, unsigned pred_node, unsigned pred_arc) {
-                forward_predecessor_node[x] = pred_node;
-                forward_predecessor_arc[x] = pred_arc;
-            });
+        forward_expand_upward_ch_arcs_of_node(popped_node,
+                                              distance_to_popped_node,
+                                              forward_first_out,
+                                              forward_head,
+                                              forward_weight,
+                                              was_forward_pushed,
+                                              forward_queue,
+                                              forward_tentative_distance,
+                                              [&](unsigned x, unsigned pred_node, unsigned pred_arc) {
+                                                  forward_predecessor_node[x] = pred_node;
+                                                  forward_predecessor_arc[x] = pred_arc;
+                                              });
     }
 }
 
@@ -1648,18 +1692,38 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::run() {
 
         if (forward_next) {
             std::cout << "Settling new node FORWARD" << std::endl;
-            forward_settle_node(shortest_path_length, shortest_path_meeting_node, ch->forward.first_out,
-                                ch->forward.head, ch->forward.weight, ch->backward.first_out, ch->backward.head,
-                                ch->backward.weight, was_forward_pushed, was_backward_pushed, forward_queue,
-                                forward_tentative_distance, backward_tentative_distance, forward_predecessor_node,
+            forward_settle_node(shortest_path_length,
+                                shortest_path_meeting_node,
+                                ch->forward.first_out,
+                                ch->forward.head,
+                                ch->forward.weight,
+                                ch->backward.first_out,
+                                ch->backward.head,
+                                ch->backward.weight,
+                                was_forward_pushed,
+                                was_backward_pushed,
+                                forward_queue,
+                                forward_tentative_distance,
+                                backward_tentative_distance,
+                                forward_predecessor_node,
                                 forward_predecessor_arc);
             forward_next = false;
         } else {
             std::cout << "Settling new node BACKWARD" << std::endl;
-            forward_settle_node(shortest_path_length, shortest_path_meeting_node, ch->backward.first_out,
-                                ch->backward.head, ch->backward.weight, ch->forward.first_out, ch->forward.head,
-                                ch->forward.weight, was_backward_pushed, was_forward_pushed, backward_queue,
-                                backward_tentative_distance, forward_tentative_distance, backward_predecessor_node,
+            forward_settle_node(shortest_path_length,
+                                shortest_path_meeting_node,
+                                ch->backward.first_out,
+                                ch->backward.head,
+                                ch->backward.weight,
+                                ch->forward.first_out,
+                                ch->forward.head,
+                                ch->forward.weight,
+                                was_backward_pushed,
+                                was_forward_pushed,
+                                backward_queue,
+                                backward_tentative_distance,
+                                forward_tentative_distance,
+                                backward_predecessor_node,
                                 backward_predecessor_arc);
             forward_next = true;
         }
@@ -1702,13 +1766,13 @@ namespace {
 // The source node of the path must be obtained by some other mean
 
 template <class OnNewInputArc>
-void unpack_forward_arc(const ContractionHierarchy& ch, unsigned arc, const OnNewInputArc& on_new_input_arc);
+void unpack_forward_arc(ContractionHierarchy const& ch, unsigned arc, OnNewInputArc const& on_new_input_arc);
 
 template <class OnNewInputArc>
-void unpack_backward_arc(const ContractionHierarchy& ch, unsigned arc, const OnNewInputArc& on_new_input_arc);
+void unpack_backward_arc(ContractionHierarchy const& ch, unsigned arc, OnNewInputArc const& on_new_input_arc);
 
 template <class OnNewInputArc>
-void unpack_forward_arc(const ContractionHierarchy& ch, unsigned arc, const OnNewInputArc& on_new_input_arc) {
+void unpack_forward_arc(ContractionHierarchy const& ch, unsigned arc, OnNewInputArc const& on_new_input_arc) {
     if (ch.forward.is_shortcut_an_original_arc.is_set(arc)) {
         on_new_input_arc(ch.forward.shortcut_first_arc[arc], ch.forward.shortcut_second_arc[arc]);
     } else {
@@ -1720,7 +1784,7 @@ void unpack_forward_arc(const ContractionHierarchy& ch, unsigned arc, const OnNe
 }
 
 template <class OnNewInputArc>
-void unpack_backward_arc(const ContractionHierarchy& ch, unsigned arc, const OnNewInputArc& on_new_input_arc) {
+void unpack_backward_arc(ContractionHierarchy const& ch, unsigned arc, OnNewInputArc const& on_new_input_arc) {
     if (ch.backward.is_shortcut_an_original_arc.is_set(arc)) {
         on_new_input_arc(ch.backward.shortcut_first_arc[arc], ch.backward.shortcut_second_arc[arc]);
     } else {
@@ -1766,8 +1830,8 @@ std::vector<unsigned> ContractionHierarchyQuery::get_arc_path() {
             unsigned x = shortest_path_meeting_node;
             while (backward_predecessor_node[x] != invalid_id) {
                 assert(was_backward_pushed.is_set(x));
-                unpack_backward_arc(*ch, backward_predecessor_arc[x],
-                                    [&](unsigned xy, unsigned y) { path.push_back(xy); });
+                unpack_backward_arc(
+                    *ch, backward_predecessor_arc[x], [&](unsigned xy, unsigned y) { path.push_back(xy); });
                 // unpack_backward_arc(*ch, find_arc_given_sorted_head(ch->backward.first_out, ch->backward.head,
                 // backward_predecessor_node[x], x), [&](unsigned xy, unsigned y){path.push_back(xy);});
                 x = backward_predecessor_node[x];
@@ -1800,8 +1864,8 @@ std::vector<unsigned> ContractionHierarchyQuery::get_node_path() {
             unsigned x = shortest_path_meeting_node;
             while (backward_predecessor_node[x] != invalid_id) {
                 assert(was_backward_pushed.is_set(x));
-                unpack_backward_arc(*ch, backward_predecessor_arc[x],
-                                    [&](unsigned xy, unsigned y) { path.push_back(y); });
+                unpack_backward_arc(
+                    *ch, backward_predecessor_arc[x], [&](unsigned xy, unsigned y) { path.push_back(y); });
                 x = backward_predecessor_node[x];
             }
         }
@@ -1845,16 +1909,16 @@ namespace {
 // The IDs are with repect to the CH and not with respect to the input.
 // select_list is ordered decreasing by rank.
 
-void pin(const std::vector<unsigned>& external_target_list,
-         const std::vector<unsigned>& external_node_to_internal_node,
+void pin(std::vector<unsigned> const& external_target_list,
+         std::vector<unsigned> const& external_node_to_internal_node,
          std::vector<unsigned>& target_list,
          unsigned& target_count,
          std::vector<unsigned>& select_list,
          unsigned& select_count,
          MinIDQueue& q,
-         const std::vector<unsigned>& backward_first_out,
-         const std::vector<unsigned>& backward_head,
-         const std::vector<unsigned>& backward_weight) {
+         std::vector<unsigned> const& backward_first_out,
+         std::vector<unsigned> const& backward_head,
+         std::vector<unsigned> const& backward_weight) {
     target_count = external_target_list.size();
 
     for (unsigned i = 0; i < target_count; ++i) {
@@ -1902,15 +1966,21 @@ void pinned_run(std::vector<unsigned>& select_list,
                 std::vector<unsigned>& forward_predecessor_node,
                 std::vector<unsigned>& predecessor_arc,
 
-                const std::vector<unsigned>& forward_first_out,
-                const std::vector<unsigned>& forward_head,
-                const std::vector<unsigned>& forward_weight,
+                std::vector<unsigned> const& forward_first_out,
+                std::vector<unsigned> const& forward_head,
+                std::vector<unsigned> const& forward_weight,
 
-                const std::vector<unsigned>& backward_first_out,
-                const std::vector<unsigned>& backward_head,
-                const std::vector<unsigned>& backward_weight) {
-    full_forward_search(forward_first_out, forward_head, forward_weight, has_forward_predecessor, forward_queue,
-                        tentative_distance, forward_predecessor_node, predecessor_arc);
+                std::vector<unsigned> const& backward_first_out,
+                std::vector<unsigned> const& backward_head,
+                std::vector<unsigned> const& backward_weight) {
+    full_forward_search(forward_first_out,
+                        forward_head,
+                        forward_weight,
+                        has_forward_predecessor,
+                        forward_queue,
+                        tentative_distance,
+                        forward_predecessor_node,
+                        predecessor_arc);
 
     for (unsigned i = 0; i < select_count; ++i) {
         unsigned x = select_list[i], dist = inf_weight, pred = invalid_id;
@@ -1938,57 +2008,68 @@ void pinned_run(std::vector<unsigned>& select_list,
     }
 }
 
-void extract_distances_to_targets(const std::vector<unsigned>& target_list,
+void extract_distances_to_targets(std::vector<unsigned> const& target_list,
                                   unsigned target_count,
-                                  const std::vector<unsigned>& forward_tentative_distance,
+                                  std::vector<unsigned> const& forward_tentative_distance,
                                   unsigned* dist) {
     for (unsigned i = 0; i < target_count; ++i)
         dist[i] = forward_tentative_distance[target_list[i]];
 }
 
-std::vector<unsigned> extract_distances_to_targets(const std::vector<unsigned>& target_list,
+std::vector<unsigned> extract_distances_to_targets(std::vector<unsigned> const& target_list,
                                                    unsigned target_count,
-                                                   const std::vector<unsigned>& forward_tentative_distance) {
+                                                   std::vector<unsigned> const& forward_tentative_distance) {
     std::vector<unsigned> dist(target_count);
     extract_distances_to_targets(target_list, target_count, forward_tentative_distance, &dist[0]);
     return dist;  // NVRO
 }
 }  // namespace
 
-ContractionHierarchyQuery& ContractionHierarchyQuery::pin_targets(const std::vector<unsigned>& external_target_list) {
+ContractionHierarchyQuery& ContractionHierarchyQuery::pin_targets(std::vector<unsigned> const& external_target_list) {
     assert(ch && "query object must have an attached CH");
     assert((external_target_list.empty() || max_element_of(external_target_list) < ch->node_count()) &&
            "node id out of bounds");
     assert(state == ContractionHierarchyQuery::InternalState::initialized);
 
-    pin(external_target_list, ch->rank,
+    pin(external_target_list,
+        ch->rank,
 
         // the following 4 variables happen to be unused and of the
         // required size -> use them to avoid allocating unnecessary
         // memory. Warning: Usage must be consistent over all pinning functions
-        backward_predecessor_node, many_to_many_source_or_target_count, backward_tentative_distance,
+        backward_predecessor_node,
+        many_to_many_source_or_target_count,
+        backward_tentative_distance,
         shortest_path_meeting_node,
 
         backward_queue,
 
-        ch->backward.first_out, ch->backward.head, ch->backward.weight);
+        ch->backward.first_out,
+        ch->backward.head,
+        ch->backward.weight);
 
     state = ContractionHierarchyQuery::InternalState::target_pinned;
     return *this;
 }
 
-ContractionHierarchyQuery& ContractionHierarchyQuery::pin_sources(const std::vector<unsigned>& external_source_list) {
+ContractionHierarchyQuery& ContractionHierarchyQuery::pin_sources(std::vector<unsigned> const& external_source_list) {
     assert(ch && "query object must have an attached CH");
     assert((external_source_list.empty() || max_element_of(external_source_list) < ch->node_count()) &&
            "node id out of bounds");
     assert(state == ContractionHierarchyQuery::InternalState::initialized);
 
-    pin(external_source_list, ch->rank,
+    pin(external_source_list,
+        ch->rank,
 
-        forward_predecessor_node, many_to_many_source_or_target_count, forward_tentative_distance,
+        forward_predecessor_node,
+        many_to_many_source_or_target_count,
+        forward_tentative_distance,
         shortest_path_meeting_node,
 
-        forward_queue, ch->forward.first_out, ch->forward.head, ch->forward.weight);
+        forward_queue,
+        ch->forward.first_out,
+        ch->forward.head,
+        ch->forward.weight);
 
     state = ContractionHierarchyQuery::InternalState::source_pinned;
     return *this;
@@ -1999,15 +2080,23 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::run_to_pinned_targets() {
     assert(!forward_queue.empty() && "must add at least one source before calling run");
     assert(state == ContractionHierarchyQuery::InternalState::target_pinned);
 
-    pinned_run(backward_tentative_distance, shortest_path_meeting_node,
+    pinned_run(backward_tentative_distance,
+               shortest_path_meeting_node,
 
-               was_forward_pushed, forward_queue, forward_tentative_distance,
+               was_forward_pushed,
+               forward_queue,
+               forward_tentative_distance,
 
-               forward_predecessor_node, forward_predecessor_arc,
+               forward_predecessor_node,
+               forward_predecessor_arc,
 
-               ch->forward.first_out, ch->forward.head, ch->forward.weight,
+               ch->forward.first_out,
+               ch->forward.head,
+               ch->forward.weight,
 
-               ch->backward.first_out, ch->backward.head, ch->backward.weight);
+               ch->backward.first_out,
+               ch->backward.head,
+               ch->backward.weight);
 
     state = ContractionHierarchyQuery::InternalState::target_run;
     return *this;
@@ -2018,56 +2107,64 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::run_to_pinned_sources() {
     assert(!backward_queue.empty() && "must add at least one target before calling run");
     assert(state == ContractionHierarchyQuery::InternalState::source_pinned);
 
-    pinned_run(forward_tentative_distance, shortest_path_meeting_node,
+    pinned_run(forward_tentative_distance,
+               shortest_path_meeting_node,
 
-               was_backward_pushed, backward_queue, backward_tentative_distance,
+               was_backward_pushed,
+               backward_queue,
+               backward_tentative_distance,
 
-               backward_predecessor_node, backward_predecessor_arc,
+               backward_predecessor_node,
+               backward_predecessor_arc,
 
-               ch->backward.first_out, ch->backward.head, ch->backward.weight,
+               ch->backward.first_out,
+               ch->backward.head,
+               ch->backward.weight,
 
-               ch->forward.first_out, ch->forward.head, ch->forward.weight);
+               ch->forward.first_out,
+               ch->forward.head,
+               ch->forward.weight);
     state = ContractionHierarchyQuery::InternalState::source_run;
     return *this;
 }
 
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_distances_to_targets(unsigned* dist) {
     assert(state == ContractionHierarchyQuery::InternalState::target_run);
-    extract_distances_to_targets(backward_predecessor_node, many_to_many_source_or_target_count,
-                                 forward_tentative_distance, dist);
+    extract_distances_to_targets(
+        backward_predecessor_node, many_to_many_source_or_target_count, forward_tentative_distance, dist);
     return *this;
 }
 
 std::vector<unsigned> ContractionHierarchyQuery::get_distances_to_targets() {
     assert(state == ContractionHierarchyQuery::InternalState::target_run);
-    return extract_distances_to_targets(backward_predecessor_node, many_to_many_source_or_target_count,
-                                        forward_tentative_distance);
+    return extract_distances_to_targets(
+        backward_predecessor_node, many_to_many_source_or_target_count, forward_tentative_distance);
 }
 
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_distances_to_sources(unsigned* dist) {
     assert(state == ContractionHierarchyQuery::InternalState::source_run);
-    extract_distances_to_targets(forward_predecessor_node, many_to_many_source_or_target_count,
-                                 backward_tentative_distance, dist);
+    extract_distances_to_targets(
+        forward_predecessor_node, many_to_many_source_or_target_count, backward_tentative_distance, dist);
     return *this;
 }
 
 std::vector<unsigned> ContractionHierarchyQuery::get_distances_to_sources() {
     assert(state == ContractionHierarchyQuery::InternalState::source_run);
-    return extract_distances_to_targets(forward_predecessor_node, many_to_many_source_or_target_count,
-                                        backward_tentative_distance);
+    return extract_distances_to_targets(
+        forward_predecessor_node, many_to_many_source_or_target_count, backward_tentative_distance);
 }
 
 namespace {
-void internal_get_used_sources_to_targets(const std::vector<unsigned>& target_list,
+void internal_get_used_sources_to_targets(std::vector<unsigned> const& target_list,
                                           unsigned target_count,
 
-                                          const TimestampFlags& has_forward_predecessor,
-                                          const std::vector<unsigned>& forward_predecessor_node,
-                                          const std::vector<unsigned>& predecessor_arc,
+                                          TimestampFlags const& has_forward_predecessor,
+                                          std::vector<unsigned> const& forward_predecessor_node,
+                                          std::vector<unsigned> const& predecessor_arc,
 
-                                          const std::vector<unsigned>& backward_head,
+                                          std::vector<unsigned> const& backward_head,
 
-                                          const std::vector<unsigned>& ch_order,
+                                          std::vector<unsigned> const& ch_order,
 
                                           unsigned* output) {
     for (unsigned i = 0; i < target_count; ++i) {
@@ -2095,11 +2192,15 @@ void internal_get_used_sources_to_targets(const std::vector<unsigned>& target_li
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_used_sources_to_targets(unsigned* output) {
     assert(state == ContractionHierarchyQuery::InternalState::target_run);
 
-    internal_get_used_sources_to_targets(backward_predecessor_node, many_to_many_source_or_target_count,
+    internal_get_used_sources_to_targets(backward_predecessor_node,
+                                         many_to_many_source_or_target_count,
 
-                                         was_forward_pushed, forward_predecessor_node, forward_predecessor_arc,
+                                         was_forward_pushed,
+                                         forward_predecessor_node,
+                                         forward_predecessor_arc,
 
-                                         ch->backward.head, ch->order,
+                                         ch->backward.head,
+                                         ch->order,
 
                                          output);
 
@@ -2116,11 +2217,15 @@ std::vector<unsigned> ContractionHierarchyQuery::get_used_sources_to_targets() {
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_used_targets_to_sources(unsigned* output) {
     assert(state == ContractionHierarchyQuery::InternalState::source_run);
 
-    internal_get_used_sources_to_targets(forward_predecessor_node, many_to_many_source_or_target_count,
+    internal_get_used_sources_to_targets(forward_predecessor_node,
+                                         many_to_many_source_or_target_count,
 
-                                         was_backward_pushed, backward_predecessor_node, backward_predecessor_arc,
+                                         was_backward_pushed,
+                                         backward_predecessor_node,
+                                         backward_predecessor_arc,
 
-                                         ch->forward.head, ch->order,
+                                         ch->forward.head,
+                                         ch->order,
 
                                          output);
 
@@ -2140,87 +2245,87 @@ template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_targets<std::vector<int>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<int>,
-                                                                 std::vector<int>>(const std::vector<int>&,
-                                                                                   const SaturatedWeightAddition&,
+                                                                 std::vector<int>>(std::vector<int> const&,
+                                                                                   SaturatedWeightAddition const&,
                                                                                    std::vector<int>&,
                                                                                    std::vector<int>&);
 template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_sources<std::vector<int>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<int>,
-                                                                 std::vector<int>>(const std::vector<int>&,
-                                                                                   const SaturatedWeightAddition&,
+                                                                 std::vector<int>>(std::vector<int> const&,
+                                                                                   SaturatedWeightAddition const&,
                                                                                    std::vector<int>&,
                                                                                    std::vector<int>&);
 template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_targets<std::vector<unsigned>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<unsigned>,
-                                                                 std::vector<unsigned>>(const std::vector<unsigned>&,
-                                                                                        const SaturatedWeightAddition&,
+                                                                 std::vector<unsigned>>(std::vector<unsigned> const&,
+                                                                                        SaturatedWeightAddition const&,
                                                                                         std::vector<unsigned>&,
                                                                                         std::vector<unsigned>&);
 template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_sources<std::vector<unsigned>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<unsigned>,
-                                                                 std::vector<unsigned>>(const std::vector<unsigned>&,
-                                                                                        const SaturatedWeightAddition&,
+                                                                 std::vector<unsigned>>(std::vector<unsigned> const&,
+                                                                                        SaturatedWeightAddition const&,
                                                                                         std::vector<unsigned>&,
                                                                                         std::vector<unsigned>&);
 template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_targets<
     ContractionHierarchyExtraWeight<int>,
     SaturatedWeightAddition,
     std::vector<int>,
-    std::vector<int>>(const ContractionHierarchyExtraWeight<int>&,
-                      const SaturatedWeightAddition&,
+    std::vector<int>>(ContractionHierarchyExtraWeight<int> const&,
+                      SaturatedWeightAddition const&,
                       std::vector<int>&,
                       std::vector<int>&);
 template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_sources<
     ContractionHierarchyExtraWeight<int>,
     SaturatedWeightAddition,
     std::vector<int>,
-    std::vector<int>>(const ContractionHierarchyExtraWeight<int>&,
-                      const SaturatedWeightAddition&,
+    std::vector<int>>(ContractionHierarchyExtraWeight<int> const&,
+                      SaturatedWeightAddition const&,
                       std::vector<int>&,
                       std::vector<int>&);
 template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_targets<
     ContractionHierarchyExtraWeight<unsigned>,
     SaturatedWeightAddition,
     std::vector<unsigned>,
-    std::vector<unsigned>>(const ContractionHierarchyExtraWeight<unsigned>&,
-                           const SaturatedWeightAddition&,
+    std::vector<unsigned>>(ContractionHierarchyExtraWeight<unsigned> const&,
+                           SaturatedWeightAddition const&,
                            std::vector<unsigned>&,
                            std::vector<unsigned>&);
 template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_sources<
     ContractionHierarchyExtraWeight<unsigned>,
     SaturatedWeightAddition,
     std::vector<unsigned>,
-    std::vector<unsigned>>(const ContractionHierarchyExtraWeight<unsigned>&,
-                           const SaturatedWeightAddition&,
+    std::vector<unsigned>>(ContractionHierarchyExtraWeight<unsigned> const&,
+                           SaturatedWeightAddition const&,
                            std::vector<unsigned>&,
                            std::vector<unsigned>&);
 template ContractionHierarchyExtraWeight<unsigned>& ContractionHierarchyExtraWeight<
-    unsigned>::reset<std::vector<unsigned>, SaturatedWeightAddition>(const ContractionHierarchy& ch,
-                                                                     const std::vector<unsigned>&,
-                                                                     const SaturatedWeightAddition&);
+    unsigned>::reset<std::vector<unsigned>, SaturatedWeightAddition>(ContractionHierarchy const& ch,
+                                                                     std::vector<unsigned> const&,
+                                                                     SaturatedWeightAddition const&);
 template ContractionHierarchyExtraWeight<int>&
-ContractionHierarchyExtraWeight<int>::reset<std::vector<int>, SaturatedWeightAddition>(const ContractionHierarchy& ch,
-                                                                                       const std::vector<int>&,
-                                                                                       const SaturatedWeightAddition&);
+ContractionHierarchyExtraWeight<int>::reset<std::vector<int>, SaturatedWeightAddition>(ContractionHierarchy const& ch,
+                                                                                       std::vector<int> const&,
+                                                                                       SaturatedWeightAddition const&);
 template unsigned ContractionHierarchyQuery::get_extra_weight_distance<std::vector<unsigned>, SaturatedWeightAddition>(
-    const std::vector<unsigned>&,
-    const SaturatedWeightAddition&);
+    std::vector<unsigned> const&,
+    SaturatedWeightAddition const&);
 template int ContractionHierarchyQuery::get_extra_weight_distance<std::vector<int>, SaturatedWeightAddition>(
-    const std::vector<int>&,
-    const SaturatedWeightAddition&);
+    std::vector<int> const&,
+    SaturatedWeightAddition const&);
 template unsigned ContractionHierarchyQuery::get_extra_weight_distance<ContractionHierarchyExtraWeight<unsigned>,
                                                                        SaturatedWeightAddition>(
-    const ContractionHierarchyExtraWeight<unsigned>&,
-    const SaturatedWeightAddition&);
+    ContractionHierarchyExtraWeight<unsigned> const&,
+    SaturatedWeightAddition const&);
 template int
 ContractionHierarchyQuery::get_extra_weight_distance<ContractionHierarchyExtraWeight<int>, SaturatedWeightAddition>(
-    const ContractionHierarchyExtraWeight<int>&,
-    const SaturatedWeightAddition&);
+    ContractionHierarchyExtraWeight<int> const&,
+    SaturatedWeightAddition const&);
 
 }  // namespace RoutingKit

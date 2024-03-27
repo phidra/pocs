@@ -42,7 +42,7 @@ inline constexpr uint64_t num_digits(auto x) noexcept  // number of digits neede
 
 template <char... args>
 struct metastring {
-    const char data[sizeof...(args)] = {args...};
+    char const data[sizeof...(args)] = {args...};
 };
 
 // recursive number-printing template, general case (for three or more digits)
@@ -104,13 +104,13 @@ struct hash128_i {
 template <size_t I>
 inline constexpr std::string_view hash128_i_v = hash128_i<I>::value;
 
-template <const std::string_view& Str>
+template <std::string_view const& Str>
 struct hash128 {
     static constexpr sv h0 = int_to_sv_v<uint64_t, xxh64::hash(Str.data(), Str.size(), 0)>;
     static constexpr sv h1 = int_to_sv_v<uint64_t, xxh64::hash(Str.data(), Str.size(), 1)>;
     static constexpr sv value = detail::join_v<h0, h1>;
 };
 
-template <const std::string_view& Str>
+template <std::string_view const& Str>
 inline constexpr std::string_view hash128_v = hash128<Str>::value;
 }  // namespace glz

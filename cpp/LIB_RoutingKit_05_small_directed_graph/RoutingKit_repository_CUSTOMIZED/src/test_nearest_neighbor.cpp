@@ -1,22 +1,23 @@
-#include <routingkit/min_max.h>
-#include <routingkit/geo_position_to_node.h>
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
 #include <routingkit/geo_dist.h>
+#include <routingkit/geo_position_to_node.h>
+#include <routingkit/min_max.h>
 #include <routingkit/sort.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
-#include "expect.h"
 #include <iostream>
 #include <random>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;
 
 int main() {
-    const unsigned point_cloud_size = 250000;
-    const unsigned query_count = 1000;
-    const unsigned verify_query_count = 100;
-    const double tolerance = 0.01;  // 1 cm tolerance
+    unsigned const point_cloud_size = 250000;
+    unsigned const query_count = 1000;
+    unsigned const verify_query_count = 100;
+    double const tolerance = 0.01;  // 1 cm tolerance
 
     vector<float> latitude(point_cloud_size);
     vector<float> longitude(point_cloud_size);
@@ -84,7 +85,9 @@ int main() {
                 ++non_trivial_count;
                 EXPECT_CMP(query_node_answer[i], <, point_cloud_size);
 
-                auto actual_distance = geo_dist(query_latitude[i], query_longitude[i], latitude[query_node_answer[i]],
+                auto actual_distance = geo_dist(query_latitude[i],
+                                                query_longitude[i],
+                                                latitude[query_node_answer[i]],
                                                 longitude[query_node_answer[i]]);
 
                 EXPECT_CMP(fabs(actual_distance - query_dist_answer[i]), <=, tolerance);
@@ -103,7 +106,8 @@ int main() {
                 min_dist = radius;
 
             for (unsigned j = 0; j < point_cloud_size; ++j) {
-                EXPECT_CMP(geo_dist(latitude[j], longitude[j], query_latitude[i], query_longitude[i]), >=,
+                EXPECT_CMP(geo_dist(latitude[j], longitude[j], query_latitude[i], query_longitude[i]),
+                           >=,
                            min_dist - tolerance);
             }
         }

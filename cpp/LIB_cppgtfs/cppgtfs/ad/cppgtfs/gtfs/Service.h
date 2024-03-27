@@ -6,10 +6,11 @@
 #define AD_CPPGTFS_GTFS_SERVICE_H_
 
 #include <ctime>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
+
 #include "flat/Service.h"
 
 using std::exception;
@@ -29,23 +30,23 @@ class Service {
     typedef flat::Calendar::SERVICE_DAY SERVICE_DAY;
     typedef flat::CalendarDate::EXCEPTION_TYPE EXCEPTION_TYPE;
 
-    explicit Service(const string& id);
-    Service(const string& id, uint8_t serviceDays, ServiceDate start, ServiceDate end);
+    explicit Service(string const& id);
+    Service(string const& id, uint8_t serviceDays, ServiceDate start, ServiceDate end);
 
-    const std::string& getId() const;
-    const std::map<ServiceDate, Service::EXCEPTION_TYPE>& getExceptions() const;
+    std::string const& getId() const;
+    std::map<ServiceDate, Service::EXCEPTION_TYPE> const& getExceptions() const;
 
-    void addException(const ServiceDate& d, EXCEPTION_TYPE t);
+    void addException(ServiceDate const& d, EXCEPTION_TYPE t);
 
-    bool isActiveOn(const ServiceDate& d) const;
+    bool isActiveOn(ServiceDate const& d) const;
 
-    static SERVICE_DAY getServiceDay(const ServiceDate& d);
+    static SERVICE_DAY getServiceDay(ServiceDate const& d);
     uint8_t getServiceDates() const;
 
-    EXCEPTION_TYPE getExceptionOn(const ServiceDate& d) const;
+    EXCEPTION_TYPE getExceptionOn(ServiceDate const& d) const;
 
-    const ServiceDate& getBeginDate() const;
-    const ServiceDate& getEndDate() const;
+    ServiceDate const& getBeginDate() const;
+    ServiceDate const& getEndDate() const;
 
     bool hasServiceDays() const;
 

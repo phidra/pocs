@@ -1,19 +1,19 @@
 #include <routingkit/contraction_hierarchy.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
+#include <routingkit/nested_dissection.h>
 #include <routingkit/osm_graph_builder.h>
 #include <routingkit/osm_simple.h>
-#include <routingkit/nested_dissection.h>
 #include <routingkit/timer.h>
-
-#include "expect.h"
 
 #include <iostream>
 #include <random>
 
+#include "expect.h"
+
 using namespace std;
 using namespace RoutingKit;
 
-void log_message(const std::string& msg) {
+void log_message(std::string const& msg) {
     cout << msg << endl;
 }
 

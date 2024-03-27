@@ -1,11 +1,10 @@
+#include <CLI/CLI.hpp>
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <tuple>
 #include <variant>
 #include <vector>
-
-#include <CLI/CLI.hpp>
 
 using std::cerr;
 using std::cout;
@@ -102,8 +101,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     // groupe.
     auto* content_source = app.add_option_group("content_source", "source of the content");
     content_source
-        ->add_option<ContentSource, std::filesystem::path>("-f,--from-file", args.content_source,
-                                                           "Local file containing the content.")
+        ->add_option<ContentSource, std::filesystem::path>(
+            "-f,--from-file", args.content_source, "Local file containing the content.")
         ->check(CLI::ExistingFile);
     content_source->add_option<ContentSource, Url>("-u,--from-url", args.content_source, "URL containing the content.");
     content_source->require_option(1);

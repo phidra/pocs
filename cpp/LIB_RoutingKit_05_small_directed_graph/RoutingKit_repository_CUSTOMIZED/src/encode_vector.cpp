@@ -1,14 +1,14 @@
 #include <routingkit/vector_io.h>
 
-#include <string>
 #include <iostream>
 #include <limits>
+#include <string>
 
 using namespace RoutingKit;
 using namespace std;
 
 template <class T>
-void convert_int_data(const string& output_vector_file) {
+void convert_int_data(string const& output_vector_file) {
     string line;
     vector<T> v;
     while (getline(cin, line)) {
@@ -25,7 +25,7 @@ void convert_int_data(const string& output_vector_file) {
 }
 
 template <class T>
-void convert_float_data(const string& output_vector_file) {
+void convert_float_data(string const& output_vector_file) {
     string line;
     vector<T> v;
     while (getline(cin, line)) {
@@ -34,7 +34,7 @@ void convert_float_data(const string& output_vector_file) {
     save_vector(output_vector_file, v);
 }
 
-void convert_uint64_data(const string& output_vector_file) {
+void convert_uint64_data(string const& output_vector_file) {
     string line;
     vector<unsigned long long> v;
     while (getline(cin, line)) {
@@ -43,7 +43,7 @@ void convert_uint64_data(const string& output_vector_file) {
     save_vector(output_vector_file, v);
 }
 
-string replace_all_substrings(string subject, const string& search, const string& replace) {
+string replace_all_substrings(string subject, string const& search, string const& replace) {
     size_t pos = 0;
     while ((pos = subject.find(search, pos)) != std::string::npos) {
         subject.replace(pos, search.length(), replace);
@@ -52,7 +52,7 @@ string replace_all_substrings(string subject, const string& search, const string
     return std::move(subject);
 }
 
-void convert_string_data(const string& output_vector_file) {
+void convert_string_data(string const& output_vector_file) {
     string line;
     vector<string> v;
     while (getline(cin, line)) {

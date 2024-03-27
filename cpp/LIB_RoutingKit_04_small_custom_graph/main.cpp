@@ -1,8 +1,9 @@
 #include <routingkit/contraction_hierarchy.h>
+
 #include <iostream>
 
-#include "mygraph.h"
 #include "ch_analysis.h"
+#include "mygraph.h"
 
 // NOTE : this example is derived from :
 //      https://github.com/phidra/RoutingKit/blob/master/README.md

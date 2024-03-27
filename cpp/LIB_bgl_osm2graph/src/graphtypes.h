@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <boost/graph/adjacency_list.hpp>
 #include <osmium/osm/location.hpp>
 #include <osmium/osm/types.hpp>
-
-#include <boost/graph/adjacency_list.hpp>
+#include <string>
+#include <vector>
 
 using NodeOsmId = osmium::object_id_type;
 using WayId = osmium::object_id_type;
@@ -37,11 +36,11 @@ struct NodeHasher {
 
 // NOTE : a single OSM way can be splitted in several edges.
 struct Edge {
-    inline Edge(NodeOsmId node_from_, NodeOsmId node_to_, Polyline&& geometry_, float length_m_, float weight_)
-        : node_from{node_from_, geometry_.front()},
-          node_to{node_to_, geometry_.back()},
-          length_m{length_m_},
-          geometry{geometry_} {}
+    inline Edge(NodeOsmId node_from_, NodeOsmId node_to_, Polyline&& geometry_, float length_m_, float weight_) :
+        node_from{node_from_, geometry_.front()},
+        node_to{node_to_, geometry_.back()},
+        length_m{length_m_},
+        geometry{geometry_} {}
 
     Node node_from;
     Node node_to;

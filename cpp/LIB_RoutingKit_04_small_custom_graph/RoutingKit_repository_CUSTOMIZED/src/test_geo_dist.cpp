@@ -1,8 +1,10 @@
-#include <iostream>
-#include <cmath>
-#include <random>
-#include <routingkit/timer.h>
 #include <routingkit/geo_dist.h>
+#include <routingkit/timer.h>
+
+#include <cmath>
+#include <iostream>
+#include <random>
+
 #include "expect.h"
 using namespace RoutingKit;
 using namespace std;
@@ -12,9 +14,9 @@ using namespace std;
 // They should do the same thing. We use the old code to verify the new code.
 
 double old_geo_dist(double a_lat, double a_lon, double b_lat, double b_lon) {
-    const double pi = 3.14159265359;
-    const double R = 6371000.785;  // earth radius in meter
-    const double inv_180 = 1.0 / 180;
+    double const pi = 3.14159265359;
+    double const R = 6371000.785;  // earth radius in meter
+    double const inv_180 = 1.0 / 180;
 
     a_lat *= inv_180;
     a_lat *= pi;

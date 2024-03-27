@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
-#include <ostream>
+#include <rapidjson/document.h>
+#include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
+
 #include <fstream>
 #include <iomanip>
+#include <ostream>
+#include <vector>
 
 #include "graphtypes.h"
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/ostreamwrapper.h>
 
 template <typename GraphType>
 struct Traits {};

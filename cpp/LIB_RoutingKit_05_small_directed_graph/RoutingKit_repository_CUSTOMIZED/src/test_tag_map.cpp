@@ -9,7 +9,7 @@ int main() {
 
     EXPECT_CMP(map["test"], ==, nullptr);
 
-    typedef const char*
+    typedef char const*
         char_ptr;  // typedef because I have no idea how the syntax for an array of pointers works without
 
     {

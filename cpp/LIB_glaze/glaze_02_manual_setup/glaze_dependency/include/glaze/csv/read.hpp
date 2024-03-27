@@ -20,8 +20,8 @@ template <>
 struct read<csv> {
     template <auto Opts, class T, is_context Ctx, class It0, class It1>
     static void op(T&& value, Ctx&& ctx, It0&& it, It1 end) noexcept {
-        from_csv<std::decay_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                     std::forward<It0>(it), std::forward<It1>(end));
+        from_csv<std::decay_t<T>>::template op<Opts>(
+            std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
     }
 };
 
@@ -30,8 +30,10 @@ struct from_csv<T> {
     template <auto Opts, is_context Ctx, class It0, class It1>
     static void op(auto&& value, Ctx&& ctx, It0&& it, It1&& end) noexcept {
         using V = decltype(get_member(std::declval<T>(), meta_wrapper_v<T>));
-        from_csv<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx),
-                                       std::forward<It0>(it), std::forward<It1>(end));
+        from_csv<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>),
+                                       std::forward<Ctx>(ctx),
+                                       std::forward<It0>(it),
+                                       std::forward<It1>(end));
     }
 };
 
@@ -217,12 +219,12 @@ struct from_csv<T> {
 
                 size_t csv_index;
 
-                const auto brace_pos = key.find('[');
+                auto const brace_pos = key.find('[');
                 if (brace_pos != sv::npos) {
-                    const auto close_brace = key.find(']');
-                    const auto index = key.substr(brace_pos + 1, close_brace - (brace_pos + 1));
+                    auto const close_brace = key.find(']');
+                    auto const index = key.substr(brace_pos + 1, close_brace - (brace_pos + 1));
                     key = key.substr(0, brace_pos);
-                    const auto [ptr, ec] = std::from_chars(index.data(), index.data() + index.size(), csv_index);
+                    auto const [ptr, ec] = std::from_chars(index.data(), index.data() + index.size(), csv_index);
                     if (ec != std::errc()) {
                         ctx.error = error_code::syntax_error;
                         return;
@@ -277,7 +279,7 @@ struct from_csv<T> {
             }
         } else  // column wise
         {
-            const auto keys = read_column_wise_keys(ctx, it, end);
+            auto const keys = read_column_wise_keys(ctx, it, end);
 
             if (bool(ctx.error)) {
                 return;
@@ -290,7 +292,7 @@ struct from_csv<T> {
                 return;
             }
 
-            const auto n_keys = keys.size();
+            auto const n_keys = keys.size();
 
             size_t row = 0;
 
@@ -300,7 +302,7 @@ struct from_csv<T> {
                     auto& member = value[key_type(keys[i].first)];
                     using M = std::decay_t<decltype(member)>;
                     if constexpr (fixed_array_value_t<M> && emplace_backable<M>) {
-                        const auto index = keys[i].second;
+                        auto const index = keys[i].second;
                         if (row < member.size()) [[likely]] {
                             read<csv>::op<Opts>(member[row][index], ctx, it, end);
                         } else [[unlikely]] {
@@ -339,12 +341,12 @@ struct from_csv<T> {
 
                 size_t csv_index;
 
-                const auto brace_pos = key.find('[');
+                auto const brace_pos = key.find('[');
                 if (brace_pos != sv::npos) {
-                    const auto close_brace = key.find(']');
-                    const auto index = key.substr(brace_pos + 1, close_brace - (brace_pos + 1));
+                    auto const close_brace = key.find(']');
+                    auto const index = key.substr(brace_pos + 1, close_brace - (brace_pos + 1));
                     key = key.substr(0, brace_pos);
-                    const auto [ptr, ec] = std::from_chars(index.data(), index.data() + index.size(), csv_index);
+                    auto const [ptr, ec] = std::from_chars(index.data(), index.data() + index.size(), csv_index);
                     if (ec != std::errc()) {
                         ctx.error = error_code::syntax_error;
                         return;
@@ -353,7 +355,7 @@ struct from_csv<T> {
 
                 match<','>(ctx, it, end);
 
-                const auto& member_it = frozen_map.find(key);
+                auto const& member_it = frozen_map.find(key);
 
                 if (member_it != frozen_map.end()) [[likely]] {
                     std::visit(
@@ -409,7 +411,7 @@ struct from_csv<T> {
             }
         } else  // column wise
         {
-            const auto keys = read_column_wise_keys(ctx, it, end);
+            auto const keys = read_column_wise_keys(ctx, it, end);
 
             if (bool(ctx.error)) {
                 return;
@@ -422,13 +424,13 @@ struct from_csv<T> {
                 return;
             }
 
-            const auto n_keys = keys.size();
+            auto const n_keys = keys.size();
 
             size_t row = 0;
 
             while (it != end) {
                 for (size_t i = 0; i < n_keys; ++i) {
-                    const auto& member_it = frozen_map.find(keys[i].first);
+                    auto const& member_it = frozen_map.find(keys[i].first);
                     if (member_it != frozen_map.end()) [[likely]] {
                         std::visit(
                             [&](auto&& member_ptr) {
@@ -484,7 +486,7 @@ inline parse_error read_file_csv(T& value, const sv file_name) {
     ctx.current_file = file_name;
 
     std::string buffer;
-    const auto ec = file_to_buffer(buffer, ctx.current_file);
+    auto const ec = file_to_buffer(buffer, ctx.current_file);
 
     if (bool(ec)) {
         return {ec};

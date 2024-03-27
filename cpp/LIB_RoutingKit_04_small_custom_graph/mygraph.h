@@ -1,11 +1,11 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <cassert>
-#include <tuple>
-
 #include <routingkit/contraction_hierarchy.h>
+
+#include <cassert>
+#include <iostream>
+#include <tuple>
+#include <vector>
 
 // easy way to set variables to nodes, but we could also `unsigned A = 0` :
 enum _ { A = 0, B, C, D, E, F, G, H };

@@ -1,9 +1,9 @@
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 constexpr int NB_ACCUMULATIONS = 500000000;
 
-void __attribute__((noinline)) accumulate(int& accumulator, const int& value);
+void __attribute__((noinline)) accumulate(int& accumulator, int const& value);
 extern int global_var;
 
 int main(int argc, char* argv[]) {

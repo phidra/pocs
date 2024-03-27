@@ -1,9 +1,9 @@
 #ifndef ROUTING_KIT_OSM_SIMPLE_H
 #define ROUTING_KIT_OSM_SIMPLE_H
 
-#include <vector>
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -23,8 +23,8 @@ struct SimpleOSMCarRoutingGraph {
 };
 
 SimpleOSMCarRoutingGraph simple_load_osm_car_routing_graph_from_pbf(
-    const std::string& pbf_file,
-    const std::function<void(const std::string&)>& log_message = nullptr,
+    std::string const& pbf_file,
+    std::function<void(std::string const&)> const& log_message = nullptr,
     bool all_modelling_nodes_are_routing_nodes = false,
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered = false);
 
@@ -41,8 +41,8 @@ struct SimpleOSMPedestrianRoutingGraph {
 };
 
 SimpleOSMPedestrianRoutingGraph simple_load_osm_pedestrian_routing_graph_from_pbf(
-    const std::string& pbf_file,
-    const std::function<void(const std::string&)>& log_message = nullptr,
+    std::string const& pbf_file,
+    std::function<void(std::string const&)> const& log_message = nullptr,
     bool all_modelling_nodes_are_routing_nodes = false,
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered = false);
 
@@ -60,8 +60,8 @@ struct SimpleOSMBicycleRoutingGraph {
 };
 
 SimpleOSMBicycleRoutingGraph simple_load_osm_bicycle_routing_graph_from_pbf(
-    const std::string& pbf_file,
-    const std::function<void(const std::string&)>& log_message = nullptr,
+    std::string const& pbf_file,
+    std::function<void(std::string const&)> const& log_message = nullptr,
     bool all_modelling_nodes_are_routing_nodes = false,
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered = false);
 

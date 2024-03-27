@@ -1,10 +1,10 @@
-#include <routingkit/vector_io.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/permutation.h>
 #include <routingkit/sort.h>
-#include <routingkit/inverse_vector.h>
+#include <routingkit/vector_io.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
         bool was_header_read = false;
         std::vector<bool> seen;
-        const double dimacs_scale = 1000000.0;
+        double const dimacs_scale = 1000000.0;
 
         while (std::getline(in, line)) {
             ++line_num;

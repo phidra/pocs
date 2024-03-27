@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
-#include <vector>
-#include <string>
 #include <osmium/osm/location.hpp>
+#include <string>
+#include <vector>
 
 #include "edge.h"
 

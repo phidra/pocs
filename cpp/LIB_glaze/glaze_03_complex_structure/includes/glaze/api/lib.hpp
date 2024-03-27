@@ -61,7 +61,7 @@ struct lib_loader final {
 
     void load_libs(const sv directory) {
         std::filesystem::directory_entry dir(directory);
-        for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+        for (auto const& entry : std::filesystem::directory_iterator(dir)) {
             if (entry.is_regular_file() && entry.path().extension() == SHARED_LIBRARY_EXTENSION) {
                 load_lib(entry.path().string());
             }
@@ -71,16 +71,16 @@ struct lib_loader final {
     auto& operator[](const sv lib_name) { return api_map[std::string(lib_name)]; }
 
     lib_loader() = default;
-    lib_loader(const lib_loader&) = delete;
+    lib_loader(lib_loader const&) = delete;
     lib_loader(lib_loader&&) = delete;
-    lib_loader& operator=(const lib_loader&) = delete;
+    lib_loader& operator=(lib_loader const&) = delete;
     lib_loader& operator=(lib_loader&&) = delete;
 
     lib_loader(const std::string_view directory) { load(directory); }
 
     ~lib_loader() {
         api_map.clear();
-        for (const auto& lib : loaded_libs) {
+        for (auto const& lib : loaded_libs) {
 #ifdef GLAZE_API_ON_WINDOWS
             FreeLibrary(lib);
 #else
@@ -90,7 +90,7 @@ struct lib_loader final {
     }
 
    private:
-    bool load_lib(const std::string& path) noexcept {
+    bool load_lib(std::string const& path) noexcept {
 #ifdef GLAZE_API_ON_WINDOWS
         lib_t loaded_lib = LoadLibrary(path.c_str());
 #else
@@ -121,7 +121,7 @@ struct lib_loader final {
         return false;
     }
 
-    bool load_lib_by_name(const std::string& path) {
+    bool load_lib_by_name(std::string const& path) {
 #ifdef NDEBUG
         static std::string suffix = "";
 #else

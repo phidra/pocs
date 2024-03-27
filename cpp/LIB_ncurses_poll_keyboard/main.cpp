@@ -1,9 +1,10 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <ncurses.h>
 #include <sys/poll.h>
 #include <unistd.h>
+
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 // this is a POC on poll usage to get key pressed.
 

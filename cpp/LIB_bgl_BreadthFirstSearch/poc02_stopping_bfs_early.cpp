@@ -1,8 +1,7 @@
-#include <iostream>
-#include <string>
-
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <iostream>
+#include <string>
 
 using namespace boost;
 using namespace std;
@@ -16,7 +15,7 @@ class BfsDiscoveryRankVisitor : public default_bfs_visitor {
    public:
     BfsDiscoveryRankVisitor(string& discovered_vertices_) : discovered_vertices{discovered_vertices_} {}
     template <typename VertexDescriptor, typename Graph>
-    void discover_vertex(VertexDescriptor u, const Graph& mygraph) const {
+    void discover_vertex(VertexDescriptor u, Graph const& mygraph) const {
         discovered_vertices.append(mygraph[u].name);
         if (mygraph[u].name == "G") {
             throw StopTheBFS{};

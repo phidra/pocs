@@ -28,7 +28,7 @@
 // Getting rid of the page boundary check is an improvement to performance and safer overall
 
 namespace glz::detail {
-inline constexpr uint64_t to_uint64_n_below_8(const char* bytes, const size_t N) noexcept {
+inline constexpr uint64_t to_uint64_n_below_8(char const* bytes, const size_t N) noexcept {
     static_assert(std::endian::native == std::endian::little);
     uint64_t res{};
     if (std::is_constant_evaluated()) {
@@ -74,7 +74,7 @@ inline constexpr uint64_t to_uint64_n_below_8(const char* bytes, const size_t N)
 }
 
 template <size_t N = 8>
-constexpr uint64_t to_uint64(const char* bytes) noexcept {
+constexpr uint64_t to_uint64(char const* bytes) noexcept {
     static_assert(N <= sizeof(uint64_t));
     static_assert(std::endian::native == std::endian::little);
     if (std::is_constant_evaluated()) {
@@ -134,13 +134,13 @@ struct naive_hash {
 
     constexpr uint64_t operator()(const std::string_view value, const uint64_t seed) noexcept {
         uint64_t h = (0xcbf29ce484222325 ^ seed) * 1099511628211;
-        const auto n = value.size();
+        auto const n = value.size();
 
         if (n < 8) {
             return bitmix(h ^ to_uint64_n_below_8(value.data(), n));
         }
 
-        const char* end7 = value.data() + n - 7;
+        char const* end7 = value.data() + n - 7;
         for (auto d0 = value.data(); d0 < end7; d0 += 8) {
             h = bitmix(h ^ to_uint64(d0));
         }
@@ -150,7 +150,7 @@ struct naive_hash {
 };
 
 constexpr bool contains(auto&& data, auto&& val) noexcept {
-    const auto n = data.size();
+    auto const n = data.size();
     for (size_t i = 0; i < n; ++i) {
         if (data[i] == val) {
             return true;
@@ -172,7 +172,7 @@ struct naive_map {
     std::array<uint64_t, N * use_hash_comparison> hashes{};
     std::array<uint8_t, bucket_size> table{};
 
-    explicit constexpr naive_map(const std::array<std::pair<std::string_view, Value>, N>& pairs) : items(pairs) {
+    explicit constexpr naive_map(std::array<std::pair<std::string_view, Value>, N> const& pairs) : items(pairs) {
         seed = naive_perfect_hash();
         if (seed == (std::numeric_limits<uint64_t>::max)()) {
             // Failed to find perfect hash
@@ -180,7 +180,7 @@ struct naive_map {
         }
 
         for (size_t i = 0; i < N; ++i) {
-            const auto hash = naive_hash{}(items[i].first, seed);
+            auto const hash = naive_hash{}(items[i].first, seed);
             if constexpr (use_hash_comparison) {
                 hashes[i] = hash;
             }
@@ -194,10 +194,10 @@ struct naive_map {
     constexpr size_t size() const { return items.size(); }
 
     constexpr decltype(auto) find(auto&& key) const noexcept {
-        const auto hash = naive_hash{}(key, seed);
+        auto const hash = naive_hash{}(key, seed);
         // constexpr bucket_size means the compiler can replace the modulos with
         // more efficient instructions So this is not as expensive as this looks
-        const auto index = table[hash % bucket_size];
+        auto const index = table[hash % bucket_size];
         if constexpr (use_hash_comparison) {
             // Odds of having a uint64_t hash collision is pretty small
             // And no valid keys could colide becuase of perfect hashing so this
@@ -205,7 +205,7 @@ struct naive_map {
             if (hashes[index] != hash) [[unlikely]]
                 return items.end();
         } else {
-            const auto& item = items[index];
+            auto const& item = items[index];
             if (item.first != key) [[unlikely]]
                 return items.end();
         }
@@ -219,9 +219,9 @@ struct naive_map {
         for (size_t i = 0; i < 1024; ++i) {
             seed = gen();
             size_t index = 0;
-            for (const auto& kv : items) {
-                const auto hash = naive_hash{}(kv.first, seed);
-                const auto bucket = hash % bucket_size;
+            for (auto const& kv : items) {
+                auto const hash = naive_hash{}(kv.first, seed);
+                auto const bucket = hash % bucket_size;
                 if (contains(std::span{bucket_index.data(), index}, bucket)) {
                     break;
                 }
@@ -278,10 +278,10 @@ struct normal_map {
     constexpr size_t index(auto&& key) const { return find(key) - begin(); }
 
     constexpr decltype(auto) find(auto&& key) const noexcept {
-        const auto hash = hash_alg{}(key, seed);
+        auto const hash = hash_alg{}(key, seed);
         // constexpr bucket_size means the compiler can replace the modulos with
         // more efficient instructions So this is not as expensive as this looks
-        const auto extra = buckets[hash % N];
+        auto const extra = buckets[hash % N];
         const size_t index = extra < 1 ? -extra : table[combine(hash, extra) % storage_size];
         if constexpr (!std::integral<Key> && use_hash_comparison) {
             // Odds of having a uint64_t hash collision is pretty small
@@ -293,7 +293,7 @@ struct normal_map {
             if (index >= N) [[unlikely]] {
                 return items.end();
             }
-            const auto& item = items[index];
+            auto const& item = items[index];
             if (item.first != key) [[unlikely]]
                 return items.end();
         }
@@ -301,10 +301,10 @@ struct normal_map {
     }
 
     constexpr decltype(auto) find(auto&& key) noexcept {
-        const auto hash = hash_alg{}(key, seed);
+        auto const hash = hash_alg{}(key, seed);
         // constexpr bucket_size means the compiler can replace the modulos with
         // more efficient instructions So this is not as expensive as this looks
-        const auto extra = buckets[hash % N];
+        auto const extra = buckets[hash % N];
         auto index = extra < 1 ? -extra : table[combine(hash, extra) % storage_size];
         if constexpr (!std::integral<Key> && use_hash_comparison) {
             // Odds of having a uint64_t hash collision is pretty small
@@ -313,14 +313,14 @@ struct normal_map {
             if (hashes[index] != hash) [[unlikely]]
                 return items.end();
         } else {
-            const auto& item = items[index];
+            auto const& item = items[index];
             if (item.first != key) [[unlikely]]
                 return items.end();
         }
         return items.begin() + index;
     }
 
-    explicit constexpr normal_map(const std::array<std::pair<Key, Value>, N>& pairs) : items(pairs) {
+    explicit constexpr normal_map(std::array<std::pair<Key, Value>, N> const& pairs) : items(pairs) {
         find_perfect_hash();
     }
 
@@ -341,10 +341,10 @@ struct normal_map {
             failed = false;
             seed = gen() + 1;
             for (storage_type i{}; i < N; ++i) {
-                const auto hash = hash_alg{}(items[i].first, seed);
+                auto const hash = hash_alg{}(items[i].first, seed);
                 hashes[i] = hash;
-                const auto bucket = hash % N;
-                const auto bucket_size = bucket_sizes[bucket]++;
+                auto const bucket = hash % N;
+                auto const bucket_size = bucket_sizes[bucket]++;
                 if (bucket_size == max_bucket_size) {
                     failed = true;
                     bucket_sizes = {};
@@ -357,27 +357,28 @@ struct normal_map {
 
         std::array<size_t, N> buckets_index{};
         std::iota(buckets_index.begin(), buckets_index.end(), 0);
-        std::sort(buckets_index.begin(), buckets_index.end(),
-                  [&bucket_sizes](size_t i1, size_t i2) { return bucket_sizes[i1] > bucket_sizes[i2]; });
+        std::sort(buckets_index.begin(), buckets_index.end(), [&bucket_sizes](size_t i1, size_t i2) {
+            return bucket_sizes[i1] > bucket_sizes[i2];
+        });
 
         std::fill(table.begin(), table.end(), storage_type(-1));
         for (auto bucket_index : buckets_index) {
-            const auto bucket_size = bucket_sizes[bucket_index];
+            auto const bucket_size = bucket_sizes[bucket_index];
             if (bucket_size < 1)
                 break;
             if (bucket_size == 1) {
                 buckets[bucket_index] = -int64_t(full_buckets[bucket_index][0]);
                 continue;
             }
-            const auto table_old = table;
+            auto const table_old = table;
             do {
                 failed = false;
                 // We need to reserve top bit for bucket_size == 1
                 auto secondary_seed = gen() >> 1;
                 for (size_t i = 0; i < bucket_size; ++i) {
-                    const auto index = full_buckets[bucket_index][i];
-                    const auto hash = hashes[index];
-                    const auto slot = combine(hash, secondary_seed) % storage_size;
+                    auto const index = full_buckets[bucket_index][i];
+                    auto const hash = hashes[index];
+                    auto const slot = combine(hash, secondary_seed) % storage_size;
                     if (table[slot] != storage_type(-1)) {
                         failed = true;
                         table = table_old;
@@ -401,7 +402,7 @@ struct single_char_hash_desc {
 };
 
 template <size_t N, bool IsFrontHash = true>
-inline constexpr single_char_hash_desc single_char_hash(const std::array<std::string_view, N>& v) noexcept {
+inline constexpr single_char_hash_desc single_char_hash(std::array<std::string_view, N> const& v) noexcept {
     if constexpr (N > 255) {
         return {};
     }
@@ -447,22 +448,22 @@ struct single_char_map {
         }
 
         if constexpr (D.is_front_hash) {
-            const auto k = static_cast<uint8_t>(static_cast<uint8_t>(key[0]) - D.front);
+            auto const k = static_cast<uint8_t>(static_cast<uint8_t>(key[0]) - D.front);
             if (k >= static_cast<uint8_t>(N_table)) [[unlikely]] {
                 return items.end();
             }
-            const auto index = table[k];
-            const auto& item = items[index];
+            auto const index = table[k];
+            auto const& item = items[index];
             if (item.first != key) [[unlikely]]
                 return items.end();
             return items.begin() + index;
         } else {
-            const auto k = static_cast<uint8_t>(static_cast<uint8_t>(key.back()) - D.front);
+            auto const k = static_cast<uint8_t>(static_cast<uint8_t>(key.back()) - D.front);
             if (k >= static_cast<uint8_t>(N_table)) [[unlikely]] {
                 return items.end();
             }
-            const auto index = table[k];
-            const auto& item = items[index];
+            auto const index = table[k];
+            auto const& item = items[index];
             if (item.first != key) [[unlikely]]
                 return items.end();
             return items.begin() + index;
@@ -478,7 +479,7 @@ constexpr auto make_single_char_map(std::initializer_list<std::pair<std::string_
     single_char_map<T, D> ht{};
 
     uint8_t i = 0;
-    for (const auto& pair : pairs) {
+    for (auto const& pair : pairs) {
         ht.items[i] = pair;
         if constexpr (D.is_front_hash) {
             ht.table[static_cast<uint8_t>(pair.first[0]) - D.front] = i;
@@ -491,7 +492,7 @@ constexpr auto make_single_char_map(std::initializer_list<std::pair<std::string_
     return ht;
 }
 
-template <class T, const std::string_view& S>
+template <class T, std::string_view const& S>
 struct micro_map1 {
     std::array<std::pair<std::string_view, T>, 1> items{};
 
@@ -507,7 +508,7 @@ struct micro_map1 {
     }
 };
 
-template <const std::string_view& S, bool CheckSize = true>
+template <std::string_view const& S, bool CheckSize = true>
 inline constexpr bool cx_string_cmp(const std::string_view key) noexcept {
     constexpr auto n = S.size();
     if (std::is_constant_evaluated()) {
@@ -521,7 +522,7 @@ inline constexpr bool cx_string_cmp(const std::string_view key) noexcept {
     }
 }
 
-template <class T, const std::string_view& S0, const std::string_view& S1>
+template <class T, std::string_view const& S0, std::string_view const& S1>
 struct micro_map2 {
     std::array<std::pair<std::string_view, T>, 2> items{};
 

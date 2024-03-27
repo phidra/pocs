@@ -1,9 +1,9 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -45,7 +45,10 @@ int main(int argc, char* argv[]) {
 
         timer = -get_micro_time();
         CustomizableContractionHierarchy cch(
-            cch_order, invert_inverse_vector(first_out), head, [](const std::string& msg) { cout << msg << endl; },
+            cch_order,
+            invert_inverse_vector(first_out),
+            head,
+            [](std::string const& msg) { cout << msg << endl; },
             true);
         timer += get_micro_time();
 

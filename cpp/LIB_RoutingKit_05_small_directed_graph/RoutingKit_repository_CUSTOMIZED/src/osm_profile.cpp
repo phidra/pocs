@@ -3,11 +3,11 @@
 namespace RoutingKit {
 
 namespace {
-bool str_eq(const char* l, const char* r) {
+bool str_eq(char const* l, char const* r) {
     return !strcmp(l, r);
 }
 
-bool str_wild_char_eq(const char* l, const char* r) {
+bool str_wild_char_eq(char const* l, char const* r) {
     while (*l != '\0' && *r != '\0') {
         if (*l != '?' && *r != '?' && *l != *r)
             return false;
@@ -17,7 +17,7 @@ bool str_wild_char_eq(const char* l, const char* r) {
     return *l == '\0' && *r == '\0';
 }
 
-bool starts_with(const char* prefix, const char* str) {
+bool starts_with(char const* prefix, char const* str) {
     while (*prefix != '\0' && *str == *prefix) {
         ++prefix;
         ++str;
@@ -25,7 +25,7 @@ bool starts_with(const char* prefix, const char* str) {
     return *prefix == '\0';
 }
 
-void copy_str_and_make_lower_case(const char* in, char* out, unsigned out_size) {
+void copy_str_and_make_lower_case(char const* in, char* out, unsigned out_size) {
     char* out_end = out + out_size - 1;
     while (*in && out != out_end) {
         if ('A' <= *in && *in <= 'Z')
@@ -44,7 +44,7 @@ template <class F>
 void split_str_at_osm_value_separators(char* in, const F& f) {
     while (*in == ' ')
         ++in;
-    const char* value_begin = in;
+    char const* value_begin = in;
     for (;;) {
         while (*in != '\0' && *in != ';')
             ++in;
@@ -64,39 +64,39 @@ void split_str_at_osm_value_separators(char* in, const F& f) {
 }  // namespace
 
 bool is_osm_way_used_by_pedestrians(uint64_t osm_way_id,
-                                    const TagMap& tags,
-                                    std::function<void(const std::string&)> log_message) {
-    const char* junction = tags["junction"];
+                                    TagMap const& tags,
+                                    std::function<void(std::string const&)> log_message) {
+    char const* junction = tags["junction"];
     if (junction != nullptr)
         return true;
 
-    const char* route = tags["route"];
+    char const* route = tags["route"];
     if (route && str_eq(route, "ferry"))
         return true;
 
-    const char* ferry = tags["ferry"];
+    char const* ferry = tags["ferry"];
     if (ferry && str_eq(ferry, "ferry"))
         return true;
 
-    const char* public_transport = tags["public_transport"];
+    char const* public_transport = tags["public_transport"];
     if (public_transport != nullptr &&
         (str_eq(public_transport, "stop_position") || str_eq(public_transport, "platform") ||
          str_eq(public_transport, "stop_area") || str_eq(public_transport, "station"))) {
         return true;
     }
 
-    const char* railway = tags["railway"];
+    char const* railway = tags["railway"];
     if (railway != nullptr &&
         (str_eq(railway, "halt") || str_eq(railway, "platform") || str_eq(railway, "subway_entrance") ||
          str_eq(railway, "station") || str_eq(railway, "tram_stop"))) {
         return true;
     }
 
-    const char* highway = tags["highway"];
+    char const* highway = tags["highway"];
     if (highway == nullptr)
         return false;
 
-    const char* access = tags["access"];
+    char const* access = tags["access"];
     if (access) {
         if (!str_eq(access, "yes") && !str_eq(access, "permissive") && !str_eq(access, "delivery") &&
             !str_eq(access, "designated") && !str_eq(access, "destination") && !str_eq(access, "agricultural") &&
@@ -105,7 +105,7 @@ bool is_osm_way_used_by_pedestrians(uint64_t osm_way_id,
         }
     }
 
-    const char* crossing = tags["crossing"];
+    char const* crossing = tags["crossing"];
     if (crossing != nullptr && str_eq(crossing, "no"))
         return false;
 
@@ -129,33 +129,33 @@ bool is_osm_way_used_by_pedestrians(uint64_t osm_way_id,
 }
 
 bool is_osm_way_used_by_cars(uint64_t osm_way_id,
-                             const TagMap& tags,
-                             std::function<void(const std::string&)> log_message) {
-    const char* junction = tags["junction"];
+                             TagMap const& tags,
+                             std::function<void(std::string const&)> log_message) {
+    char const* junction = tags["junction"];
     if (junction != nullptr)
         return true;
 
-    const char* route = tags["route"];
+    char const* route = tags["route"];
     if (route && str_eq(route, "ferry"))
         return true;
 
-    const char* ferry = tags["ferry"];
+    char const* ferry = tags["ferry"];
     if (ferry && str_eq(ferry, "yes"))
         return true;
 
-    const char* highway = tags["highway"];
+    char const* highway = tags["highway"];
     if (highway == nullptr)
         return false;
 
-    const char* motorcar = tags["motorcar"];
+    char const* motorcar = tags["motorcar"];
     if (motorcar && str_eq(motorcar, "no"))
         return false;
 
-    const char* motor_vehicle = tags["motor_vehicle"];
+    char const* motor_vehicle = tags["motor_vehicle"];
     if (motor_vehicle && str_eq(motor_vehicle, "no"))
         return false;
 
-    const char* access = tags["access"];
+    char const* access = tags["access"];
     if (access) {
         if (!(str_eq(access, "yes") || str_eq(access, "permissive") || str_eq(access, "delivery") ||
               str_eq(access, "designated") || str_eq(access, "destination")))
@@ -184,14 +184,14 @@ bool is_osm_way_used_by_cars(uint64_t osm_way_id,
         str_eq(highway, "steps") || str_eq(highway, "proposed") || str_eq(highway, "conveying"))
         return false;
 
-    const char* oneway = tags["oneway"];
+    char const* oneway = tags["oneway"];
     if (oneway != nullptr) {
         if (str_eq(oneway, "reversible") || str_eq(oneway, "alternating")) {
             return false;
         }
     }
 
-    const char* maxspeed = tags["maxspeed"];
+    char const* maxspeed = tags["maxspeed"];
     if (maxspeed != nullptr)
         return true;
 
@@ -199,9 +199,9 @@ bool is_osm_way_used_by_cars(uint64_t osm_way_id,
 }
 
 OSMWayDirectionCategory get_osm_car_direction_category(uint64_t osm_way_id,
-                                                       const TagMap& tags,
-                                                       std::function<void(const std::string&)> log_message) {
-    const char *oneway = tags["oneway"], *junction = tags["junction"], *highway = tags["highway"];
+                                                       TagMap const& tags,
+                                                       std::function<void(std::string const&)> log_message) {
+    char const *oneway = tags["oneway"], *junction = tags["junction"], *highway = tags["highway"];
     if (oneway != nullptr) {
         if (str_eq(oneway, "-1") || str_eq(oneway, "reverse") || str_eq(oneway, "backward")) {
             return OSMWayDirectionCategory::only_open_backwards;
@@ -226,8 +226,8 @@ OSMWayDirectionCategory get_osm_car_direction_category(uint64_t osm_way_id,
 
 namespace {
 unsigned parse_maxspeed_value(uint64_t osm_way_id,
-                              const char* maxspeed,
-                              std::function<void(const std::string&)> log_message) {
+                              char const* maxspeed,
+                              std::function<void(std::string const&)> log_message) {
     if (str_eq(maxspeed, "signals") || str_eq(maxspeed, "variable"))
         return inf_weight;
 
@@ -298,8 +298,8 @@ unsigned parse_maxspeed_value(uint64_t osm_way_id,
 }  // namespace
 
 unsigned get_osm_way_speed(uint64_t osm_way_id,
-                           const TagMap& tags,
-                           std::function<void(const std::string&)> log_message) {
+                           TagMap const& tags,
+                           std::function<void(std::string const&)> log_message) {
     auto maxspeed = tags["maxspeed"];
     if (maxspeed != nullptr && !str_eq(maxspeed, "unposted")) {
         char lower_case_maxspeed[1024];
@@ -307,7 +307,7 @@ unsigned get_osm_way_speed(uint64_t osm_way_id,
 
         unsigned speed = inf_weight;
 
-        split_str_at_osm_value_separators(lower_case_maxspeed, [&](const char* maxspeed) {
+        split_str_at_osm_value_separators(lower_case_maxspeed, [&](char const* maxspeed) {
             min_to(speed, parse_maxspeed_value(osm_way_id, maxspeed, log_message));
         });
 
@@ -392,8 +392,8 @@ unsigned get_osm_way_speed(uint64_t osm_way_id,
 }
 
 std::string get_osm_way_name(uint64_t osm_way_id,
-                             const TagMap& tags,
-                             std::function<void(const std::string&)> log_message) {
+                             TagMap const& tags,
+                             std::function<void(std::string const&)> log_message) {
     auto name = tags["name"], ref = tags["ref"];
 
     if (name != nullptr && ref != nullptr)
@@ -407,28 +407,28 @@ std::string get_osm_way_name(uint64_t osm_way_id,
 }
 
 bool is_osm_way_used_by_bicycles(uint64_t osm_way_id,
-                                 const TagMap& tags,
-                                 std::function<void(const std::string&)> log_message) {
-    const char* junction = tags["junction"];
+                                 TagMap const& tags,
+                                 std::function<void(std::string const&)> log_message) {
+    char const* junction = tags["junction"];
     if (junction != nullptr)
         return true;
 
-    const char* route = tags["route"];
+    char const* route = tags["route"];
     if (route != nullptr && str_eq(route, "ferry"))
         return true;
 
-    const char* ferry = tags["ferry"];
+    char const* ferry = tags["ferry"];
     if (ferry != nullptr && str_eq(ferry, "ferry"))
         return true;
 
-    const char* highway = tags["highway"];
+    char const* highway = tags["highway"];
     if (highway == nullptr)
         return false;
 
     if (str_eq(highway, "proposed"))
         return false;
 
-    const char* access = tags["access"];
+    char const* access = tags["access"];
     if (access) {
         if (!str_eq(access, "yes") && !str_eq(access, "permissive") && !str_eq(access, "delivery") &&
             !str_eq(access, "designated") && !str_eq(access, "destination") && !str_eq(access, "agricultural") &&
@@ -437,22 +437,22 @@ bool is_osm_way_used_by_bicycles(uint64_t osm_way_id,
         }
     }
 
-    const char* bicycle = tags["bicycle"];
+    char const* bicycle = tags["bicycle"];
     if (bicycle && (str_eq(bicycle, "no") || str_eq(bicycle, "use_sidepath")))
         return false;
 
     // if a cycleway is specified we can be sure
     // that the highway will be used in a direction
-    const char* cycleway = tags["cycleway"];
+    char const* cycleway = tags["cycleway"];
     if (cycleway != nullptr)
         return true;
-    const char* cycleway_left = tags["cycleway:left"];
+    char const* cycleway_left = tags["cycleway:left"];
     if (cycleway_left != nullptr)
         return true;
-    const char* cycleway_right = tags["cycleway:right"];
+    char const* cycleway_right = tags["cycleway:right"];
     if (cycleway_right != nullptr)
         return true;
-    const char* cycleway_both = tags["cycleway:both"];
+    char const* cycleway_both = tags["cycleway:both"];
     if (cycleway_both != nullptr)
         return true;
 
@@ -475,9 +475,9 @@ bool is_osm_way_used_by_bicycles(uint64_t osm_way_id,
 }
 
 OSMWayDirectionCategory get_osm_bicycle_direction_category(uint64_t osm_way_id,
-                                                           const TagMap& tags,
-                                                           std::function<void(const std::string&)> log_message) {
-    const char* oneway_bicycle = tags["oneway:bicycle"];
+                                                           TagMap const& tags,
+                                                           std::function<void(std::string const&)> log_message) {
+    char const* oneway_bicycle = tags["oneway:bicycle"];
     if (oneway_bicycle != nullptr) {
         if (str_eq(oneway_bicycle, "-1") || str_eq(oneway_bicycle, "opposite"))
             return OSMWayDirectionCategory::only_open_backwards;
@@ -495,7 +495,7 @@ OSMWayDirectionCategory get_osm_bicycle_direction_category(uint64_t osm_way_id,
         return OSMWayDirectionCategory::closed;
     }
 
-    const char* oneway = tags["oneway"];
+    char const* oneway = tags["oneway"];
     if (oneway == nullptr) {
         return OSMWayDirectionCategory::open_in_both;
     } else {
@@ -503,7 +503,7 @@ OSMWayDirectionCategory get_osm_bicycle_direction_category(uint64_t osm_way_id,
             return OSMWayDirectionCategory::open_in_both;
         }
 
-        const char* cycleway = tags["cycleway"];
+        char const* cycleway = tags["cycleway"];
         if (cycleway != nullptr) {
             // "opposite" is interpreted as the other direction than cars are allowed.
             // This is not necessarily opposite to the direction of the OSM way.
@@ -518,12 +518,12 @@ OSMWayDirectionCategory get_osm_bicycle_direction_category(uint64_t osm_way_id,
             }
         }
 
-        const char* cycleway_both = tags["cycleway:both"];
+        char const* cycleway_both = tags["cycleway:both"];
         if (cycleway_both != nullptr)
             return OSMWayDirectionCategory::open_in_both;
 
-        const char* cycleway_left = tags["cycleway:left"];
-        const char* cycleway_right = tags["cycleway:right"];
+        char const* cycleway_left = tags["cycleway:left"];
+        char const* cycleway_right = tags["cycleway:right"];
         if (cycleway_left != nullptr && cycleway_right != nullptr)
             return OSMWayDirectionCategory::open_in_both;
 
@@ -551,13 +551,13 @@ unsigned char get_max_bicycle_comfort_level() {
 }
 
 unsigned char get_osm_way_bicycle_comfort_level(uint64_t osm_way_id,
-                                                const TagMap& tags,
-                                                std::function<void(const std::string&)> log_message) {
-    const char* highway = tags["highway"];
+                                                TagMap const& tags,
+                                                std::function<void(std::string const&)> log_message) {
+    char const* highway = tags["highway"];
     if (highway != nullptr && str_eq(highway, "cycleway"))
         return 4;
 
-    const char* cycleway = tags["cycleway"];
+    char const* cycleway = tags["cycleway"];
     if (cycleway != nullptr) {
         if (str_eq(cycleway, "track"))
             return 3;
@@ -568,7 +568,7 @@ unsigned char get_osm_way_bicycle_comfort_level(uint64_t osm_way_id,
     if (highway != nullptr && (str_eq(highway, "primary") || str_eq(highway, "primary_link")))
         return 0;
 
-    const char* bicycle = tags["bicycle"];
+    char const* bicycle = tags["bicycle"];
     if (bicycle != nullptr && str_eq(bicycle, "dismount"))
         return 0;
 
@@ -576,11 +576,11 @@ unsigned char get_osm_way_bicycle_comfort_level(uint64_t osm_way_id,
 }
 
 void decode_osm_car_turn_restrictions(uint64_t osm_relation_id,
-                                      const std::vector<OSMRelationMember>& member_list,
-                                      const TagMap& tags,
+                                      std::vector<OSMRelationMember> const& member_list,
+                                      TagMap const& tags,
                                       std::function<void(OSMTurnRestriction)> on_new_turn_restriction,
-                                      std::function<void(const std::string&)> log_message) {
-    const char* restriction = tags["restriction"];
+                                      std::function<void(std::string const&)> log_message) {
+    char const* restriction = tags["restriction"];
     if (restriction == nullptr)
         return;
 
@@ -663,7 +663,8 @@ void decode_osm_car_turn_restrictions(uint64_t osm_relation_id,
     }
 
     from_member_list.erase(
-        std::remove_if(from_member_list.begin(), from_member_list.end(),
+        std::remove_if(from_member_list.begin(),
+                       from_member_list.end(),
                        [&](unsigned member) {
                            if (member_list[member].type != OSMIDType::way) {
                                if (log_message)
@@ -676,7 +677,8 @@ void decode_osm_car_turn_restrictions(uint64_t osm_relation_id,
                        }),
         from_member_list.end());
 
-    to_member_list.erase(std::remove_if(to_member_list.begin(), to_member_list.end(),
+    to_member_list.erase(std::remove_if(to_member_list.begin(),
+                                        to_member_list.end(),
                                         [&](unsigned member) {
                                             if (member_list[member].type != OSMIDType::way) {
                                                 if (log_message)
@@ -720,8 +722,11 @@ void decode_osm_car_turn_restrictions(uint64_t osm_relation_id,
 
     for (unsigned from_member : from_member_list)
         for (unsigned to_member : to_member_list)
-            on_new_turn_restriction(OSMTurnRestriction{osm_relation_id, restriction_type, turn_direction,
-                                                       member_list[from_member].id, via_node,
+            on_new_turn_restriction(OSMTurnRestriction{osm_relation_id,
+                                                       restriction_type,
+                                                       turn_direction,
+                                                       member_list[from_member].id,
+                                                       via_node,
                                                        member_list[to_member].id});
 }
 

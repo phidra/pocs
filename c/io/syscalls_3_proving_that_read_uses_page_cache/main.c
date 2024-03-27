@@ -1,9 +1,9 @@
+#include <assert.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <assert.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
     int nb_of_loops = 20;

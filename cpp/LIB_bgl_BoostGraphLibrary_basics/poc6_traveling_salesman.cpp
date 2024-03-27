@@ -1,15 +1,15 @@
-#include <iostream>
-#include <utility>
-#include <string>
 #include <algorithm>
-#include <numeric>
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/property_map/property_map.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/metric_tsp_approx.hpp>
+#include <boost/property_map/property_map.hpp>
 #include <cassert>
+#include <iostream>
+#include <numeric>
+#include <string>
+#include <utility>
 
 using namespace boost;
 using namespace std;
@@ -57,16 +57,17 @@ int main(int, char*[]) {
     //========================================
     // STEP 2 = préparation des edges et de leur poids :
 
-    vector<string> cities = {"Amiens", "Angers", "Biarritz",  "Bordeaux",
-                             "Brest",  "Calais", "Cherbourg", "Clermond-Ferrand"};
+    vector<string> cities = {
+        "Amiens", "Angers", "Biarritz", "Bordeaux", "Brest", "Calais", "Cherbourg", "Clermond-Ferrand"};
 
-    vector<vector<int>> distance_matrix = {
-        {0, 369, 862, 679, 619, 159, 366, 524},  // from Amiens to ...
-        {399, 0, 518, 335, 371, 494, 290, 402},  // from Angers to ...
-        {862, 518, 0, 183, 817, 997, 808, 555},  // from Biarritz to ...
-        {679, 335, 183, 0, 634, 814, 625, 369}, {619, 371, 817, 634, 0, 714, 402, 752},
-        {159, 494, 997, 814, 714, 0, 461, 672}, {366, 290, 808, 625, 402, 461, 0, 647},
-        {524, 402, 555, 369, 752, 672, 647, 0}};
+    vector<vector<int>> distance_matrix = {{0, 369, 862, 679, 619, 159, 366, 524},  // from Amiens to ...
+                                           {399, 0, 518, 335, 371, 494, 290, 402},  // from Angers to ...
+                                           {862, 518, 0, 183, 817, 997, 808, 555},  // from Biarritz to ...
+                                           {679, 335, 183, 0, 634, 814, 625, 369},
+                                           {619, 371, 817, 634, 0, 714, 402, 752},
+                                           {159, 494, 997, 814, 714, 0, 461, 672},
+                                           {366, 290, 808, 625, 402, 461, 0, 647},
+                                           {524, 402, 555, 369, 752, 672, 647, 0}};
 
     int number_of_cities = cities.size();
     int number_of_edges = ((number_of_cities * number_of_cities)  // taille de la matrice...

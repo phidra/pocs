@@ -1,13 +1,13 @@
-#include <routingkit/vector_io.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/permutation.h>
 #include <routingkit/sort.h>
-#include <routingkit/inverse_vector.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
-#include <stdexcept>
 #include <random>
-#include <vector>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace RoutingKit;
 using namespace std;
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
 
         cout << "done" << endl;
 
-        const unsigned node_count = first_out.size() - 1;
-        const unsigned arc_count = head.size();
+        unsigned const node_count = first_out.size() - 1;
+        unsigned const arc_count = head.size();
 
         if (first_out.front() != 0)
             throw runtime_error("The first element of first out must be 0.");

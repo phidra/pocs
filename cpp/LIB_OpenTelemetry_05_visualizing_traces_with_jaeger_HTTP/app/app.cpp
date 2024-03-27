@@ -1,8 +1,8 @@
 #include "app.h"
 
 #include <chrono>
-#include <thread>
 #include <random>
+#include <thread>
 
 // Notre app utilise l'API OpenTelemetry pour instrumenter le code, mais n'utilise pas le SDK.
 // (si OpenTelemetry n'a pas été initialisé, l'utilisation de cette API sera des noop)
@@ -17,8 +17,8 @@ std::string suffix(std::string const& in) {
     return std::string(in) + "+suffix]";
 }
 
-constexpr const int lower_bound = 100;
-constexpr const int upper_bound = 200;
+constexpr int const lower_bound = 100;
+constexpr int const upper_bound = 200;
 
 struct RandomSleeper {
     RandomSleeper() : distribution(lower_bound, upper_bound) {}

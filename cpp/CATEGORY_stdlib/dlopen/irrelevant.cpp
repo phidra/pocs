@@ -1,6 +1,6 @@
 extern "C" {
 
-const char* description = "[say hello]";
+char const* description = "[say hello]";
 
 void say_hello() {
     // I don't wanna say hello...

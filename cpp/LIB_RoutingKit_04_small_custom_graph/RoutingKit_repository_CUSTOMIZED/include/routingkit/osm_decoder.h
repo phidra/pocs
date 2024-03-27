@@ -2,9 +2,9 @@
 #define OSM_DECODER_H
 
 #include <routingkit/tag_map.h>
+#include <stdint.h>
 
 #include <functional>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -15,29 +15,29 @@ enum class OSMIDType { node, way, relation };
 struct OSMRelationMember {
     OSMIDType type;
     uint64_t id;
-    const char* role;
+    char const* role;
 };
 
 void unordered_read_osm_pbf(
-    const std::string& file_name,
-    std::function<void(uint64_t osm_node_id, double latitude, double longitude, const TagMap& tags)> node_callback,
-    std::function<void(uint64_t osm_way_id, const std::vector<uint64_t>& osm_node_id_list, const TagMap& tags)>
+    std::string const& file_name,
+    std::function<void(uint64_t osm_node_id, double latitude, double longitude, TagMap const& tags)> node_callback,
+    std::function<void(uint64_t osm_way_id, std::vector<uint64_t> const& osm_node_id_list, TagMap const& tags)>
         way_callback,
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback,
-    std::function<void(const std::string& msg)> log_message = [](const std::string&) {});
+    std::function<void(std::string const& msg)> log_message = [](std::string const&) {});
 
 void ordered_read_osm_pbf(
-    const std::string& file_name,
-    std::function<void(uint64_t osm_node_id, double latitude, double longitude, const TagMap& tags)> node_callback,
-    std::function<void(uint64_t osm_way_id, const std::vector<uint64_t>& osm_node_id_list, const TagMap& tags)>
+    std::string const& file_name,
+    std::function<void(uint64_t osm_node_id, double latitude, double longitude, TagMap const& tags)> node_callback,
+    std::function<void(uint64_t osm_way_id, std::vector<uint64_t> const& osm_node_id_list, TagMap const& tags)>
         way_callback,
-    std::function<void(uint64_t osm_relation_id, const std::vector<OSMRelationMember>& member_list, const TagMap& tags)>
+    std::function<void(uint64_t osm_relation_id, std::vector<OSMRelationMember> const& member_list, TagMap const& tags)>
         relation_callback,
-    std::function<void(const std::string& msg)> log_message = [](const std::string&) {},
+    std::function<void(std::string const& msg)> log_message = [](std::string const&) {},
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered = false);
 
-void speedtest_osm_pbf_reading(const std::string& pbf_file, std::function<void(std::string)> log_message);
+void speedtest_osm_pbf_reading(std::string const& pbf_file, std::function<void(std::string)> log_message);
 
 }  // namespace RoutingKit
 

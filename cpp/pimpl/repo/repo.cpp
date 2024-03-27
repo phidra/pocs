@@ -2,7 +2,7 @@
 
 namespace lib {
 
-constexpr const char MALE = 'M';
+constexpr char const MALE = 'M';
 
 DataRepoConnection connect() {
     // stub

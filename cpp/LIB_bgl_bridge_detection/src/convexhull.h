@@ -1,9 +1,8 @@
 #pragma once
 
-#include <iostream>
-
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
+#include <iostream>
 
 #include "graphtypes.h"
 

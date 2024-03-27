@@ -1,11 +1,12 @@
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string>
-#include <boost/graph/connected_components.hpp>
-#include <boost/graph/biconnected_components.hpp>
-
 #include "connected_components.h"
+
+#include <boost/graph/biconnected_components.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+
 #include "convexhull.h"
 #include "dump_to_geojson.h"
 
@@ -24,7 +25,8 @@ vector<vector<VertexDescriptor>> compute_connected_vertices(Graph const& graph) 
         connected_vertices[conn_comp_index].push_back(v);
     }
 
-    sort(connected_vertices.begin(), connected_vertices.end(),
+    sort(connected_vertices.begin(),
+         connected_vertices.end(),
          [](vector<VertexDescriptor> const& left, vector<VertexDescriptor> const& right) {
              return left.size() <= right.size();
          });
@@ -34,7 +36,7 @@ vector<vector<VertexDescriptor>> compute_connected_vertices(Graph const& graph) 
 
 void display_connected_vertices(Graph const& graph,
                                 vector<vector<VertexDescriptor>> const& connected_vertices,
-                                const int size_display_threshold) {
+                                int const size_display_threshold) {
     cout << "Displaying the " << connected_vertices.size() << " connected-components :" << endl;
     for (auto connected_component : connected_vertices) {
         cout << "This component has " << connected_component.size() << " vertices" << endl;
@@ -107,8 +109,10 @@ BiconnResults compute_biconnected_vertices(Graph const& graph) {
     /* } */
 
     // transformation des articulation points :
-    transform(results.art_points_descriptors.cbegin(), results.art_points_descriptors.cend(),
-              back_inserter(results.art_points), [&graph](VertexDescriptor const& vd) {
+    transform(results.art_points_descriptors.cbegin(),
+              results.art_points_descriptors.cend(),
+              back_inserter(results.art_points),
+              [&graph](VertexDescriptor const& vd) {
                   return Point{graph[vd].latitude, graph[vd].longitude};
               });
 

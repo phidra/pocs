@@ -25,7 +25,7 @@ struct ShapePoint {
 };
 
 struct ShapePointCompare {
-    bool operator()(const ShapePoint& lh, const ShapePoint& rh) const { return lh.seq < rh.seq; }
+    bool operator()(ShapePoint const& lh, ShapePoint const& rh) const { return lh.seq < rh.seq; }
 };
 
 typedef std::vector<ShapePoint> ShapePoints;
@@ -36,13 +36,13 @@ class Shape {
     static std::string getId(Ref r) { return r->getId(); }
     Shape() {}
 
-    explicit Shape(const string& id) : _id(id) {}
+    explicit Shape(string const& id) : _id(id) {}
 
-    const std::string& getId() const { return _id; }
+    std::string const& getId() const { return _id; }
 
-    const ShapePoints& getPoints() const { return _shapePoints; }
+    ShapePoints const& getPoints() const { return _shapePoints; }
 
-    bool addPoint(const ShapePoint& p) {
+    bool addPoint(ShapePoint const& p) {
         for (size_t i = 0; i < _shapePoints.size(); i++) {
             if (_shapePoints[i].seq == p.seq)
                 return false;

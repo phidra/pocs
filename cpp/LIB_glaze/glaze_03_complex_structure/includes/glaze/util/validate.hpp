@@ -24,16 +24,16 @@ inline std::optional<source_info> get_source_info(const std::string_view buffer,
     }
 
     using V = std::decay_t<decltype(buffer[0])>;
-    const auto start = std::begin(buffer) + index;
-    const auto line = size_t(std::count(std::begin(buffer), start, static_cast<V>('\n')) + 1);
-    const auto rstart = std::rbegin(buffer) + buffer.size() - index - 1;
-    const auto prev_new_line =
+    auto const start = std::begin(buffer) + index;
+    auto const line = size_t(std::count(std::begin(buffer), start, static_cast<V>('\n')) + 1);
+    auto const rstart = std::rbegin(buffer) + buffer.size() - index - 1;
+    auto const prev_new_line =
         std::find((std::min)(rstart + 1, std::rend(buffer)), std::rend(buffer), static_cast<V>('\n'));
-    const auto column = size_t(std::distance(rstart, prev_new_line));
-    const auto next_new_line =
+    auto const column = size_t(std::distance(rstart, prev_new_line));
+    auto const next_new_line =
         std::find((std::min)(start + 1, std::end(buffer)), std::end(buffer), static_cast<V>('\n'));
 
-    const auto offset = (prev_new_line == std::rend(buffer) ? 0 : index - column + 1);
+    auto const offset = (prev_new_line == std::rend(buffer) ? 0 : index - column + 1);
     auto context_begin = std::begin(buffer) + offset;
     auto context_end = next_new_line;
 
@@ -56,8 +56,8 @@ inline std::optional<source_info> get_source_info(const std::string_view buffer,
     }
 
     if constexpr (std::same_as<V, std::byte>) {
-        std::string context{reinterpret_cast<const char*>(&(*context_begin)),
-                            reinterpret_cast<const char*>(&(*context_end))};
+        std::string context{reinterpret_cast<char const*>(&(*context_begin)),
+                            reinterpret_cast<char const*>(&(*context_end))};
         return source_info{line, column, context, index, front_truncation, rear_truncation};
     } else {
         std::string context{context_begin, context_end};
@@ -66,7 +66,7 @@ inline std::optional<source_info> get_source_info(const std::string_view buffer,
 }
 
 inline std::string generate_error_string(const std::string_view error,
-                                         const source_info& info,
+                                         source_info const& info,
                                          const std::string_view filename = "") {
     std::string s{};
 

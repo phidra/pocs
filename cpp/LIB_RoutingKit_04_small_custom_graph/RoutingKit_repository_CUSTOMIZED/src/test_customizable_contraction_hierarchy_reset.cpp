@@ -1,22 +1,22 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
-#include "expect.h"
-
+#include <random>
 #include <stdexcept>
 #include <vector>
-#include <random>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;
 
 int main(int argc, char* argv[]) {
     try {
-        const unsigned node_count = 8;
+        unsigned const node_count = 8;
 
         vector<unsigned> tail = {0, 1, 1, 1, 2, 3, 4, 4, 4, 5, 6, 6, 6, 7, 7, 7},
                          head = {4, 5, 6, 7, 6, 7, 0, 6, 7, 1, 1, 2, 4, 1, 3, 4},

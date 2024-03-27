@@ -1,11 +1,11 @@
 #include "GreeterFactory.h"
 
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
 
+#include "GreeterImplReversed.h"
 #include "GreeterImplSimple.h"
 #include "GreeterImplThreaded.h"
-#include "GreeterImplReversed.h"
 
 std::unique_ptr<IGreeter> create_greeter(GreeterType greeter_type) {
     switch (greeter_type) {

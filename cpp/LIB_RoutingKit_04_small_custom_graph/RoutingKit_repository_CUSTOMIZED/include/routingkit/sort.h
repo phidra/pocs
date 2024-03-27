@@ -1,12 +1,12 @@
 #ifndef ROUTING_KIT_SORT_H
 #define ROUTING_KIT_SORT_H
 
+#include <assert.h>
 #include <routingkit/permutation.h>
 
-#include <vector>
-#include <assert.h>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -53,14 +53,14 @@ namespace RoutingKit {
 //
 
 template <class T, class C>
-std::vector<unsigned> compute_stable_sort_permutation_using_comparator(const std::vector<T>& v, const C& is_less) {
+std::vector<unsigned> compute_stable_sort_permutation_using_comparator(std::vector<T> const& v, const C& is_less) {
     std::vector<unsigned> p = identity_permutation(v.size());
     std::stable_sort(p.begin(), p.end(), [&](unsigned l, unsigned r) { return is_less(v[l], v[r]); });
     return p;  // NVRO
 }
 
 template <class T, class C>
-std::vector<T> stable_sort_using_comparator(const std::vector<T>& v, const C& is_less) {
+std::vector<T> stable_sort_using_comparator(std::vector<T> const& v, const C& is_less) {
     std::vector<T> r = v;
     std::stable_sort(r.begin(), r.end(), is_less);
     return r;  // NVRO
@@ -73,14 +73,14 @@ std::vector<T> stable_sort_using_comparator(std::vector<T>&& v, const C& is_less
 }
 
 template <class T, class C>
-std::vector<unsigned> compute_sort_permutation_using_comparator(const std::vector<T>& v, const C& is_less) {
+std::vector<unsigned> compute_sort_permutation_using_comparator(std::vector<T> const& v, const C& is_less) {
     std::vector<unsigned> p = identity_permutation(v.size());
     std::sort(p.begin(), p.end(), [&](unsigned l, unsigned r) { return is_less(v[l], v[r]); });
     return p;  // NVRO
 }
 
 template <class T, class C>
-std::vector<T> sort_using_comparator(const std::vector<T>& v, const C& is_less) {
+std::vector<T> sort_using_comparator(std::vector<T> const& v, const C& is_less) {
     std::vector<T> r = v;
     std::sort(r.begin(), r.end(), is_less);
     return r;  // NVRO
@@ -93,7 +93,7 @@ std::vector<T> sort_using_comparator(std::vector<T>&& v, const C& is_less) {
 }
 
 template <class T, class C>
-bool is_sorted_using_comparator(const std::vector<T>& v, const C& is_less) {
+bool is_sorted_using_comparator(std::vector<T> const& v, const C& is_less) {
     for (unsigned i = 1; i < v.size(); ++i)
         if (is_less(v[i], v[i - 1]))
             return false;
@@ -101,21 +101,21 @@ bool is_sorted_using_comparator(const std::vector<T>& v, const C& is_less) {
 }
 
 template <class T, class C>
-std::vector<unsigned> compute_inverse_sort_permutation_using_comparator(const std::vector<T>& v, const C& is_less) {
+std::vector<unsigned> compute_inverse_sort_permutation_using_comparator(std::vector<T> const& v, const C& is_less) {
     return invert_permutation(compute_sort_permutation_using_comparator(v, is_less));
 }
 
 template <class T, class C>
-std::vector<unsigned> compute_inverse_stable_sort_permutation_using_comparator(const std::vector<T>& v,
+std::vector<unsigned> compute_inverse_stable_sort_permutation_using_comparator(std::vector<T> const& v,
                                                                                const C& is_less) {
     return invert_permutation(compute_stable_sort_permutation_using_comparator(v, is_less));
 }
 
 namespace detail {
-const unsigned bucket_sort_min_key_to_element_ratio = 16;
+unsigned const bucket_sort_min_key_to_element_ratio = 16;
 
 template <class T, class K>
-std::vector<unsigned> compute_key_pos(const std::vector<T>& v, unsigned key_count, const K& get_key) {
+std::vector<unsigned> compute_key_pos(std::vector<T> const& v, unsigned key_count, const K& get_key) {
     std::vector<unsigned> key_pos(key_count, 0);
     for (unsigned i = 0; i < v.size(); ++i) {
         unsigned k = get_key(v[i]);
@@ -174,7 +174,7 @@ namespace detail {
 // be stable.
 
 template <bool is_stable, class T, class K>
-std::vector<unsigned> compute_maybe_stable_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_maybe_stable_sort_permutation_using_key(std::vector<T> const& v,
                                                                       unsigned key_count,
                                                                       const K& get_key) {
     std::vector<unsigned> p;
@@ -199,14 +199,14 @@ std::vector<unsigned> compute_maybe_stable_sort_permutation_using_key(const std:
 }  // namespace detail
 
 template <class T, class K>
-std::vector<unsigned> compute_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_sort_permutation_using_key(std::vector<T> const& v,
                                                          unsigned key_count,
                                                          const K& get_key) {
     return detail::compute_maybe_stable_sort_permutation_using_key<false>(v, key_count, get_key);
 }
 
 template <class T, class K>
-std::vector<unsigned> compute_stable_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_stable_sort_permutation_using_key(std::vector<T> const& v,
                                                                 unsigned key_count,
                                                                 const K& get_key) {
     return detail::compute_maybe_stable_sort_permutation_using_key<true>(v, key_count, get_key);
@@ -214,7 +214,7 @@ std::vector<unsigned> compute_stable_sort_permutation_using_key(const std::vecto
 
 namespace detail {
 template <bool is_stable, class T, class K>
-std::vector<unsigned> compute_inverse_maybe_stable_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_inverse_maybe_stable_sort_permutation_using_key(std::vector<T> const& v,
                                                                               unsigned key_count,
                                                                               const K& get_key) {
     std::vector<unsigned> p;
@@ -238,14 +238,14 @@ std::vector<unsigned> compute_inverse_maybe_stable_sort_permutation_using_key(co
 }  // namespace detail
 
 template <class T, class K>
-std::vector<unsigned> compute_inverse_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_inverse_sort_permutation_using_key(std::vector<T> const& v,
                                                                  unsigned key_count,
                                                                  const K& get_key) {
     return detail::compute_inverse_maybe_stable_sort_permutation_using_key<false>(v, key_count, get_key);
 }
 
 template <class T, class K>
-std::vector<unsigned> compute_inverse_stable_sort_permutation_using_key(const std::vector<T>& v,
+std::vector<unsigned> compute_inverse_stable_sort_permutation_using_key(std::vector<T> const& v,
                                                                         unsigned key_count,
                                                                         const K& get_key) {
     return detail::compute_inverse_maybe_stable_sort_permutation_using_key<true>(v, key_count, get_key);
@@ -253,7 +253,7 @@ std::vector<unsigned> compute_inverse_stable_sort_permutation_using_key(const st
 
 namespace detail {
 template <bool is_stable, class T, class K>
-std::vector<T> maybe_stable_sort_using_key(const std::vector<T>& v, unsigned key_count, const K& get_key) {
+std::vector<T> maybe_stable_sort_using_key(std::vector<T> const& v, unsigned key_count, const K& get_key) {
     std::vector<T> r;
 
     if (v.size() >= key_count / bucket_sort_min_key_to_element_ratio) {
@@ -297,7 +297,7 @@ std::vector<T> maybe_stable_sort_using_key(std::vector<T>&& v, unsigned key_coun
 }  // namespace detail
 
 template <class T, class K>
-std::vector<T> sort_using_key(const std::vector<T>& v, unsigned key_count, const K& get_key) {
+std::vector<T> sort_using_key(std::vector<T> const& v, unsigned key_count, const K& get_key) {
     return detail::maybe_stable_sort_using_key<false>(v, key_count, get_key);  // NVRO
 }
 
@@ -307,7 +307,7 @@ std::vector<T> sort_using_key(std::vector<T>&& v, unsigned key_count, const K& g
 }
 
 template <class T, class K>
-std::vector<T> stable_sort_using_key(const std::vector<T>& v, unsigned key_count, const K& get_key) {
+std::vector<T> stable_sort_using_key(std::vector<T> const& v, unsigned key_count, const K& get_key) {
     return detail::maybe_stable_sort_using_key<true>(v, key_count, get_key);  // NVRO
 }
 
@@ -317,7 +317,7 @@ std::vector<T> stable_sort_using_key(std::vector<T>&& v, unsigned key_count, con
 }
 
 template <class T, class K>
-bool is_sorted_using_key(const std::vector<T>& v, unsigned key_count, const K& get_key) {
+bool is_sorted_using_key(std::vector<T> const& v, unsigned key_count, const K& get_key) {
     for (unsigned i = 1; i < v.size(); ++i)
         if (get_key(v[i]) < get_key(v[i - 1]))
             return false;
@@ -325,27 +325,27 @@ bool is_sorted_using_key(const std::vector<T>& v, unsigned key_count, const K& g
 }
 
 template <class T>
-std::vector<unsigned> compute_sort_permutation_using_less(const std::vector<T>& v) {
+std::vector<unsigned> compute_sort_permutation_using_less(std::vector<T> const& v) {
     return compute_sort_permutation_using_comparator(v, [](const T& l, const T& r) { return l < r; });
 }
 
 template <class T>
-std::vector<unsigned> compute_stable_sort_permutation_using_less(const std::vector<T>& v) {
+std::vector<unsigned> compute_stable_sort_permutation_using_less(std::vector<T> const& v) {
     return compute_stable_sort_permutation_using_comparator(v, [](const T& l, const T& r) { return l < r; });
 }
 
 template <class T>
-std::vector<unsigned> compute_inverse_sort_permutation_using_less(const std::vector<T>& v) {
+std::vector<unsigned> compute_inverse_sort_permutation_using_less(std::vector<T> const& v) {
     return invert_permutation(compute_sort_permutation_using_less(v));
 }
 
 template <class T>
-std::vector<unsigned> compute_inverse_stable_sort_permutation_using_less(const std::vector<T>& v) {
+std::vector<unsigned> compute_inverse_stable_sort_permutation_using_less(std::vector<T> const& v) {
     return invert_permutation(compute_stable_sort_permutation_using_less(v));
 }
 
 template <class T>
-std::vector<T> stable_sort_using_less(const std::vector<T>& v) {
+std::vector<T> stable_sort_using_less(std::vector<T> const& v) {
     return stable_sort_using_comparator(v, [](const T& l, const T& r) { return l < r; });
 }
 
@@ -355,7 +355,7 @@ std::vector<T> stable_sort_using_less(std::vector<T>&& v) {
 }
 
 template <class T>
-std::vector<T> sort_using_less(const std::vector<T>& v) {
+std::vector<T> sort_using_less(std::vector<T> const& v) {
     return sort_using_comparator(v, [](const T& l, const T& r) { return l < r; });
 }
 
@@ -365,7 +365,7 @@ std::vector<T> sort_using_less(std::vector<T>&& v) {
 }
 
 template <class T>
-bool is_sorted_using_less(const std::vector<T>& v) {
+bool is_sorted_using_less(std::vector<T> const& v) {
     return is_sorted_using_comparator(v, [](const T& l, const T& r) { return l < r; });
 }
 

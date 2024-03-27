@@ -1,7 +1,8 @@
-#include <iostream>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <iostream>
 
 inline size_t get_file_size(int fd) {
     struct stat st;
@@ -19,8 +20,8 @@ struct FileLock {
     int file_descriptor;
     LockType lock_type;
     useconds_t spin_duration;
-    FileLock(int file_descriptor_, LockType lock_type_, useconds_t spin_duration_ = 10000)
-        : file_descriptor{file_descriptor_}, lock_type{lock_type_}, spin_duration{spin_duration_} {
+    FileLock(int file_descriptor_, LockType lock_type_, useconds_t spin_duration_ = 10000) :
+        file_descriptor{file_descriptor_}, lock_type{lock_type_}, spin_duration{spin_duration_} {
         // acquiring lock :
         while (flock(file_descriptor, static_cast<int>(lock_type)) != 0) {
             usleep(spin_duration);  // spinning  (WARNING : there is no timeout)

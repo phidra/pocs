@@ -1,10 +1,10 @@
 #include <routingkit/bit_vector.h>
-#include <routingkit/vector_io.h>
 #include <routingkit/dijkstra.h>
 #include <routingkit/inverse_vector.h>
+#include <routingkit/vector_io.h>
 
-#include <vector>
 #include <random>
+#include <vector>
 
 #include "expect.h"
 #include "verify.h"
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
 
         vector<unsigned> tail = invert_inverse_vector(first_out);
 
-        const unsigned path_test_count = 1000;
-        const unsigned test_count = 1000;
+        unsigned const path_test_count = 1000;
+        unsigned const test_count = 1000;
         unsigned node_count = first_out.size() - 1;
         unsigned arc_count = head.size();
 

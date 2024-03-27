@@ -1,10 +1,10 @@
-#include <iostream>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
+#include <iostream>
 
 constexpr int default_age = 42;
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char const* argv[]) {
     try {
         boost::program_options::options_description spec{"Options"};
         spec.add_options()("age", boost::program_options::value<int>()->default_value(default_age), "age du capitaine");
@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
         } else {
             throw std::runtime_error("on ne devrait pas finir ici, vu qu'on a un 'default_age' !");
         }
-    } catch (const boost::program_options::error& ex) {
+    } catch (boost::program_options::error const& ex) {
         std::cerr << ex.what() << '\n';
     }
 }

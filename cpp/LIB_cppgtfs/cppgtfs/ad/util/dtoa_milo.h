@@ -4,6 +4,7 @@
 
 #if defined(_MSC_VER)
 #include <intrin.h>
+
 #include "msinttypes/stdint.h"
 #else
 #include <stdint.h>
@@ -41,13 +42,13 @@ struct DiyFp {
         }
     }
 
-    DiyFp operator-(const DiyFp& rhs) const {
+    DiyFp operator-(DiyFp const& rhs) const {
         assert(e == rhs.e);
         assert(f >= rhs.f);
         return DiyFp(f - rhs.f, e);
     }
 
-    DiyFp operator*(const DiyFp& rhs) const {
+    DiyFp operator*(DiyFp const& rhs) const {
 #if defined(_MSC_VER) && defined(_M_AMD64)
         uint64_t h;
         uint64_t l = _umul128(f, rhs.f, &h);
@@ -123,10 +124,10 @@ struct DiyFp {
         *minus = mi;
     }
 
-    static const int kDiySignificandSize = 64;
-    static const int kDpSignificandSize = 52;
-    static const int kDpExponentBias = 0x3FF + kDpSignificandSize;
-    static const int kDpMinExponent = -kDpExponentBias;
+    static int const kDiySignificandSize = 64;
+    static int const kDpSignificandSize = 52;
+    static int const kDpExponentBias = 0x3FF + kDpSignificandSize;
+    static int const kDpMinExponent = -kDpExponentBias;
     static const uint64_t kDpExponentMask = UINT64_C2(0x7FF00000, 0x00000000);
     static const uint64_t kDpSignificandMask = UINT64_C2(0x000FFFFF, 0xFFFFFFFF);
     static const uint64_t kDpHiddenBit = UINT64_C2(0x00100000, 0x00000000);
@@ -221,10 +222,22 @@ inline unsigned CountDecimalDigit32(uint32_t n) {
     return 10;
 }
 
-inline void DigitGen(const DiyFp& W, const DiyFp& Mp, uint64_t delta, char* buffer, int* len, int* K) {
-    static const uint64_t kPow10[] = {1,           10,           100,           1000,           10000,
-                                      100000,      1000000,      10000000,      100000000,      1000000000,
-                                      10000000000, 100000000000, 1000000000000, 10000000000000, 100000000000000};
+inline void DigitGen(DiyFp const& W, DiyFp const& Mp, uint64_t delta, char* buffer, int* len, int* K) {
+    static const uint64_t kPow10[] = {1,
+                                      10,
+                                      100,
+                                      1000,
+                                      10000,
+                                      100000,
+                                      1000000,
+                                      10000000,
+                                      100000000,
+                                      1000000000,
+                                      10000000000,
+                                      100000000000,
+                                      1000000000000,
+                                      10000000000000,
+                                      100000000000000};
     const DiyFp one(uint64_t(1) << -Mp.e, Mp.e);
     const DiyFp wp_w = Mp - W;
     uint32_t p1 = static_cast<uint32_t>(Mp.f >> -one.e);
@@ -326,8 +339,8 @@ inline void Grisu2(double value, char* buffer, int* length, int* K) {
     DigitGen(W, Wp, Wp.f - Wm.f, buffer, length, K);
 }
 
-inline const char* GetDigitsLut() {
-    static const char cDigitsLut[200] = {
+inline char const* GetDigitsLut() {
+    static char const cDigitsLut[200] = {
         '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0', '7', '0', '8', '0', '9',
         '1', '0', '1', '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9',
         '2', '0', '2', '1', '2', '2', '2', '3', '2', '4', '2', '5', '2', '6', '2', '7', '2', '8', '2', '9',
@@ -350,11 +363,11 @@ inline void WriteExponent(int K, char* buffer) {
     if (K >= 100) {
         *buffer++ = '0' + static_cast<char>(K / 100);
         K %= 100;
-        const char* d = GetDigitsLut() + K * 2;
+        char const* d = GetDigitsLut() + K * 2;
         *buffer++ = d[0];
         *buffer++ = d[1];
     } else if (K >= 10) {
-        const char* d = GetDigitsLut() + K * 2;
+        char const* d = GetDigitsLut() + K * 2;
         *buffer++ = d[0];
         *buffer++ = d[1];
     } else
@@ -364,7 +377,7 @@ inline void WriteExponent(int K, char* buffer) {
 }
 
 inline void Prettify(char* buffer, int length, int k) {
-    const int kk = length + k;  // 10^(kk-1) <= v < 10^kk
+    int const kk = length + k;  // 10^(kk-1) <= v < 10^kk
 
     if (length <= kk && kk <= 21) {
         // 1234e7 -> 12340000000
@@ -380,7 +393,7 @@ inline void Prettify(char* buffer, int length, int k) {
         buffer[length + 1] = '\0';
     } else if (-6 < kk && kk <= 0) {
         // 1234e-6 -> 0.001234
-        const int offset = 2 - kk;
+        int const offset = 2 - kk;
         memmove(&buffer[offset], &buffer[0], length);
         buffer[0] = '0';
         buffer[1] = '.';

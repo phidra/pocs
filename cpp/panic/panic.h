@@ -27,8 +27,8 @@ struct panic_dynamic_string_view {
 template <class... Args>
 struct panic_format {
     template <class T>
-    consteval panic_format(const T& s, std::source_location loc = std::source_location::current()) noexcept
-        : fmt{s}, loc{loc} {}
+    consteval panic_format(const T& s, std::source_location loc = std::source_location::current()) noexcept :
+        fmt{s}, loc{loc} {}
 
     std::format_string<Args...> fmt;
     std::source_location loc;
@@ -37,7 +37,7 @@ struct panic_format {
 //--------------------------------------------------------------------------------------------------
 // panic_impl
 //--------------------------------------------------------------------------------------------------
-[[noreturn]] void panic_impl(const char* s) noexcept;
+[[noreturn]] void panic_impl(char const* s) noexcept;
 
 //--------------------------------------------------------------------------------------------------
 // panic
@@ -50,8 +50,8 @@ struct panic_format {
 template <class... Args>
 [[noreturn]] void panic(panic_format<std::type_identity_t<Args>...> fmt, Args&&... args) noexcept
     requires(sizeof...(Args) > 0) {
-    auto msg = std::format("{}:{} panic: {}\n", fmt.loc.file_name(), fmt.loc.line(),
-                           std::format(fmt.fmt, std::forward<Args>(args)...));
+    auto msg = std::format(
+        "{}:{} panic: {}\n", fmt.loc.file_name(), fmt.loc.line(), std::format(fmt.fmt, std::forward<Args>(args)...));
     panic_impl(msg.c_str());
 }
 }  // namespace panic

@@ -1,8 +1,8 @@
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-
 #include "dimacs.h"
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 
 void create_dimacs(std::string output_dir,
                    std::map<int, osmium::Location> const& nodes,

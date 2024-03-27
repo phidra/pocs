@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "modules/module1.h"
-#include "modules/submodules/module2.h"
 #include "modules/submodules/deeper/module3.h"
+#include "modules/submodules/module2.h"
 
 using namespace std;
 

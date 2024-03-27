@@ -90,7 +90,7 @@ inline constexpr auto map_tuple(Func&& f, Tuple&& tuple) {
 }
 
 template <size_t n_groups>
-constexpr auto group_sizes(const std::array<size_t, n_groups>& indices, size_t n_total) {
+constexpr auto group_sizes(std::array<size_t, n_groups> const& indices, size_t n_total) {
     std::array<size_t, n_groups> diffs;
 
     for (size_t i = 0; i < n_groups - 1; ++i) {

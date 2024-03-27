@@ -5,9 +5,9 @@
 #ifndef AD_CPPGTFS_GTFS_FLAT_ROUTE_H_
 #define AD_CPPGTFS_GTFS_FLAT_ROUTE_H_
 
+#include <iomanip>
 #include <sstream>
 #include <string>
-#include <iomanip>
 
 namespace ad {
 namespace cppgtfs {

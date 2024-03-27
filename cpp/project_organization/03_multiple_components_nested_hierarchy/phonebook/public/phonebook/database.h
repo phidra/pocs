@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <tuple>
+#include <vector>
 
 #include "person/person.h"
 #include "personal_infos/address/address.h"

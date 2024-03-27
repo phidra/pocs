@@ -1,18 +1,17 @@
-#include <routingkit/nested_dissection.h>
-#include <routingkit/constants.h>
-#include <routingkit/graph_util.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
-#include <routingkit/filter.h>
-#include <routingkit/id_mapper.h>
-#include <routingkit/bit_vector.h>
-#include <routingkit/timer.h>
-
 #include <assert.h>
+#include <routingkit/bit_vector.h>
+#include <routingkit/constants.h>
+#include <routingkit/filter.h>
+#include <routingkit/graph_util.h>
+#include <routingkit/id_mapper.h>
+#include <routingkit/inverse_vector.h>
+#include <routingkit/nested_dissection.h>
+#include <routingkit/permutation.h>
+#include <routingkit/timer.h>
 
 namespace RoutingKit {
 
-void assert_fragment_is_valid(const GraphFragment& fragment){
+void assert_fragment_is_valid(GraphFragment const& fragment){
 #ifndef NDEBUG
 //	unsigned node_count = fragment.node_count();
 //	unsigned arc_count = fragment.arc_count();
@@ -39,7 +38,7 @@ void assert_fragment_is_valid(const GraphFragment& fragment){
 }
 
 GraphFragment
-    make_graph_fragment(unsigned node_count, const std::vector<unsigned>& tail, const std::vector<unsigned>& head) {
+    make_graph_fragment(unsigned node_count, std::vector<unsigned> const& tail, std::vector<unsigned> const& head) {
     unsigned arc_count = head.size();
 
     GraphFragment fragment;
@@ -84,15 +83,15 @@ GraphFragment
     return fragment;
 }
 
-BlockingFlow::BlockingFlow(const GraphFragment& fragment, BitVector is_source_, BitVector is_target_)
-    : fragment(&fragment),
-      is_source(std::move(is_source_)),
-      is_target(std::move(is_target_)),
+BlockingFlow::BlockingFlow(GraphFragment const& fragment, BitVector is_source_, BitVector is_target_) :
+    fragment(&fragment),
+    is_source(std::move(is_source_)),
+    is_target(std::move(is_target_)),
 
-      flow_intensity(0),
-      is_arc_saturated(fragment.arc_count(), false),
-      is_arc_blocked(fragment.arc_count(), BitVector::uninitialized),
-      is_finished_flag(false) {
+    flow_intensity(0),
+    is_arc_saturated(fragment.arc_count(), false),
+    is_arc_blocked(fragment.arc_count(), BitVector::uninitialized),
+    is_finished_flag(false) {
 #ifndef NDEBUG
     assert_fragment_is_valid(fragment);
     assert(is_source.size() == fragment.node_count());
@@ -105,10 +104,10 @@ BlockingFlow::BlockingFlow(const GraphFragment& fragment, BitVector is_source_, 
 }
 
 namespace {
-bool compute_blocking_flow(const GraphFragment& fragment,
-                           const BitVector& is_source,
-                           const BitVector& is_target,
-                           const BitVector& is_arc_saturated,
+bool compute_blocking_flow(GraphFragment const& fragment,
+                           BitVector const& is_source,
+                           BitVector const& is_target,
+                           BitVector const& is_arc_saturated,
                            BitVector& is_arc_blocked) {
     BitVector is_on_same_level_or_lower(fragment.node_count(), false);
     BitVector was_node_pushed(fragment.node_count(), false);
@@ -160,9 +159,9 @@ bool compute_blocking_flow(const GraphFragment& fragment,
     return is_a_target_node_reachable;
 }
 
-unsigned augment_all_non_blocked_path(const GraphFragment& fragment,
-                                      const BitVector& is_source,
-                                      const BitVector& is_target,
+unsigned augment_all_non_blocked_path(GraphFragment const& fragment,
+                                      BitVector const& is_source,
+                                      BitVector const& is_target,
                                       BitVector& is_arc_saturated,
                                       BitVector& is_arc_blocked) {
     std::vector<unsigned> current_path_node(fragment.node_count());
@@ -421,7 +420,7 @@ void BlockingFlow::advance() {
 
 namespace {
 template <class GetKey>
-BitVector mark_first_n_elements(unsigned n, unsigned total_element_count, const GetKey& sort_key) {
+BitVector mark_first_n_elements(unsigned n, unsigned total_element_count, GetKey const& sort_key) {
     auto v = identity_permutation(total_element_count);
     auto begin = v.begin(), mid = v.begin() + n, end = v.end();
 
@@ -440,7 +439,7 @@ struct SourceTargetResult {
 };
 
 template <class GetKey>
-SourceTargetResult select_source_and_target(unsigned n, unsigned node_count, const GetKey& sort_key) {
+SourceTargetResult select_source_and_target(unsigned n, unsigned node_count, GetKey const& sort_key) {
     assert(n <= node_count / 2);
     auto v = identity_permutation(node_count);
     auto begin = v.begin(), source_end = v.begin() + n, target_begin = v.begin() + node_count - n, end = v.end();
@@ -477,11 +476,11 @@ void pick_smaller_side(CutSide& c) {
     }
 }
 
-CutSide inertial_flow(const GraphFragment& g,
+CutSide inertial_flow(GraphFragment const& g,
                       unsigned min_balance,
-                      const std::vector<float>& latitude,
-                      const std::vector<float>& longitude,
-                      const std::function<void(const std::string&)>& log_message) {
+                      std::vector<float> const& latitude,
+                      std::vector<float> const& longitude,
+                      std::function<void(std::string const&)> const& log_message) {
     assert_fragment_is_valid(g);
 
     long long last_report = 0;
@@ -493,7 +492,7 @@ CutSide inertial_flow(const GraphFragment& g,
         last_report = start_time;
     }
 
-    const unsigned node_count = g.node_count();
+    unsigned const node_count = g.node_count();
 
     unsigned side_size = (node_count * min_balance) / 100;
     if (side_size == 0)
@@ -501,25 +500,25 @@ CutSide inertial_flow(const GraphFragment& g,
 
     auto horizontal_source_target =
         select_source_and_target(side_size, node_count, [&](unsigned x) { return latitude[g.global_node_id[x]]; });
-    BlockingFlow horizontal_cutter(g, std::move(horizontal_source_target.is_source),
-                                   std::move(horizontal_source_target.is_target));
+    BlockingFlow horizontal_cutter(
+        g, std::move(horizontal_source_target.is_source), std::move(horizontal_source_target.is_target));
 
     auto vertical_source_target =
         select_source_and_target(side_size, node_count, [&](unsigned x) { return longitude[g.global_node_id[x]]; });
-    BlockingFlow vertical_cutter(g, std::move(vertical_source_target.is_source),
-                                 std::move(vertical_source_target.is_target));
+    BlockingFlow vertical_cutter(
+        g, std::move(vertical_source_target.is_source), std::move(vertical_source_target.is_target));
 
     auto main_diagonal_source_target = select_source_and_target(side_size, node_count, [&](unsigned x) {
         return latitude[g.global_node_id[x]] + longitude[g.global_node_id[x]];
     });
-    BlockingFlow main_diagonal_cutter(g, std::move(main_diagonal_source_target.is_source),
-                                      std::move(main_diagonal_source_target.is_target));
+    BlockingFlow main_diagonal_cutter(
+        g, std::move(main_diagonal_source_target.is_source), std::move(main_diagonal_source_target.is_target));
 
     auto next_diagonal_source_target = select_source_and_target(side_size, node_count, [&](unsigned x) {
         return latitude[g.global_node_id[x]] - longitude[g.global_node_id[x]];
     });
-    BlockingFlow next_diagonal_cutter(g, std::move(next_diagonal_source_target.is_source),
-                                      std::move(next_diagonal_source_target.is_target));
+    BlockingFlow next_diagonal_cutter(
+        g, std::move(next_diagonal_source_target.is_source), std::move(next_diagonal_source_target.is_target));
 
     auto get_next_cutter = [&]() -> BlockingFlow& {
         if (horizontal_cutter.get_current_flow_intensity() <= vertical_cutter.get_current_flow_intensity() &&
@@ -571,10 +570,10 @@ CutSide inertial_flow(const GraphFragment& g,
     }
 }
 
-CutSide inertial_flow(const GraphFragment& g,
-                      const std::vector<float>& latitude,
-                      const std::vector<float>& longitude,
-                      const std::function<void(const std::string&)>& log_message) {
+CutSide inertial_flow(GraphFragment const& g,
+                      std::vector<float> const& latitude,
+                      std::vector<float> const& longitude,
+                      std::function<void(std::string const&)> const& log_message) {
     assert_fragment_is_valid(g);
 
     auto c25 = inertial_flow(g, 25, latitude, longitude, log_message);
@@ -646,7 +645,9 @@ std::vector<GraphFragment> decompose_graph_fragment_into_connected_components(Gr
 
     std::vector<GraphFragment> part_list;
 
-    auto generate_part = [&](unsigned component_node_begin, unsigned component_node_end, unsigned component_arc_begin,
+    auto generate_part = [&](unsigned component_node_begin,
+                             unsigned component_node_end,
+                             unsigned component_arc_begin,
                              unsigned component_arc_end) {
         GraphFragment part;
 
@@ -713,7 +714,7 @@ std::vector<GraphFragment> decompose_graph_fragment_into_connected_components(Gr
     return part_list;  // NVRO
 }
 
-BitVector derive_separator_from_cut(const GraphFragment& fragment, const BitVector& cut) {
+BitVector derive_separator_from_cut(GraphFragment const& fragment, BitVector const& cut) {
     assert_fragment_is_valid(fragment);
 
     bool small_side = cut.population_count() <= fragment.node_count() / 2;
@@ -729,8 +730,8 @@ BitVector derive_separator_from_cut(const GraphFragment& fragment, const BitVect
 
 SeparatorDecomposition compute_separator_decomposition(
     GraphFragment fragment,
-    const std::function<BitVector(const GraphFragment&)>& compute_separator,
-    const std::function<void(const std::string&)>& log_message) {
+    std::function<BitVector(GraphFragment const&)> const& compute_separator,
+    std::function<void(std::string const&)> const& log_message) {
     assert_fragment_is_valid(fragment);
 
     long long timer = 0;
@@ -832,18 +833,18 @@ SeparatorDecomposition compute_separator_decomposition(
 
 std::vector<unsigned> compute_nested_node_dissection_order(
     GraphFragment fragment,
-    const std::function<BitVector(const GraphFragment&)>& compute_separator,
-    const std::function<void(const std::string&)>& log_message) {
+    std::function<BitVector(GraphFragment const&)> const& compute_separator,
+    std::function<void(std::string const&)> const& log_message) {
     return compute_separator_decomposition(fragment, compute_separator, log_message).order;
 }
 
 std::vector<unsigned> compute_nested_node_dissection_order_using_inertial_flow(
     unsigned node_count,
-    const std::vector<unsigned>& tail,
-    const std::vector<unsigned>& head,
-    const std::vector<float>& latitude,
-    const std::vector<float>& longitude,
-    const std::function<void(const std::string&)>& log_message) {
+    std::vector<unsigned> const& tail,
+    std::vector<unsigned> const& head,
+    std::vector<float> const& latitude,
+    std::vector<float> const& longitude,
+    std::function<void(std::string const&)> const& log_message) {
     long long timer = 0;
 
     if (log_message) {
@@ -856,13 +857,13 @@ std::vector<unsigned> compute_nested_node_dissection_order_using_inertial_flow(
         log_message("Finished making graph fragment, needed " + std::to_string(timer) + "musec");
     }
 
-    auto compute_cut = [&](const GraphFragment& fragment) -> BitVector {
+    auto compute_cut = [&](GraphFragment const& fragment) -> BitVector {
         auto c = inertial_flow(fragment, latitude, longitude, log_message);
         pick_smaller_side(c);
         return std::move(c.is_node_on_side);
     };
 
-    auto compute_separator = [&](const GraphFragment& fragment) -> BitVector {
+    auto compute_separator = [&](GraphFragment const& fragment) -> BitVector {
         return derive_separator_from_cut(fragment, compute_cut(fragment));
     };
 

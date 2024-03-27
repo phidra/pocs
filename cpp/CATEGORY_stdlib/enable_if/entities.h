@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 // A bunch of classes that the POC uses.
 // Some of thoses have a 'toString' method, some don't.
@@ -10,8 +10,8 @@ struct Person {
     std::string first_name;
     std::string last_name;
     int age;
-    Person(std::string first_name_, std::string last_name_, int age_)
-        : first_name(first_name_), last_name(last_name_), age(age_) {}
+    Person(std::string first_name_, std::string last_name_, int age_) :
+        first_name(first_name_), last_name(last_name_), age(age_) {}
     std::string toString() const { return std::string("PERSON> ") + first_name + std::string(" ") + last_name; }
 };
 

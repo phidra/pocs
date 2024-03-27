@@ -1,13 +1,13 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
 #include <routingkit/contraction_hierarchy.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include <iomanip>
 
 using namespace RoutingKit;
 using namespace std;

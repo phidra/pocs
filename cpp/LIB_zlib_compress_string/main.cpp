@@ -1,8 +1,8 @@
-#include <iostream>
-#include <stdexcept>
-#include <iomanip>
-#include <sstream>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 #include "zcompression.h"
 

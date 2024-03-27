@@ -6,6 +6,7 @@
 #define AD_CPPGTFS_GTFS_TRANSFER_H_
 
 #include <string>
+
 #include "Stop.h"
 #include "flat/Transfer.h"
 
@@ -21,8 +22,8 @@ class Transfer {
     typedef flat::Transfer::TYPE TYPE;
     Transfer() {}
 
-    Transfer(Stop* fromStop, Stop* toStop, TYPE type, int32_t tTime)
-        : _fromStop(fromStop), _toStop(toStop), _type(type), _tTime(tTime) {}
+    Transfer(Stop* fromStop, Stop* toStop, TYPE type, int32_t tTime) :
+        _fromStop(fromStop), _toStop(toStop), _type(type), _tTime(tTime) {}
 
     Stop* getFromStop() const { return _fromStop; }
 

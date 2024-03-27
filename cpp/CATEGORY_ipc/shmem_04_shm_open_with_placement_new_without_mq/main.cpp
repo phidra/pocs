@@ -1,8 +1,9 @@
-#include <atomic>
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <dirent.h>
+
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 #include "shared_mem.h"
 #include "utils.h"
@@ -43,11 +44,11 @@ struct Payload {
     std::atomic_bool producer_is_still_using_the_payload;
     char shared_data;
 
-    Payload()
-        : consumer_has_work_to_do{false},
-          producer_has_work_to_do{false},
-          consumer_is_still_using_the_payload{true},
-          producer_is_still_using_the_payload{true} {
+    Payload() :
+        consumer_has_work_to_do{false},
+        producer_has_work_to_do{false},
+        consumer_is_still_using_the_payload{true},
+        producer_is_still_using_the_payload{true} {
         std::cout << "CONSTRUCTOR CALLED !" << std::endl;
     }
 
@@ -68,8 +69,7 @@ void producer(SharedMem<Payload> const& writer) {
         payload.consumer_has_work_to_do.store(true);
 
         payload.producer_has_work_to_do.store(false);
-        while (!payload.producer_has_work_to_do.load()) {
-        }
+        while (!payload.producer_has_work_to_do.load()) {}
     }
 
     std::cout << "=== End of emission, PRODUCER will now close ===" << std::endl;
@@ -88,8 +88,7 @@ void consumer(SharedMem<Payload> const& reader) {
     char received_char;
 
     do {
-        while (!payload.consumer_has_work_to_do.load()) {
-        }
+        while (!payload.consumer_has_work_to_do.load()) {}
         payload.consumer_has_work_to_do.store(false);
 
         received_char = payload.shared_data;

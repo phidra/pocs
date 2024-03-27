@@ -1,15 +1,14 @@
 #include <iostream>
-
-#include <osmium/io/any_input.hpp>
-#include <osmium/handler.hpp>
-#include <osmium/visitor.hpp>
-#include <osmium/index/map/sparse_mmap_array.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
 #include <osmium/geom/haversine.hpp>
+#include <osmium/handler.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/sparse_mmap_array.hpp>
+#include <osmium/io/any_input.hpp>
+#include <osmium/visitor.hpp>
 
+#include "dimacs.h"
 #include "edge.h"
 #include "geojson.h"
-#include "dimacs.h"
 
 // libosmium Handler that fills way+nodes structures
 struct MyHandler : public osmium::handler::Handler {
@@ -26,7 +25,7 @@ struct MyHandler : public osmium::handler::Handler {
     std::map<int, osmium::Location> node_index_to_location;
     int current_node_index = 0;
 
-    void way(const osmium::Way& way) noexcept {
+    void way(osmium::Way const& way) noexcept {
         auto tag_highway = way.tags()["highway"];
         // FIXME : we would probably like to filter out non-pedestrian ways.
         // For now, we keep all ways with tag highway set :
@@ -131,7 +130,7 @@ int main(int argc, char* argv[]) {
         create_dimacs(output_dir, handler.node_index_to_location, handler.edges);
         debug_display(handler);
 
-    } catch (const std::exception& e) {
+    } catch (std::exception const& e) {
         std::cerr << e.what() << '\n';
         std::exit(1);
     }

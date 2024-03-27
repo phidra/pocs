@@ -1,7 +1,7 @@
 #pragma once
 
-#include <functional>
 #include <chrono>
+#include <functional>
 #include <type_traits>
 
 // measure_time_1 = accepts a function without argument or returned value

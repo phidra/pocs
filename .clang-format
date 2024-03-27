@@ -1,4 +1,26 @@
 BasedOnStyle: Chromium
 IndentWidth: 4
 ColumnLimit: 120
-SortIncludes: false
+BinPackArguments: false
+BinPackParameters: false
+SortIncludes: CaseSensitive
+SortUsingDeclarations: true
+IncludeBlocks: Regroup
+# InsertNewlineAtEOF: true  # needs clang-format >= 16
+# KeepEmptyLinesAtEOF: false  # needs clang-format >= 17
+PackConstructorInitializers: NextLine
+QualifierAlignment: Right
+ReferenceAlignment: Left
+PointerAlignment: Left
+FixNamespaceComments: true
+BreakConstructorInitializers: AfterColon
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Empty
+SpacesBeforeTrailingComments: 2
+EmptyLineBeforeAccessModifier: Always
+EmptyLineAfterAccessModifier: Never

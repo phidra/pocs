@@ -33,7 +33,7 @@ struct any {
     constexpr any() noexcept = default;
     ~any() = default;
 
-    any(const any& other) {
+    any(any const& other) {
         if (other.instance) {
             instance = other.instance->clone();
         }
@@ -61,7 +61,7 @@ struct any {
         emplace<std::decay_t<T>>(list, std::forward<Args>(args)...);
     }
 
-    any& operator=(const any& rhs) {
+    any& operator=(any const& rhs) {
         any(rhs).swap(*this);
         return *this;
     }
@@ -109,7 +109,7 @@ struct any {
 
    private:
     template <class T>
-    friend const T* any_cast(const any*) noexcept;
+    friend const T* any_cast(any const*) noexcept;
 
     template <class T>
     friend T* any_cast(any*) noexcept;
@@ -150,7 +150,7 @@ template <class T>
 using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
 template <class T>
-requires(std::constructible_from<T, const remove_cvref_t<T>&>) T any_cast(const any& a) {
+requires(std::constructible_from<T, remove_cvref_t<T> const&>) T any_cast(any const& a) {
     using V = remove_cvref_t<T>;
     if (auto* value = any_cast<V>(&a)) {
         return static_cast<T>(*value);
@@ -180,7 +180,7 @@ requires(std::constructible_from<T, remove_cvref_t<T>>) T any_cast(any&& a) {
 }
 
 template <class T>
-const T* any_cast(const any* a) noexcept {
+const T* any_cast(any const* a) noexcept {
     if (!a) {
         return nullptr;
     }
@@ -194,7 +194,7 @@ const T* any_cast(const any* a) noexcept {
 
 template <class T>
 T* any_cast(any* a) noexcept {
-    return const_cast<T*>(any_cast<T>(static_cast<const any*>(a)));
+    return const_cast<T*>(any_cast<T>(static_cast<any const*>(a)));
 }
 
 template <class T, class... Args>

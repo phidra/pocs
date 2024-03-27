@@ -1,7 +1,8 @@
 #pragma once
 
-#include "mygraph.h"
 #include <routingkit/contraction_hierarchy.h>
+
+#include "mygraph.h"
 
 enum Direction { FORWARD, BACKWARD };
 

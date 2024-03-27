@@ -3,16 +3,16 @@
 namespace RoutingKit {
 
 template <>
-void save_vector<std::string>(const std::string& file_name, const std::vector<std::string>& vec) {
+void save_vector<std::string>(std::string const& file_name, std::vector<std::string> const& vec) {
     std::ofstream out(file_name, std::ios::binary);
     for (unsigned i = 0; i < vec.size(); ++i) {
-        const char* x = vec[i].c_str();
+        char const* x = vec[i].c_str();
         out.write(x, vec[i].length() + 1);
     }
 }
 
 template <>
-std::vector<std::string> load_vector<std::string>(const std::string& file_name) {
+std::vector<std::string> load_vector<std::string>(std::string const& file_name) {
     std::vector<char> data = load_vector<char>(file_name);
     std::vector<std::string> ret;
     std::vector<char>::const_iterator str_begin = data.begin(), str_end = data.begin(), data_end = data.end();
@@ -31,16 +31,16 @@ std::vector<std::string> load_vector<std::string>(const std::string& file_name) 
     return ret;  // NVRO
 }
 
-void save_bit_vector(const std::string& file_name, const BitVector& vec) {
+void save_bit_vector(std::string const& file_name, BitVector const& vec) {
     std::ofstream out(file_name, std::ios::binary);
     if (!out)
         throw std::runtime_error("Can not open \"" + file_name + "\" for writing.");
     uint64_t size = vec.size();
-    out.write(reinterpret_cast<const char*>(&size), 8);
-    out.write(reinterpret_cast<const char*>(vec.data()), vec.uint512_count() * 64);
+    out.write(reinterpret_cast<char const*>(&size), 8);
+    out.write(reinterpret_cast<char const*>(vec.data()), vec.uint512_count() * 64);
 }
 
-BitVector load_bit_vector(const std::string& file_name) {
+BitVector load_bit_vector(std::string const& file_name) {
     std::ifstream in(file_name, std::ios::binary);
     if (!in)
         throw std::runtime_error("Can not open \"" + file_name + "\" for reading.");

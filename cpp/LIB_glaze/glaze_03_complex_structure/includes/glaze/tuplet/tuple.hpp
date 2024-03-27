@@ -100,8 +100,8 @@ struct type_map : Bases... {
     using base_list = type_list<Bases...>;
     using Bases::operator[]...;
     using Bases::decl_elem...;
-    auto operator<=>(const type_map&) const = default;
-    bool operator==(const type_map&) const = default;
+    auto operator<=>(type_map const&) const = default;
+    bool operator==(type_map const&) const = default;
 };
 
 template <size_t I, class T>
@@ -115,14 +115,14 @@ struct tuple_elem {
     constexpr decltype(auto) operator[](tag<I>) & { return (value); }
     constexpr decltype(auto) operator[](tag<I>) const& { return (value); }
     constexpr decltype(auto) operator[](tag<I>) && { return (std::move(*this).value); }
-    auto operator<=>(const tuple_elem&) const = default;
-    bool operator==(const tuple_elem&) const = default;
+    auto operator<=>(tuple_elem const&) const = default;
+    bool operator==(tuple_elem const&) const = default;
     // Implements comparison for tuples containing reference types
-    constexpr auto operator<=>(const tuple_elem& other) const
+    constexpr auto operator<=>(tuple_elem const& other) const
         noexcept(noexcept(value <=> other.value)) requires(std::is_reference_v<T>&& ordered<T>) {
         return value <=> other.value;
     }
-    constexpr bool operator==(const tuple_elem& other) const
+    constexpr bool operator==(tuple_elem const& other) const
         noexcept(noexcept(value == other.value)) requires(std::is_reference_v<T>&& equality_comparable<T>) {
         return value == other.value;
     }
@@ -209,8 +209,8 @@ struct tuple : tuple_base_t<T...> {
        return *this;
     }*/
 
-    auto operator<=>(const tuple&) const = default;
-    bool operator==(const tuple&) const = default;
+    auto operator<=>(tuple const&) const = default;
+    bool operator==(tuple const&) const = default;
 
     // Applies a function to every element of the tuple. The order is the
     // declaration order, so first the function will be applied to element 0,
@@ -358,8 +358,8 @@ struct tuple<> : tuple_base_t<> {
     constexpr auto& operator=(U&&) noexcept { return *this; }
 
     constexpr auto& assign() noexcept { return *this; }
-    auto operator<=>(const tuple&) const = default;
-    bool operator==(const tuple&) const = default;
+    auto operator<=>(tuple const&) const = default;
+    bool operator==(tuple const&) const = default;
 
     // Applies a function to every element of the tuple. The order is the
     // declaration order, so first the function will be applied to element 0,
@@ -432,8 +432,8 @@ struct pair {
         second = static_cast<S2&&>(s);
         return *this;
     }
-    auto operator<=>(const pair&) const = default;
-    bool operator==(const pair&) const = default;
+    auto operator<=>(pair const&) const = default;
+    bool operator==(pair const&) const = default;
 };
 template <class A, class B>
 pair(A, B) -> pair<unwrap_ref_decay_t<A>, unwrap_ref_decay_t<B>>;
@@ -460,7 +460,7 @@ struct convert {
 template <class Tuple>
 convert(Tuple&) -> convert<Tuple&>;
 template <class Tuple>
-convert(const Tuple&) -> convert<const Tuple&>;
+convert(Tuple const&) -> convert<Tuple const&>;
 template <class Tuple>
 convert(Tuple&&) -> convert<Tuple>;
 }  // namespace tuplet
@@ -480,15 +480,15 @@ constexpr tuplet::tuple<T&...> tie(T&... t) {
 
 template <class F, tuplet::base_list_tuple Tup>
 constexpr decltype(auto) apply(F&& func, Tup&& tup) {
-    return tuplet::detail::apply_impl(static_cast<F&&>(func), static_cast<Tup&&>(tup),
-                                      typename std::decay_t<Tup>::base_list());
+    return tuplet::detail::apply_impl(
+        static_cast<F&&>(func), static_cast<Tup&&>(tup), typename std::decay_t<Tup>::base_list());
 }
 template <class F, class A, class B>
 constexpr decltype(auto) apply(F&& func, tuplet::pair<A, B>& pair) {
     return static_cast<F&&>(func)(pair.first, pair.second);
 }
 template <class F, class A, class B>
-constexpr decltype(auto) apply(F&& func, const tuplet::pair<A, B>& pair) {
+constexpr decltype(auto) apply(F&& func, tuplet::pair<A, B> const& pair) {
     return static_cast<F&&>(func)(pair.first, pair.second);
 }
 template <class F, class A, class B>

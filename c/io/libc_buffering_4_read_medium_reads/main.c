@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #define CONTENT_LEN 1024
 char CONTENT[CONTENT_LEN];

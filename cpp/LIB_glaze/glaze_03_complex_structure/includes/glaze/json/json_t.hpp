@@ -49,7 +49,7 @@ struct json_t {
 
     json_t& operator[](std::integral auto&& index) { return std::get<array_t>(data)[index]; }
 
-    const json_t& operator[](std::integral auto&& index) const { return std::get<array_t>(data)[index]; }
+    json_t const& operator[](std::integral auto&& index) const { return std::get<array_t>(data)[index]; }
 
     json_t& operator[](std::convertible_to<std::string_view> auto&& key) {
         //[] operator for maps does not support heterogeneous lookups yet
@@ -63,7 +63,7 @@ struct json_t {
         return iter->second;
     }
 
-    const json_t& operator[](std::convertible_to<std::string_view> auto&& key) const {
+    json_t const& operator[](std::convertible_to<std::string_view> auto&& key) const {
         //[] operator for maps does not support heterogeneous lookups yet
         auto& object = std::get<object_t>(data);
         auto iter = object.find(key);
@@ -75,7 +75,7 @@ struct json_t {
 
     json_t& at(std::convertible_to<std::string_view> auto&& key) { return operator[](key); }
 
-    const json_t& at(std::convertible_to<std::string_view> auto&& key) const { return operator[](key); }
+    json_t const& at(std::convertible_to<std::string_view> auto&& key) const { return operator[](key); }
 
     bool contains(std::convertible_to<std::string_view> auto&& key) const {
         if (!holds<object_t>())
@@ -91,7 +91,7 @@ struct json_t {
 
     val_t& operator*() noexcept { return data; }
 
-    const val_t& operator*() const noexcept { return data; }
+    val_t const& operator*() const noexcept { return data; }
 
     void reset() noexcept { data = null_t{}; }
 
@@ -106,7 +106,7 @@ struct json_t {
         data = static_cast<double>(val);
     }
 
-    json_t(std::initializer_list<std::pair<const char*, json_t>>&& obj) {
+    json_t(std::initializer_list<std::pair<char const*, json_t>>&& obj) {
         // TODO try to see if there is a beter way to do this initialization withought copying the json_t
         // std::string in std::initializer_list<std::pair<const std::string, json_t>> would match with {"literal",
         // "other_literal"} So we cant use std::string or std::string view. Luckily const char * will not match with

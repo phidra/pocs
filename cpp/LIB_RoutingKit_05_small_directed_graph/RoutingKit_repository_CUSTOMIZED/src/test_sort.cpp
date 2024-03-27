@@ -1,13 +1,13 @@
-#include <routingkit/sort.h>
 #include <routingkit/permutation.h>
+#include <routingkit/sort.h>
 #include <routingkit/timer.h>
-
-#include "expect.h"
-
-#include <vector>
 #include <stdlib.h>
+
 #include <iostream>
 #include <random>
+#include <vector>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;
@@ -207,7 +207,7 @@ int main() {
     }
 
     {
-        auto print_something_to_prevent_optimizer_from_removing_everything = [&](const std::vector<unsigned>& v) {
+        auto print_something_to_prevent_optimizer_from_removing_everything = [&](std::vector<unsigned> const& v) {
             unsigned x = 0;
             for (auto& y : v)
                 x ^= y;
@@ -297,12 +297,12 @@ int main() {
         {
             long long time = -get_micro_time();
 
-            auto p = compute_inverse_stable_sort_permutation_using_key(sorted1_head, node_count,
-                                                                       [](unsigned x) { return x; });
+            auto p = compute_inverse_stable_sort_permutation_using_key(
+                sorted1_head, node_count, [](unsigned x) { return x; });
             // inplace_apply_inverse_permutation(p, sorted1_tail);
             sorted1_tail = apply_inverse_permutation(p, sorted1_tail);
-            auto q = compute_inverse_stable_sort_permutation_using_key(sorted1_tail, node_count,
-                                                                       [](unsigned x) { return x; });
+            auto q = compute_inverse_stable_sort_permutation_using_key(
+                sorted1_tail, node_count, [](unsigned x) { return x; });
             // inplace_apply_inverse_permutation(q, sorted1_tail);
             sorted1_tail = apply_inverse_permutation(q, sorted1_tail);
             p = chain_permutation_first_left_then_right(q, p);

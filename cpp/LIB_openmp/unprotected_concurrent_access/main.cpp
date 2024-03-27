@@ -1,10 +1,11 @@
-#include <iostream>
-#include <chrono>
-#include <vector>
 #include <omp.h>
-#include <cmath>
-#include <string>
+
 #include <cassert>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 

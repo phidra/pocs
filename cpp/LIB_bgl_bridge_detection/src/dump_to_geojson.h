@@ -1,17 +1,16 @@
 #pragma once
 
-#include <vector>
-#include <ostream>
-#include <fstream>
-#include <iomanip>
-
-#include "graphtypes.h"
-
 #include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
 #include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
 
 #include <boost/geometry.hpp>
+#include <fstream>
+#include <iomanip>
+#include <ostream>
+#include <vector>
+
+#include "graphtypes.h"
 
 inline void dump_geojson_graph(std::ostream& out, Graph const& graph) {
     // EXPECTED OUTPUT :
@@ -103,7 +102,7 @@ template <typename Polylines>
 void geometries_to_geojson_linestrings(std::ostream& out,
                                        Polylines const& polylines,
                                        const std::string stroke_color = "#555555",
-                                       const int stroke_width = 2) {
+                                       int const stroke_width = 2) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
@@ -155,7 +154,7 @@ void edges_to_geojson_linestrings(std::ostream& out,
                                   Edges const& edges,
                                   Graph const& graph,
                                   const std::string stroke_color = "#555555",
-                                  const int stroke_width = 2) {
+                                  int const stroke_width = 2) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);

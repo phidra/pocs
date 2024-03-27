@@ -1,11 +1,11 @@
-#include <routingkit/geo_position_to_node.h>
-#include <routingkit/geo_dist.h>
-#include <routingkit/constants.h>
-#include <vector>
-#include <algorithm>
-
-#include <math.h>
 #include <assert.h>
+#include <math.h>
+#include <routingkit/constants.h>
+#include <routingkit/geo_dist.h>
+#include <routingkit/geo_position_to_node.h>
+
+#include <algorithm>
+#include <vector>
 
 // See https://en.wikipedia.org/wiki/Vantage-point_tree for details
 
@@ -22,14 +22,15 @@ struct PointData {
     float distance_to_pivot;
 };
 
-const unsigned max_points_per_leaf = 8;
+unsigned const max_points_per_leaf = 8;
 
 void construct_tree(std::vector<PointData>& d, unsigned begin, unsigned end) {
     if (end - begin > max_points_per_leaf) {
         auto mid = begin + (end - begin) / 2;
 
-        std::nth_element(d.begin() + begin + 1, d.begin() + mid, d.begin() + end,
-                         [](PointData l, PointData r) { return l.distance_to_pivot < r.distance_to_pivot; });
+        std::nth_element(d.begin() + begin + 1, d.begin() + mid, d.begin() + end, [](PointData l, PointData r) {
+            return l.distance_to_pivot < r.distance_to_pivot;
+        });
 
         construct_tree(d, begin, mid);
 
@@ -39,9 +40,9 @@ void construct_tree(std::vector<PointData>& d, unsigned begin, unsigned end) {
 
         // Faster more complex vectorized code
         {
-            const float pi = 3.14159265359;
-            const float R = 6371000.785;  // earth radius in meter
-            const float inv_180 = 1.0 / 180;
+            float const pi = 3.14159265359;
+            float const R = 6371000.785;  // earth radius in meter
+            float const inv_180 = 1.0 / 180;
 
             float a_lat = d[mid].position.latitude;
             float a_lon = d[mid].position.longitude;
@@ -51,7 +52,7 @@ void construct_tree(std::vector<PointData>& d, unsigned begin, unsigned end) {
             a_lon *= inv_180;
             a_lon *= pi;
 
-            const unsigned vector_width = 16;
+            unsigned const vector_width = 16;
             for (unsigned i = mid; i < end; i += vector_width) {
                 float b_lat[vector_width];
                 float b_lon[vector_width];
@@ -102,8 +103,8 @@ void construct_tree(std::vector<PointData>& d, unsigned begin, unsigned end) {
 }
 }  // namespace
 
-GeoPositionToNode::GeoPositionToNode(const std::vector<float>& latitude, const std::vector<float>& longitude)
-    : point_position(latitude.size()), point_id(latitude.size()) {
+GeoPositionToNode::GeoPositionToNode(std::vector<float> const& latitude, std::vector<float> const& longitude) :
+    point_position(latitude.size()), point_id(latitude.size()) {
     assert(latitude.size() == longitude.size());
     unsigned point_count = latitude.size();
 
@@ -124,8 +125,8 @@ GeoPositionToNode::GeoPositionToNode(const std::vector<float>& latitude, const s
 namespace {
 // I envy the day that C++ will finally support recursive lambda functions...
 
-void nearest_neighbor_recursion(const std::vector<GeoPositionToNode::PointPosition>& point_position,
-                                const std::vector<unsigned>& point_id,
+void nearest_neighbor_recursion(std::vector<GeoPositionToNode::PointPosition> const& point_position,
+                                std::vector<unsigned> const& point_id,
                                 unsigned begin,
                                 unsigned end,
                                 GeoPositionToNode::PointPosition query_position,
@@ -166,8 +167,8 @@ void nearest_neighbor_recursion(const std::vector<GeoPositionToNode::PointPositi
     }
 }
 
-void find_all_nodes_recursion(const std::vector<GeoPositionToNode::PointPosition>& point_position,
-                              const std::vector<unsigned>& point_id,
+void find_all_nodes_recursion(std::vector<GeoPositionToNode::PointPosition> const& point_position,
+                              std::vector<unsigned> const& point_id,
                               unsigned begin,
                               unsigned end,
                               GeoPositionToNode::PointPosition query_position,
@@ -181,8 +182,8 @@ void find_all_nodes_recursion(const std::vector<GeoPositionToNode::PointPosition
         }
     } else {
         auto recurse = [&](unsigned new_begin, unsigned new_end) {
-            find_all_nodes_recursion(point_position, point_id, new_begin, new_end, query_position, query_radius,
-                                     result);
+            find_all_nodes_recursion(
+                point_position, point_id, new_begin, new_end, query_position, query_radius, result);
         };
 
         auto pivot_position = point_position[begin];
@@ -220,8 +221,8 @@ std::vector<GeoPositionToNode::NearestNeighborhoodQueryResult>
 GeoPositionToNode::find_all_nodes_within_radius(float query_latitude, float query_longitude, float query_radius) const {
     assert(query_radius >= 0.0 && "radius must be positive");
     std::vector<NearestNeighborhoodQueryResult> result;
-    find_all_nodes_recursion(point_position, point_id, 0, point_count(), {query_latitude, query_longitude},
-                             query_radius, result);
+    find_all_nodes_recursion(
+        point_position, point_id, 0, point_count(), {query_latitude, query_longitude}, query_radius, result);
     return result;  // NVRO
 }
 

@@ -1,14 +1,14 @@
 #ifndef ROUTING_KIT_CUSTOMIZABLE_CONSTRACTION_HIERARCHY_H
 #define ROUTING_KIT_CUSTOMIZABLE_CONSTRACTION_HIERARCHY_H
 
-#include <routingkit/constants.h>
-#include <routingkit/id_set_queue.h>
 #include <routingkit/bit_vector.h>
+#include <routingkit/constants.h>
 #include <routingkit/id_mapper.h>
+#include <routingkit/id_set_queue.h>
 
-#include <vector>
-#include <string>
 #include <functional>
+#include <string>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -21,7 +21,7 @@ struct CustomizableContractionHierarchy {
         std::vector<unsigned> order,
         std::vector<unsigned> tail,
         std::vector<unsigned> head,
-        std::function<void(const std::string&)> log_message = [](const std::string&) {},
+        std::function<void(std::string const&)> log_message = [](std::string const&) {},
         bool filter_always_inf_arcs = false);
 
     unsigned node_count() const { return rank.size(); }
@@ -65,17 +65,17 @@ struct CustomizableContractionHierarchy {
 
 struct CustomizableContractionHierarchyMetric {
     CustomizableContractionHierarchyMetric() {}
-    CustomizableContractionHierarchyMetric(const CustomizableContractionHierarchy& cch, const unsigned* input_weight);
-    CustomizableContractionHierarchyMetric(const CustomizableContractionHierarchy& cch,
-                                           const std::vector<unsigned>& input_weight);
+    CustomizableContractionHierarchyMetric(CustomizableContractionHierarchy const& cch, unsigned const* input_weight);
+    CustomizableContractionHierarchyMetric(CustomizableContractionHierarchy const& cch,
+                                           std::vector<unsigned> const& input_weight);
 
-    CustomizableContractionHierarchyMetric& reset(const CustomizableContractionHierarchy& cch,
-                                                  const unsigned* input_weight);
-    CustomizableContractionHierarchyMetric& reset(const CustomizableContractionHierarchy& cch,
-                                                  const std::vector<unsigned>& input_weight);
+    CustomizableContractionHierarchyMetric& reset(CustomizableContractionHierarchy const& cch,
+                                                  unsigned const* input_weight);
+    CustomizableContractionHierarchyMetric& reset(CustomizableContractionHierarchy const& cch,
+                                                  std::vector<unsigned> const& input_weight);
 
-    CustomizableContractionHierarchyMetric& reset(const unsigned* input_weight);
-    CustomizableContractionHierarchyMetric& reset(const std::vector<unsigned>& input_weight);
+    CustomizableContractionHierarchyMetric& reset(unsigned const* input_weight);
+    CustomizableContractionHierarchyMetric& reset(std::vector<unsigned> const& input_weight);
 
     CustomizableContractionHierarchyMetric& customize();
 
@@ -84,15 +84,15 @@ struct CustomizableContractionHierarchyMetric {
     // private:
     std::vector<unsigned> forward;
     std::vector<unsigned> backward;
-    const CustomizableContractionHierarchy* cch;
-    const unsigned* input_weight;
+    CustomizableContractionHierarchy const* cch;
+    unsigned const* input_weight;
 };
 
 struct CustomizableContractionHierarchyParallelization {
     CustomizableContractionHierarchyParallelization() {}
-    explicit CustomizableContractionHierarchyParallelization(const CustomizableContractionHierarchy& cch);
+    explicit CustomizableContractionHierarchyParallelization(CustomizableContractionHierarchy const& cch);
 
-    CustomizableContractionHierarchyParallelization& reset(const CustomizableContractionHierarchy& cch) {
+    CustomizableContractionHierarchyParallelization& reset(CustomizableContractionHierarchy const& cch) {
         *this = CustomizableContractionHierarchyParallelization(cch);
         return *this;
     }
@@ -104,30 +104,30 @@ struct CustomizableContractionHierarchyParallelization {
     // private:
     std::vector<unsigned> first_arc_of_level;
     std::vector<unsigned> arcs_ordered_by_level;
-    const CustomizableContractionHierarchy* cch;
+    CustomizableContractionHierarchy const* cch;
 };
 
 struct CustomizableContractionHierarchyPartialCustomization {
     CustomizableContractionHierarchyPartialCustomization() {}
-    explicit CustomizableContractionHierarchyPartialCustomization(const CustomizableContractionHierarchy& cch);
+    explicit CustomizableContractionHierarchyPartialCustomization(CustomizableContractionHierarchy const& cch);
 
     CustomizableContractionHierarchyPartialCustomization& reset();
-    CustomizableContractionHierarchyPartialCustomization& reset(const CustomizableContractionHierarchy& cch);
+    CustomizableContractionHierarchyPartialCustomization& reset(CustomizableContractionHierarchy const& cch);
 
     CustomizableContractionHierarchyPartialCustomization& update_arc(unsigned xy);
     CustomizableContractionHierarchyPartialCustomization& customize(CustomizableContractionHierarchyMetric& metric);
 
     // private:
     IDSetMinQueue q;
-    const CustomizableContractionHierarchy* cch;
+    CustomizableContractionHierarchy const* cch;
 };
 
 struct CustomizableContractionHierarchyQuery {
     CustomizableContractionHierarchyQuery() {}
-    explicit CustomizableContractionHierarchyQuery(const CustomizableContractionHierarchyMetric& metric);
+    explicit CustomizableContractionHierarchyQuery(CustomizableContractionHierarchyMetric const& metric);
 
     CustomizableContractionHierarchyQuery& reset();
-    CustomizableContractionHierarchyQuery& reset(const CustomizableContractionHierarchyMetric& metric);
+    CustomizableContractionHierarchyQuery& reset(CustomizableContractionHierarchyMetric const& metric);
 
     CustomizableContractionHierarchyQuery& add_source(unsigned s, unsigned dist_to_s = 0);
     CustomizableContractionHierarchyQuery& add_target(unsigned t, unsigned dist_to_t = 0);
@@ -143,7 +143,7 @@ struct CustomizableContractionHierarchyQuery {
 
     // One-To-Many
     CustomizableContractionHierarchyQuery& reset_source();
-    CustomizableContractionHierarchyQuery& pin_targets(const std::vector<unsigned>&);
+    CustomizableContractionHierarchyQuery& pin_targets(std::vector<unsigned> const&);
     CustomizableContractionHierarchyQuery& run_to_pinned_targets();
 
     CustomizableContractionHierarchyQuery& get_distances_to_targets(unsigned* dist);
@@ -151,7 +151,7 @@ struct CustomizableContractionHierarchyQuery {
 
     // Many-To-One
     CustomizableContractionHierarchyQuery& reset_target();
-    CustomizableContractionHierarchyQuery& pin_sources(const std::vector<unsigned>&);
+    CustomizableContractionHierarchyQuery& pin_sources(std::vector<unsigned> const&);
     CustomizableContractionHierarchyQuery& run_to_pinned_sources();
 
     CustomizableContractionHierarchyQuery& get_distances_to_sources(unsigned* dist);
@@ -170,8 +170,8 @@ struct CustomizableContractionHierarchyQuery {
 
     unsigned shortest_path_meeting_node;
 
-    const CustomizableContractionHierarchy* cch;
-    const CustomizableContractionHierarchyMetric* metric;
+    CustomizableContractionHierarchy const* cch;
+    CustomizableContractionHierarchyMetric const* metric;
     unsigned state;
 };
 

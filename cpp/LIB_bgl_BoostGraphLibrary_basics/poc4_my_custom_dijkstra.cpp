@@ -1,13 +1,13 @@
-#include <iostream>
-#include <utility>
-#include <string>
 #include <algorithm>
-#include <numeric>
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <cassert>
+#include <iostream>
+#include <numeric>
+#include <string>
+#include <utility>
 
 using namespace boost;
 using namespace std;
@@ -159,7 +159,8 @@ int main(int, char*[]) {
     auto SOURCE = A;
     auto TARGET = H;
 
-    dijkstra_shortest_paths(mygraph, SOURCE,
+    dijkstra_shortest_paths(mygraph,
+                            SOURCE,
                             weight_map(get(&EdgeProperty::weight, mygraph))
                                 .  // à la différence de la POC précédente, je dois préciser explicitement comment
                                    // "trouver" le weight des edges
@@ -189,8 +190,10 @@ int main(int, char*[]) {
     reverse(shortest_path.begin(), shortest_path.end());
 
     // affichage du shortest path :
-    string shortest_path_str = accumulate(shortest_path.cbegin(), shortest_path.cend(), string{},
-                                          [&nameof](string const& a, VertexDescriptor b) { return a + nameof(b); });
+    string shortest_path_str = accumulate(
+        shortest_path.cbegin(), shortest_path.cend(), string{}, [&nameof](string const& a, VertexDescriptor b) {
+            return a + nameof(b);
+        });
     const string EXPECTED_SHORTEST_PATH = "ABEGH";
     cout << "Shortest-path from " << nameof(SOURCE) << " to " << nameof(TARGET) << " is :" << endl;
     cout << shortest_path_str << endl;

@@ -1,6 +1,6 @@
+#include <csignal>
 #include <iostream>
 #include <vector>
-#include <csignal>
 
 // on déclenche l'envoi d'un signal SIGFPE en divisant par 0.
 // un handler attrape le signal
@@ -22,7 +22,7 @@ void my_handler(int sig) {
 int main(int argc, char* argv[]) {
     signal(SIGFPE, my_handler);
 
-    for (const auto& x : v) {
+    for (auto const& x : v) {
         cout << " - " << (32.0 / x) << endl;
     }
     return 0;

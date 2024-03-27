@@ -7,15 +7,15 @@
 
 namespace RoutingKit {
 
-uint64_t decode_varint_as_uint64_and_advance_first_parameter(const char*& begin, const char* end);
+uint64_t decode_varint_as_uint64_and_advance_first_parameter(char const*& begin, char const* end);
 int64_t zigzag_convert_uint64_to_int64(uint64_t x);
 
 template <class VarIntCallback, class DoubleCallback, class StringCallback>
-void decode_protobuf_message_with_callbacks(const char* begin,
-                                            const char* end,
-                                            const VarIntCallback& varint_callback,
-                                            const DoubleCallback& double_callback,
-                                            const StringCallback& string_callback) {
+void decode_protobuf_message_with_callbacks(char const* begin,
+                                            char const* end,
+                                            VarIntCallback const& varint_callback,
+                                            DoubleCallback const& double_callback,
+                                            StringCallback const& string_callback) {
     while (begin != end) {
         uint64_t header = decode_varint_as_uint64_and_advance_first_parameter(begin, end);
         uint64_t field_id = header >> 3;
@@ -29,7 +29,7 @@ void decode_protobuf_message_with_callbacks(const char* begin,
                     throw std::runtime_error(
                         "Protobuf message is corrupt, the end of message was reached while parsing a 64-bit floating "
                         "point.");
-                double_callback(field_id, *reinterpret_cast<const double*>(begin));
+                double_callback(field_id, *reinterpret_cast<double const*>(begin));
                 begin += 8;
                 break;
             case 5:
@@ -37,7 +37,7 @@ void decode_protobuf_message_with_callbacks(const char* begin,
                     throw std::runtime_error(
                         "Protobuf message is corrupt, the end of message was reached while parsing a 32-bit floating "
                         "point.");
-                double_callback(field_id, *reinterpret_cast<const float*>(begin));
+                double_callback(field_id, *reinterpret_cast<float const*>(begin));
                 begin += 4;
                 break;
             case 2: {

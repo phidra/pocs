@@ -1,21 +1,20 @@
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <cassert>
-
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
+#include <cassert>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 
-#include "graphtypes.h"
-#include "graph.h"
 #include "connected_components.h"
 #include "dump_to_geojson.h"
+#include "graph.h"
+#include "graphtypes.h"
 #include "parse_polygonfile.h"
 
 using namespace std;
 namespace bg = boost::geometry;
 
-void usage(const char* prog_name) {
+void usage(char const* prog_name) {
     const string description = R"DELIM(
 From a given OSM file (filtered by a geojson polygon), computes and dumps connected components.
 Inputs :
@@ -72,7 +71,7 @@ int main(int argc, char* argv[]) {
 
         // computing + dumping connected components :
         vector<vector<VertexDescriptor>> connected_vertices = compute_connected_vertices(boost_graph);
-        constexpr const int size_display_threshold = 15;
+        constexpr int const size_display_threshold = 15;
         display_connected_vertices(boost_graph, connected_vertices, size_display_threshold);
         dump_connected_vertices_hull(boost_graph, connected_vertices, output_dir);
 
@@ -91,7 +90,9 @@ int main(int argc, char* argv[]) {
         //      - real bridges = potential bridges that are not deadends
         using BiconnAndEdge = decltype(biconns.biconn2edges)::value_type;
         vector<BiconnAndEdge> potential_bridges;
-        copy_if(biconns.biconn2edges.cbegin(), biconns.biconn2edges.cend(), back_inserter(potential_bridges),
+        copy_if(biconns.biconn2edges.cbegin(),
+                biconns.biconn2edges.cend(),
+                back_inserter(potential_bridges),
                 [](auto const& x) {
                     auto biconn_id = x.first;
                     auto const& edges = x.second;
@@ -197,7 +198,7 @@ int main(int argc, char* argv[]) {
         ofstream merged_bridges_stream(output_dir + "merged_bridges.geojson");
         geometries_to_geojson_linestrings(merged_bridges_stream, merged_bridges, "#0000ff", 5);
 
-    } catch (const exception& e) {
+    } catch (exception const& e) {
         cerr << e.what() << '\n';
         exit(1);
     }

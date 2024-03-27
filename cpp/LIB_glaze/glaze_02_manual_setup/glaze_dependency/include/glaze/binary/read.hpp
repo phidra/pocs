@@ -17,8 +17,8 @@ struct from_binary {};
 
 template <auto Opts, class T, class Ctx, class It0, class It1>
 concept read_binary_invocable = requires(T&& value, Ctx&& ctx, It0&& it, It1&& end) {
-    from_binary<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                           std::forward<It0>(it), std::forward<It1>(end));
+    from_binary<std::remove_cvref_t<T>>::template op<Opts>(
+        std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
 };
 
 template <>
@@ -35,8 +35,8 @@ struct read<binary> {
         } else {
             if constexpr (read_binary_invocable<Opts, T, Ctx, It0, It1>) {
                 using V = std::remove_cvref_t<T>;
-                from_binary<V>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it),
-                                                  std::forward<It1>(end));
+                from_binary<V>::template op<Opts>(
+                    std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
             } else {
                 static_assert(false_v<T>, "Glaze metadata is probably needed for your type");
             }
@@ -49,8 +49,10 @@ struct from_binary<T> {
     template <auto Opts, is_context Ctx, class It0, class It1>
     GLZ_ALWAYS_INLINE static void op(auto&& value, Ctx&& ctx, It0&& it, It1&& end) {
         using V = decltype(get_member(std::declval<T>(), meta_wrapper_v<T>));
-        from_binary<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>), std::forward<Ctx>(ctx),
-                                          std::forward<It0>(it), std::forward<It1>(end));
+        from_binary<V>::template op<Opts>(get_member(value, meta_wrapper_v<T>),
+                                          std::forward<Ctx>(ctx),
+                                          std::forward<It0>(it),
+                                          std::forward<It1>(end));
     }
 };
 
@@ -58,7 +60,7 @@ template <is_bitset T>
 struct from_binary<T> {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
 
         constexpr uint8_t type = uint8_t(3) << 3;
         constexpr uint8_t header = tag::typed_array | type;
@@ -70,9 +72,9 @@ struct from_binary<T> {
 
         ++it;
 
-        const auto n = int_from_compressed(it, end);
+        auto const n = int_from_compressed(it, end);
 
-        const auto num_bytes = (value.size() + 7) / 8;
+        auto const num_bytes = (value.size() + 7) / 8;
         for (size_t byte_i{}, i{}; byte_i < num_bytes; ++byte_i, ++it) {
             uint8_t byte;
             std::memcpy(&byte, &*it, 1);
@@ -123,7 +125,7 @@ requires(num_t<T> || char_t<T> || glaze_enum_t<T>) struct from_binary<T> {
             constexpr uint8_t type = std::floating_point<T> ? 0 : (std::is_signed_v<T> ? 0b000'01'000 : 0b000'10'000);
             constexpr uint8_t header = tag::number | type | (byte_count<T> << 5);
 
-            const auto tag = uint8_t(*it);
+            auto const tag = uint8_t(*it);
             if (tag != header) {
                 ctx.error = error_code::syntax_error;
                 return;
@@ -150,7 +152,7 @@ struct from_binary<T> {
         } else {
             constexpr uint8_t header = tag::extensions | 0b00011'000;
 
-            const auto tag = uint8_t(*it);
+            auto const tag = uint8_t(*it);
             if (tag != header) {
                 ctx.error = error_code::syntax_error;
                 return;
@@ -162,7 +164,7 @@ struct from_binary<T> {
             constexpr uint8_t complex_number = 0;
             constexpr uint8_t complex_header = complex_number | type | (byte_count<V> << 5);
 
-            const auto complex_tag = uint8_t(*it);
+            auto const complex_tag = uint8_t(*it);
             if (complex_tag != complex_header) {
                 ctx.error = error_code::syntax_error;
                 return;
@@ -179,7 +181,7 @@ template <boolean_like T>
 struct from_binary<T> {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& /* end */) noexcept {
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if ((tag & 0b0000'1111) != tag::boolean) {
             ctx.error = error_code::syntax_error;
             return;
@@ -222,14 +224,14 @@ struct from_binary<T> {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
         constexpr uint8_t header = tag::extensions | 0b00001'000;
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != header) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
         }
         ++it;
 
-        const auto type_index = int_from_compressed(it, end);
+        auto const type_index = int_from_compressed(it, end);
         if (value.index() != type_index) {
             value = runtime_variant_map<T>()[type_index];
         }
@@ -245,14 +247,14 @@ struct from_binary<T> final {
         static_assert(sizeof(V) == 1);
 
         if constexpr (Opts.no_header) {
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
             value.resize(n);
             std::memcpy(value.data(), &(*it), n);
             std::advance(it, n);
         } else {
             constexpr uint8_t header = tag::string;
 
-            const auto tag = uint8_t(*it);
+            auto const tag = uint8_t(*it);
             if (tag != header) [[unlikely]] {
                 ctx.error = error_code::syntax_error;
                 return;
@@ -260,7 +262,7 @@ struct from_binary<T> final {
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
             value.resize(n);
             std::memcpy(value.data(), &(*it), n);
             std::advance(it, n);
@@ -275,7 +277,7 @@ requires(readable_array_t<T> && !emplace_backable<T> && !resizeable<T> && emplac
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
         using V = range_value_t<std::decay_t<T>>;
 
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
 
         if constexpr (boolean_like<V>) {
             constexpr uint8_t type = uint8_t(3) << 3;
@@ -288,11 +290,11 @@ requires(readable_array_t<T> && !emplace_backable<T> && !resizeable<T> && emplac
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             value.clear();
 
-            const auto num_bytes = (value.size() + 7) / 8;
+            auto const num_bytes = (value.size() + 7) / 8;
             for (size_t byte_i{}, i{}; byte_i < num_bytes; ++byte_i, ++it) {
                 uint8_t byte;
                 std::memcpy(&byte, &*it, 1);
@@ -312,7 +314,7 @@ requires(readable_array_t<T> && !emplace_backable<T> && !resizeable<T> && emplac
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             value.clear();
 
@@ -334,12 +336,12 @@ requires(readable_array_t<T> && !emplace_backable<T> && !resizeable<T> && emplac
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             value.clear();
 
             for (size_t i = 0; i < n; ++i) {
-                const auto length = int_from_compressed(it, end);
+                auto const length = int_from_compressed(it, end);
                 V str;
                 str.resize(length);
                 std::memcpy(str.data(), &*it, length);
@@ -356,7 +358,7 @@ requires(readable_array_t<T> && !emplace_backable<T> && !resizeable<T> && emplac
             }
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             value.clear();
 
@@ -375,7 +377,7 @@ struct from_binary<T> final {
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
         using V = range_value_t<std::decay_t<T>>;
 
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
 
         if constexpr (boolean_like<V>) {
             constexpr uint8_t type = uint8_t(3) << 3;
@@ -388,7 +390,7 @@ struct from_binary<T> final {
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             if constexpr (resizeable<T>) {
                 value.resize(n);
@@ -398,7 +400,7 @@ struct from_binary<T> final {
                 }
             }
 
-            const auto num_bytes = (value.size() + 7) / 8;
+            auto const num_bytes = (value.size() + 7) / 8;
             for (size_t byte_i{}, i{}; byte_i < num_bytes; ++byte_i, ++it) {
                 uint8_t byte;
                 std::memcpy(&byte, &*it, 1);
@@ -417,7 +419,7 @@ struct from_binary<T> final {
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             if constexpr (resizeable<T>) {
                 value.resize(n);
@@ -448,7 +450,7 @@ struct from_binary<T> final {
 
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             if constexpr (resizeable<T>) {
                 value.resize(n);
@@ -459,7 +461,7 @@ struct from_binary<T> final {
             }
 
             for (auto&& x : value) {
-                const auto length = int_from_compressed(it, end);
+                auto const length = int_from_compressed(it, end);
                 x.resize(length);
 
                 if constexpr (Opts.shrink_to_fit) {
@@ -481,14 +483,14 @@ struct from_binary<T> final {
             constexpr uint8_t complex_array = 1;
             constexpr uint8_t type = std::floating_point<X> ? 0 : (std::is_signed_v<X> ? 0b000'01'000 : 0b000'10'000);
             constexpr uint8_t complex_header = complex_array | type | (byte_count<X> << 5);
-            const auto complex_tag = uint8_t(*it);
+            auto const complex_tag = uint8_t(*it);
             if (complex_tag != complex_header) [[unlikely]] {
                 ctx.error = error_code::syntax_error;
                 return;
             }
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             if constexpr (resizeable<T>) {
                 value.resize(n);
@@ -514,7 +516,7 @@ struct from_binary<T> final {
             }
             ++it;
 
-            const auto n = int_from_compressed(it, end);
+            auto const n = int_from_compressed(it, end);
 
             if constexpr (resizeable<T>) {
                 value.resize(n);
@@ -541,7 +543,7 @@ struct from_binary<T> final {
         constexpr uint8_t byte_cnt = str_t<Key> ? 0 : byte_count<Key>;
         constexpr uint8_t header = tag::object | type | (byte_cnt << 5);
 
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != header) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -549,7 +551,7 @@ struct from_binary<T> final {
 
         ++it;
 
-        const auto n = int_from_compressed(it, end);
+        auto const n = int_from_compressed(it, end);
         if (n != 1) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -570,7 +572,7 @@ struct from_binary<T> final {
         constexpr uint8_t byte_cnt = str_t<Key> ? 0 : byte_count<Key>;
         constexpr uint8_t header = tag::object | type | (byte_cnt << 5);
 
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != header) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -578,7 +580,7 @@ struct from_binary<T> final {
 
         ++it;
 
-        const auto n = int_from_compressed(it, end);
+        auto const n = int_from_compressed(it, end);
 
         if constexpr (std::is_arithmetic_v<std::decay_t<Key>>) {
             Key key;
@@ -600,7 +602,7 @@ template <nullable_t T>
 struct from_binary<T> final {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
 
         if (tag == tag::null) {
             ++it;
@@ -640,7 +642,7 @@ struct from_binary<includer<T>> {
         } else {
             constexpr uint8_t header = tag::string;
 
-            const auto tag = uint8_t(*it);
+            auto const tag = uint8_t(*it);
             if (tag != header) [[unlikely]] {
                 ctx.error = error_code::syntax_error;
                 return;
@@ -661,7 +663,7 @@ struct from_binary<T> final {
         constexpr uint8_t type = 0;  // string key
         constexpr uint8_t header = tag::object | type;
 
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != header) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -669,18 +671,18 @@ struct from_binary<T> final {
 
         ++it;
 
-        const auto n_keys = int_from_compressed(it, end);
+        auto const n_keys = int_from_compressed(it, end);
 
         static constexpr auto storage = detail::make_map<T, Opts.use_hash_comparison>();
 
         for (size_t i = 0; i < n_keys; ++i) {
-            const auto length = int_from_compressed(it, end);
+            auto const length = int_from_compressed(it, end);
 
             const std::string_view key{it, length};
 
             std::advance(it, length);
 
-            const auto& p = storage.find(key);
+            auto const& p = storage.find(key);
 
             if (p != storage.end()) [[likely]] {
                 std::visit(
@@ -709,7 +711,7 @@ requires glaze_array_t<T>
 struct from_binary<T> final {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != tag::generic_array) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -729,7 +731,7 @@ requires is_std_tuple<T>
 struct from_binary<T> final {
     template <auto Opts>
     GLZ_ALWAYS_INLINE static void op(auto&& value, is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-        const auto tag = uint8_t(*it);
+        auto const tag = uint8_t(*it);
         if (tag != tag::generic_array) [[unlikely]] {
             ctx.error = error_code::syntax_error;
             return;
@@ -752,7 +754,7 @@ template <class T, class Buffer>
 template <class T, class Buffer>
 [[nodiscard]] inline expected<T, parse_error> read_binary(Buffer&& buffer) noexcept {
     T value{};
-    const auto pe = read<opts{.format = binary}>(value, std::forward<Buffer>(buffer));
+    auto const pe = read<opts{.format = binary}>(value, std::forward<Buffer>(buffer));
     if (pe) [[unlikely]] {
         return unexpected(pe);
     }
@@ -764,7 +766,7 @@ template <class T>
     context ctx{};
     ctx.current_file = file_name;
 
-    const auto file_error = file_to_buffer(buffer, ctx.current_file);
+    auto const file_error = file_to_buffer(buffer, ctx.current_file);
 
     if (bool(file_error)) [[unlikely]] {
         return parse_error{file_error};

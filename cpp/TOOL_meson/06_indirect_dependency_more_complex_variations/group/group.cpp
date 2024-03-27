@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-#include "person.h"
-#include "name_modifier.h"
 #include "announce.h"
+#include "name_modifier.h"
+#include "person.h"
 
 Group::Group(Person _leader) : leader{_leader} {
     std::cout << announce_new_group() << "its leader is : " << modify_name(leader.name) << std::endl;

@@ -12,13 +12,13 @@ template <class T>
 const T& handle_null_ptr(const T& t) {
     return t;
 }
-inline const char* handle_null_ptr(const char* p) {
+inline char const* handle_null_ptr(char const* p) {
     if (p)
         return p;
     else
         return "nullptr";
 }
-inline const char* handle_null_ptr(const decltype(nullptr)) {
+inline char const* handle_null_ptr(decltype const(nullptr)) {
     return "nullptr";
 }
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <map>
 #include <osmium/handler.hpp>
+#include <vector>
 
 #include "common/graphtypes.h"
 #include "common/polygon.h"
@@ -29,8 +29,8 @@ struct FillingHandler : public osmium::handler::Handler {
 
     BgPolygon polygon;  // the ways outside of this polygon will be ignored
     inline FillingHandler(BgPolygon polygon_ = DEFAULT_POLYGON) : polygon(polygon_) {}
-    void way(const osmium::Way& way) noexcept;
+    void way(osmium::Way const& way) noexcept;
 };
 
-bool is_way_interesting(const osmium::Way& way);
-bool is_way_in_polygon(const osmium::Way& way, const BgPolygon& polygon);
+bool is_way_interesting(osmium::Way const& way);
+bool is_way_in_polygon(osmium::Way const& way, BgPolygon const& polygon);

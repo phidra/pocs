@@ -41,7 +41,7 @@
 #endif
 
 namespace glz {
-inline void glaze_error([[maybe_unused]] const char* msg) GLZ_NOEXCEPT {
+inline void glaze_error([[maybe_unused]] char const* msg) GLZ_NOEXCEPT {
     GLZ_THROW_OR_ABORT(std::runtime_error(msg));
 }
 }  // namespace glz
@@ -83,9 +83,9 @@ template <class E>
 class unexpected {
    public:
     using value_type = E;
-    constexpr unexpected(const unexpected&) = default;
+    constexpr unexpected(unexpected const&) = default;
     constexpr unexpected(unexpected&&) = default;  // NOLINT
-    constexpr auto operator=(const unexpected&) -> unexpected& = default;
+    constexpr auto operator=(unexpected const&) -> unexpected& = default;
     constexpr auto operator=(unexpected&&) -> unexpected& = default;  // NOLINT
     ~unexpected() = default;
 
@@ -96,14 +96,15 @@ class unexpected {
     template <class U, class... Args>
     requires std::constructible_from < E, std::initializer_list<U>
     &, Args... >
-           constexpr explicit unexpected(std::in_place_t /*unused*/, std::initializer_list<U> i_list, Args&&... args)
-        : val(i_list, std::forward<Args>(args)...) {}
+           constexpr explicit unexpected(std::in_place_t /*unused*/, std::initializer_list<U> i_list, Args&&... args) :
+        val(i_list, std::forward<Args>(args)...) {}
 
     template <class Err = E>
     requires(!std::same_as<std::remove_cvref_t<Err>, unexpected>) &&
         (!std::same_as<std::remove_cvref_t<Err>, std::in_place_t>)&&std::
             constructible_from<E, Err> constexpr explicit unexpected(Err&& err)  // NOLINT
-        : val(std::forward<Err>(err)) {}
+        :
+        val(std::forward<Err>(err)) {}
 
     constexpr auto value() const& noexcept -> const E& { return val; }
     constexpr auto value() & noexcept -> E& { return val; }
@@ -119,7 +120,7 @@ class unexpected {
     requires(requires(const E& x, E2 const& y) {
         { x == y } -> std::convertible_to<bool>;
     }) friend constexpr auto
-    operator==(const unexpected& x, const unexpected<E2>& y) -> bool {
+    operator==(unexpected const& x, unexpected<E2> const& y) -> bool {
         return x.value() == y.value();
     }
 
@@ -142,14 +143,14 @@ template <>
 class bad_expected_access<void> : public std::exception {
    protected:
     bad_expected_access() noexcept = default;
-    bad_expected_access(const bad_expected_access&) = default;
+    bad_expected_access(bad_expected_access const&) = default;
     bad_expected_access(bad_expected_access&&) = default;
-    auto operator=(const bad_expected_access&) -> bad_expected_access& = default;
+    auto operator=(bad_expected_access const&) -> bad_expected_access& = default;
     auto operator=(bad_expected_access&&) -> bad_expected_access& = default;
     ~bad_expected_access() override = default;
 
    public:
-    auto what() const noexcept -> const char* override {  // NOLINT
+    auto what() const noexcept -> char const* override {  // NOLINT
         return "bad expected access";
     }
 };
@@ -158,7 +159,7 @@ template <class E>
 class bad_expected_access : public bad_expected_access<void> {
    public:
     explicit bad_expected_access(E e) : val(std::move(e)) {}
-    auto what() const noexcept -> const char* override {  // NOLINT
+    auto what() const noexcept -> char const* override {  // NOLINT
         return "bad expected access";
     }
 
@@ -185,47 +186,47 @@ class expected;
 namespace detail {
 template <typename T, typename E, typename U, typename G, typename UF, typename GF>
 concept expected_constructible_from_other = std::constructible_from<T, UF> && std::constructible_from<E, GF> &&
-    (!std::constructible_from<T, expected<U, G>&>)&&(!std::constructible_from<T, expected<U, G> >)&&(!std::constructible_from<T, const expected<U, G>&>)&&(
+    (!std::constructible_from<T, expected<U, G>&>)&&(!std::constructible_from<T, expected<U, G> >)&&(!std::constructible_from<T, expected<U, G> const&>)&&(
         !std::constructible_from<
             T,
-            const expected<
+            expected<
                 U,
-                G> >)&&(!std::
-                            convertible_to<
-                                expected<U, G>&,
-                                T>)&&(!std::
-                                          convertible_to<
-                                              expected<U, G>&&,
-                                              T>)&&(!std::
-                                                        convertible_to<
-                                                            const expected<U, G>&,
-                                                            T>)&&(!std::
-                                                                      convertible_to<
-                                                                          const expected<U, G>&&,
-                                                                          T>)&&(!std::
-                                                                                    constructible_from<
-                                                                                        unexpected<E>,
-                                                                                        expected<
-                                                                                            U,
-                                                                                            G>&>)&&(!std::
-                                                                                                        constructible_from<
-                                                                                                            unexpected<
-                                                                                                                E>,
-                                                                                                            expected<
-                                                                                                                U,
-                                                                                                                G> >)&&(!std::
-                                                                                                                            constructible_from<
-                                                                                                                                unexpected<
-                                                                                                                                    E>,
-                                                                                                                                const expected<
-                                                                                                                                    U,
-                                                                                                                                    G>&>)&&(!std::
-                                                                                                                                                constructible_from<
-                                                                                                                                                    unexpected<
-                                                                                                                                                        E>,
-                                                                                                                                                    const expected<
-                                                                                                                                                        U,
-                                                                                                                                                        G> >);
+                G> const>)&&(!std::
+                                 convertible_to<
+                                     expected<U, G>&,
+                                     T>)&&(!std::
+                                               convertible_to<
+                                                   expected<U, G>&&,
+                                                   T>)&&(!std::
+                                                             convertible_to<
+                                                                 expected<U, G> const&,
+                                                                 T>)&&(!std::
+                                                                           convertible_to<
+                                                                               expected<U, G> const&&,
+                                                                               T>)&&(!std::
+                                                                                         constructible_from<
+                                                                                             unexpected<E>,
+                                                                                             expected<
+                                                                                                 U,
+                                                                                                 G>&>)&&(!std::
+                                                                                                             constructible_from<
+                                                                                                                 unexpected<
+                                                                                                                     E>,
+                                                                                                                 expected<
+                                                                                                                     U,
+                                                                                                                     G> >)&&(!std::
+                                                                                                                                 constructible_from<
+                                                                                                                                     unexpected<
+                                                                                                                                         E>,
+                                                                                                                                     expected<
+                                                                                                                                         U,
+                                                                                                                                         G> const&>)&&(!std::
+                                                                                                                                                           constructible_from<
+                                                                                                                                                               unexpected<
+                                                                                                                                                                   E>,
+                                                                                                                                                               expected<
+                                                                                                                                                                   U,
+                                                                                                                                                                   G> const>);
 
 template <typename T>
 concept is_unexpected = std::same_as<std::remove_cvref_t<T>, unexpected<typename T::value_type> >;
@@ -277,12 +278,12 @@ class expected {
     constexpr expected() requires std::default_initializable<T> : val{} {};
 
     // postcondition: has_value() = rhs.has_value()
-    constexpr expected(const expected& rhs) requires std::copy_constructible<T> && std::copy_constructible<E> &&
+    constexpr expected(expected const& rhs) requires std::copy_constructible<T> && std::copy_constructible<E> &&
         std::is_trivially_copy_constructible_v<T> && std::is_trivially_copy_constructible_v<E>
     = default;
 
     // postcondition: has_value() = rhs.has_value()
-    constexpr expected(const expected& rhs) requires std::copy_constructible<T> && std::copy_constructible<E>
+    constexpr expected(expected const& rhs) requires std::copy_constructible<T> && std::copy_constructible<E>
         : has_val(rhs.has_val) {
         if (rhs.has_value()) {
             std::construct_at(std::addressof(this->val), *rhs);
@@ -310,8 +311,9 @@ class expected {
     template <class U, class G>
     requires detail::expected_constructible_from_other<T, E, U, G, const U&, const G&>
     constexpr explicit(!std::convertible_to<const U&, T> || !std::convertible_to<const G&, E>)
-        expected(const expected<U, G>& rhs)  // NOLINT
-        : has_val(rhs.has_value()) {
+        expected(expected<U, G> const& rhs)  // NOLINT
+        :
+        has_val(rhs.has_value()) {
         using UF = const U&;
         using GF = const G&;
         if (rhs.has_value()) {
@@ -325,7 +327,8 @@ class expected {
     requires detail::expected_constructible_from_other<T, E, U, G, U, G>
     constexpr explicit(!std::convertible_to<U, T> || !std::convertible_to<G, E>)
         expected(expected<U, G>&& rhs)  // NOLINT
-        : has_val(rhs.has_value()) {
+        :
+        has_val(rhs.has_value()) {
         using UF = const U&;
         using GF = const G&;
         if (rhs.has_value()) {
@@ -340,17 +343,20 @@ class expected {
         (!std::same_as<expected<T, E>, std::remove_cvref_t<U> >)&&(
             !detail::is_unexpected<U>)&&std::constructible_from<T, U> constexpr explicit(!std::convertible_to<U, T>)
             expected(U&& v)  // NOLINT
-        : val(std::forward<U>(v)) {}
+        :
+        val(std::forward<U>(v)) {}
 
     template <class G>
     requires std::constructible_from<E, const G&>
-    constexpr explicit(!std::convertible_to<const G&, E>) expected(const unexpected<G>& e)  // NOLINT
-        : has_val{false}, unex(std::forward<const G&>(e.value())) {}
+    constexpr explicit(!std::convertible_to<const G&, E>) expected(unexpected<G> const& e)  // NOLINT
+        :
+        has_val{false}, unex(std::forward<const G&>(e.value())) {}
 
     template <class G>
     requires std::constructible_from<E, G>
     constexpr explicit(!std::convertible_to<G, E>) expected(unexpected<G>&& e)  // NOLINT
-        : has_val{false}, unex(std::forward<G>(e.value())) {}
+        :
+        has_val{false}, unex(std::forward<G>(e.value())) {}
 
     template <class... Args>
     requires std::constructible_from<T, Args...>
@@ -358,19 +364,19 @@ class expected {
 
     template <class U, class... Args>
     requires std::constructible_from < T, std::initializer_list<U>
-    &, Args... > constexpr explicit expected(std::in_place_t /*unused*/, std::initializer_list<U> il, Args&&... args)
-        : val(il, std::forward<Args>(args)...) {}
+    &, Args... > constexpr explicit expected(std::in_place_t /*unused*/, std::initializer_list<U> il, Args&&... args) :
+        val(il, std::forward<Args>(args)...) {}
 
     template <class... Args>
     requires std::constructible_from<E, Args...>
-    constexpr explicit expected(unexpect_t /*unused*/, Args&&... args)
-        : has_val{false}, unex(std::forward<Args>(args)...) {}
+    constexpr explicit expected(unexpect_t /*unused*/, Args&&... args) :
+        has_val{false}, unex(std::forward<Args>(args)...) {}
 
     template <class U, class... Args>
     requires std::constructible_from < E, std::initializer_list<U>
     &,
-        Args... > constexpr explicit expected(unexpect_t /*unused*/, std::initializer_list<U> il, Args&&... args)
-        : has_val(false),
+        Args... > constexpr explicit expected(unexpect_t /*unused*/, std::initializer_list<U> il, Args&&... args) :
+        has_val(false),
     unex(il, std::forward<Args>(args)...) {}
 
     // destructor
@@ -394,7 +400,7 @@ class expected {
     }
 
     // assignment
-    constexpr auto operator=(const expected& rhs)  // NOLINT
+    constexpr auto operator=(expected const& rhs)  // NOLINT
         -> expected& requires std::is_copy_assignable_v<T> && std::is_copy_constructible_v<T> &&
         std::is_copy_assignable_v<E> && std::is_copy_constructible_v<E> &&
         (std::is_nothrow_move_constructible_v<E> || std::is_nothrow_move_constructible_v<T>) {
@@ -449,7 +455,7 @@ class expected {
     requires std::constructible_from<E, const G&> && std::is_assignable_v<E&, const G&> &&
         (std::is_nothrow_constructible_v<E, const G&> || std::is_nothrow_move_constructible_v<T> ||
          std::is_nothrow_move_constructible_v<E>)constexpr auto
-        operator=(const unexpected<G>& e) -> expected& {
+        operator=(unexpected<G> const& e) -> expected& {
         using GF = const G&;
         if (has_value()) {
             detail::reinit_expected(this->unex, this->val, std::forward<GF>(e.value()));
@@ -877,7 +883,7 @@ class expected {
         { t1 == t2 } -> std::convertible_to<bool>;
         { e1 == e2 } -> std::convertible_to<bool>;
     }
-    friend constexpr auto operator==(const expected& x, const expected<T2, E2>& y) -> bool {
+    friend constexpr auto operator==(expected const& x, expected<T2, E2> const& y) -> bool {
         if (x.has_value() != y.has_value()) {
             return false;
         }
@@ -885,15 +891,15 @@ class expected {
     }
 
     template <typename T2>
-    requires(!detail::is_expected<T2>) friend constexpr bool operator==(const expected& x, const T2& v) {
+    requires(!detail::is_expected<T2>) friend constexpr bool operator==(expected const& x, const T2& v) {
         return x.has_value() && bool(*x == v);
     }
 
     template <class E2>
-    requires requires(const E& x, const unexpected<E2>& e) {
+    requires requires(const E& x, unexpected<E2> const& e) {
         { x == e.value() } -> std::convertible_to<bool>;
     }
-    friend constexpr auto operator==(const expected& x, const unexpected<E2>& e) -> bool {
+    friend constexpr auto operator==(expected const& x, unexpected<E2> const& e) -> bool {
         return !x.has_value() && bool(x.error() == e.value());
     }
 
@@ -926,10 +932,10 @@ class expected<void, E> {
     constexpr expected() noexcept {}  // NOLINT
 
     constexpr expected(
-        const expected& rhs) requires std::is_copy_constructible_v<E> && std::is_trivially_copy_constructible_v<E>
+        expected const& rhs) requires std::is_copy_constructible_v<E> && std::is_trivially_copy_constructible_v<E>
     = default;
 
-    constexpr expected(const expected& rhs) requires std::is_copy_constructible_v<E> : has_val(rhs.has_value()) {
+    constexpr expected(expected const& rhs) requires std::is_copy_constructible_v<E> : has_val(rhs.has_value()) {
         if (!rhs.has_value()) {
             std::construct_at(std::addressof(this->unex), rhs.error());
         }
@@ -956,16 +962,20 @@ class expected<void, E> {
                     G> >)&&(!std::
                                 is_constructible_v<
                                     unexpected<E>,
-                                    const expected<
+                                    expected<
                                         U,
-                                        G>&>)&&(!std::
-                                                    is_constructible_v<
-                                                        unexpected<E>,
-                                                        const expected<
-                                                            U,
-                                                            G>&>)constexpr explicit(!std::is_convertible_v<const G&, E>)
-            expected(const expected<U, G>& rhs)  // NOLINT
-        : has_val(rhs.has_value()) {
+                                        G> const&>)&&(!std::
+                                                          is_constructible_v<
+                                                              unexpected<E>,
+                                                              expected<
+                                                                  U,
+                                                                  G> const&>)constexpr explicit(!std::
+                                                                                                    is_convertible_v<
+                                                                                                        const G&,
+                                                                                                        E>)
+            expected(expected<U, G> const& rhs)  // NOLINT
+        :
+        has_val(rhs.has_value()) {
         if (!rhs.has_value()) {
             std::construct_at(std::addressof(this->unex), std::forward<const G&>(rhs.error()));
         }
@@ -981,16 +991,20 @@ class expected<void, E> {
                     G> >)&&(!std::
                                 is_constructible_v<
                                     unexpected<E>,
-                                    const expected<
+                                    expected<
                                         U,
-                                        G>&>)&&(!std::
-                                                    is_constructible_v<
-                                                        unexpected<E>,
-                                                        const expected<
-                                                            U,
-                                                            G>&>)constexpr explicit(!std::is_convertible_v<const G&, E>)
+                                        G> const&>)&&(!std::
+                                                          is_constructible_v<
+                                                              unexpected<E>,
+                                                              expected<
+                                                                  U,
+                                                                  G> const&>)constexpr explicit(!std::
+                                                                                                    is_convertible_v<
+                                                                                                        const G&,
+                                                                                                        E>)
             expected(expected<U, G>&& rhs)  // NOLINT
-        : has_val(rhs.has_value()) {
+        :
+        has_val(rhs.has_value()) {
         if (!rhs.has_value()) {
             std::construct_at(std::addressof(this->unex), std::forward<G>(rhs.error()));
         }
@@ -998,26 +1012,28 @@ class expected<void, E> {
 
     template <class G>
     requires std::is_constructible_v<E, const G&>
-    constexpr explicit(!std::is_convertible_v<const G&, E>) expected(const unexpected<G>& e)  // NOLINT
-        : has_val(false), unex(std::forward<const G&>(e.value())) {}
+    constexpr explicit(!std::is_convertible_v<const G&, E>) expected(unexpected<G> const& e)  // NOLINT
+        :
+        has_val(false), unex(std::forward<const G&>(e.value())) {}
 
     template <class G>
     requires std::is_constructible_v<E, G>
     constexpr explicit(!std::is_convertible_v<G, E>) expected(unexpected<G>&& e)  // NOLINT
-        : has_val(false), unex(std::forward<G>(e.value())) {}
+        :
+        has_val(false), unex(std::forward<G>(e.value())) {}
 
     constexpr explicit expected(std::in_place_t /*unused*/) noexcept {}
 
     template <class... Args>
     requires std::is_constructible_v<E, Args...>
-    constexpr explicit expected(unexpect_t /*unused*/, Args&&... args)
-        : has_val(false), unex(std::forward<Args>(args)...) {}
+    constexpr explicit expected(unexpect_t /*unused*/, Args&&... args) :
+        has_val(false), unex(std::forward<Args>(args)...) {}
 
     template <class U, class... Args>
     requires std::is_constructible_v < E, std::initializer_list<U>
     &,
-        Args... > constexpr explicit expected(unexpect_t /*unused*/, std::initializer_list<U> il, Args... args)
-        : has_val(false),
+        Args... > constexpr explicit expected(unexpect_t /*unused*/, std::initializer_list<U> il, Args... args) :
+        has_val(false),
     unex(il, std::forward<Args>(args)...) {}
 
     // destructor
@@ -1030,7 +1046,7 @@ class expected<void, E> {
     }
 
     // assignment
-    constexpr auto operator=(const expected& rhs) -> expected&  // NOLINT
+    constexpr auto operator=(expected const& rhs) -> expected&  // NOLINT
         requires std::is_copy_assignable_v<E> && std::is_copy_constructible_v<E> {
         if (has_value() && rhs.has_value()) {
         } else if (has_value()) {
@@ -1063,7 +1079,7 @@ class expected<void, E> {
 
     template <class G>
     requires std::is_constructible_v<E, const G&> and std::is_assignable_v<E&, const G&>
-    constexpr auto operator=(const unexpected<G>& e) -> expected& {
+    constexpr auto operator=(unexpected<G> const& e) -> expected& {
         if (has_value()) {
             std::construct_at(std::addressof(this->unex), std::forward<const G&>(e.value()));
             has_val = false;
@@ -1359,17 +1375,17 @@ class expected<void, E> {
     requires std::is_void_v<T2> && requires(E e, E2 e2) {
         { e == e2 } -> std::convertible_to<bool>;
     }
-    friend constexpr auto operator==(const expected& x, const expected<T2, E2>& y) -> bool {
+    friend constexpr auto operator==(expected const& x, expected<T2, E2> const& y) -> bool {
         if (x.has_value() != y.has_value())
             return false;
         return x.has_value() or bool(x.error() == y.error());
     }
 
     template <class E2>
-    requires requires(const expected& x, const unexpected<E2>& e) {
+    requires requires(expected const& x, unexpected<E2> const& e) {
         { x.error() == e.value() } -> std::convertible_to<bool>;
     }
-    friend constexpr auto operator==(const expected& x, const unexpected<E2>& e) -> bool {
+    friend constexpr auto operator==(expected const& x, unexpected<E2> const& e) -> bool {
         return !x.has_value() && bool(x.error() == e.value());
     }
 

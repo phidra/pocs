@@ -1,8 +1,8 @@
 #include <routingkit/id_set_queue.h>
 
-#include "expect.h"
-
 #include <iostream>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;

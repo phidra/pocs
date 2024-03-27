@@ -1,8 +1,7 @@
-#include <iostream>
-#include <string>
-
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <iostream>
+#include <string>
 
 using namespace boost;
 using namespace std;
@@ -15,7 +14,7 @@ class BfsDiscoveryRankVisitor : public default_bfs_visitor {
    public:
     BfsDiscoveryRankVisitor(RankPMap tmap, T& t) : m_rank_pmap(tmap), m_rank(t) {}
     template <typename VertexDescriptor, typename Graph>
-    void discover_vertex(VertexDescriptor u, const Graph&) const {
+    void discover_vertex(VertexDescriptor u, Graph const&) const {
         put(m_rank_pmap, u, m_rank++);
     }
     RankPMap m_rank_pmap;
@@ -122,16 +121,18 @@ int main(int, char*[]) {
     }
 
     // sorting the vertices by their discovery ranks :
-    sort(vertices.begin(), vertices.end(),
+    sort(vertices.begin(),
+         vertices.end(),
          [&discovery_rank_pmap](VertexDescriptor const& left, VertexDescriptor const& right) {
              auto left_discovery_rank = get(discovery_rank_pmap, left);
              auto right_discovery_rank = get(discovery_rank_pmap, right);
              return left_discovery_rank < right_discovery_rank;
          });
 
-    string vertices_by_rank =
-        accumulate(vertices.cbegin(), vertices.cend(), string{},
-                   [&nameof](string const& acc, VertexDescriptor const& vd) { return acc + nameof(vd); });
+    string vertices_by_rank = accumulate(
+        vertices.cbegin(), vertices.cend(), string{}, [&nameof](string const& acc, VertexDescriptor const& vd) {
+            return acc + nameof(vd);
+        });
     cout << "Here are the vertices, sorted by discovery-rank : " << vertices_by_rank << endl;
     // expected order = BACEDFGH
 

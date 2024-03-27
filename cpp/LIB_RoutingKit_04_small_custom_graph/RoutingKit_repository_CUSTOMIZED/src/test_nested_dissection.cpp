@@ -1,9 +1,9 @@
-#include <routingkit/nested_dissection.h>
 #include <routingkit/inverse_vector.h>
-
-#include "expect.h"
+#include <routingkit/nested_dissection.h>
 
 #include <vector>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;

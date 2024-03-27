@@ -3,28 +3,28 @@
 
 #include <routingkit/bit_vector.h>
 
-#include <string>
-#include <vector>
-#include <stdexcept>
 #include <fstream>
-#include <type_traits>
 #include <functional>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace RoutingKit {
 
 template <class T>
-void save_vector(const std::string& file_name, const std::vector<T>& vec) {
+void save_vector(std::string const& file_name, std::vector<T> const& vec) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
     std::ofstream out(file_name, std::ios::binary);
     if (!out)
         throw std::runtime_error("Can not open \"" + file_name + "\" for writing.");
-    out.write(reinterpret_cast<const char*>(&vec[0]), vec.size() * sizeof(T));
+    out.write(reinterpret_cast<char const*>(&vec[0]), vec.size() * sizeof(T));
 }
 
 template <class T>
-std::vector<T> load_vector(const std::string& file_name) {
+std::vector<T> load_vector(std::string const& file_name) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
@@ -44,23 +44,23 @@ std::vector<T> load_vector(const std::string& file_name) {
 }
 
 template <>
-void save_vector<std::string>(const std::string& file_name, const std::vector<std::string>& vec);
-extern template void save_vector<std::string>(const std::string& file_name, const std::vector<std::string>& vec);
+void save_vector<std::string>(std::string const& file_name, std::vector<std::string> const& vec);
+extern template void save_vector<std::string>(std::string const& file_name, std::vector<std::string> const& vec);
 
 template <>
-std::vector<std::string> load_vector<std::string>(const std::string& file_name);
-extern template std::vector<std::string> load_vector<std::string>(const std::string& file_name);
+std::vector<std::string> load_vector<std::string>(std::string const& file_name);
+extern template std::vector<std::string> load_vector<std::string>(std::string const& file_name);
 
-void save_bit_vector(const std::string& file_name, const BitVector& vec);
-BitVector load_bit_vector(const std::string& file_name);
+void save_bit_vector(std::string const& file_name, BitVector const& vec);
+BitVector load_bit_vector(std::string const& file_name);
 
 template <class T>
-void save_value(const std::string& file_name, const T& val) {
+void save_value(std::string const& file_name, const T& val) {
     save_vector(file_name, std::vector<T>{val});
 }
 
 template <class T>
-T load_value(const std::string& file_name) {
+T load_value(std::string const& file_name) {
     auto v = load_vector<T>(file_name);
     if (v.empty())
         throw std::runtime_error(file_name + " is empty");
@@ -74,7 +74,7 @@ void write_value(std::ostream& out, const T& val) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
-    out.write((const char*)&val, sizeof(T));
+    out.write((char const*)&val, sizeof(T));
     if (!out)
         throw std::runtime_error("Could not write value to file");
 }
@@ -92,11 +92,11 @@ T read_value(std::istream& in) {
 }
 
 template <class T>
-void write_vector(std::ostream& out, const std::vector<T>& v) {
+void write_vector(std::ostream& out, std::vector<T> const& v) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
-    out.write((const char*)&v[0], sizeof(T) * v.size());
+    out.write((char const*)&v[0], sizeof(T) * v.size());
     if (!out)
         throw std::runtime_error("Could not write vector data");
 }
@@ -114,15 +114,15 @@ std::vector<T> read_vector(std::istream& in, unsigned long long size) {
 }
 
 template <class T>
-void write_value(const std::function<void(const char*, unsigned long long)>& out, const T& val) {
+void write_value(std::function<void(char const*, unsigned long long)> const& out, const T& val) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
-    out((const char*)&val, sizeof(T));
+    out((char const*)&val, sizeof(T));
 }
 
 template <class T>
-T read_value(const std::function<void(char*, unsigned long long)>& in) {
+T read_value(std::function<void(char*, unsigned long long)> const& in) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
@@ -132,15 +132,15 @@ T read_value(const std::function<void(char*, unsigned long long)>& in) {
 }
 
 template <class T>
-void write_vector(const std::function<void(const char*, unsigned long long)>& out, const std::vector<T>& v) {
+void write_vector(std::function<void(char const*, unsigned long long)> const& out, std::vector<T> const& v) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
-    out((const char*)&v[0], sizeof(T) * v.size());
+    out((char const*)&v[0], sizeof(T) * v.size());
 }
 
 template <class T>
-std::vector<T> read_vector(const std::function<void(char*, unsigned long long)>& in, unsigned long long size) {
+std::vector<T> read_vector(std::function<void(char*, unsigned long long)> const& in, unsigned long long size) {
     static_assert(std::is_pod<T>::value,
                   "Cannot find non-trivial serialization code for this type, maybe a header is missing or "
                   "serialization is simply not available");
@@ -149,18 +149,18 @@ std::vector<T> read_vector(const std::function<void(char*, unsigned long long)>&
     return v;  // NVRO
 }
 
-inline BitVector read_bit_vector(const std::function<void(char*, unsigned long long)>& in, unsigned long long size) {
+inline BitVector read_bit_vector(std::function<void(char*, unsigned long long)> const& in, unsigned long long size) {
     BitVector v(size);
     in((char*)v.data(), ((size + 511) / 512) * 64);
     return v;
 }
 
-inline void write_bit_vector(const std::function<void(const char*, unsigned long long)>& out, const BitVector& v) {
-    out((const char*)v.data(), ((v.size() + 511) / 512) * 64);
+inline void write_bit_vector(std::function<void(char const*, unsigned long long)> const& out, BitVector const& v) {
+    out((char const*)v.data(), ((v.size() + 511) / 512) * 64);
 }
 
 template <class F>
-void open_file_for_saving(const std::string& file_name, const F& f) {
+void open_file_for_saving(std::string const& file_name, const F& f) {
     std::ofstream out(file_name, std::ios::binary);
     if (!out)
         throw std::runtime_error("Can not open \"" + file_name + "\" for writing.");
@@ -168,7 +168,7 @@ void open_file_for_saving(const std::string& file_name, const F& f) {
 }
 
 template <class F>
-void open_file_for_loading(const std::string& file_name, const F& f) {
+void open_file_for_loading(std::string const& file_name, const F& f) {
     std::ifstream in(file_name, std::ios::binary);
     if (!in)
         throw std::runtime_error("Can not open \"" + file_name + "\" for reading.");

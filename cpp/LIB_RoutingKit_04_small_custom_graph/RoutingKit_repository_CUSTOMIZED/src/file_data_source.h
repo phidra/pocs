@@ -13,23 +13,23 @@ namespace RoutingKit {
 class FileDataSource {
    public:
     FileDataSource();
-    FileDataSource(const char* file_name);
-    FileDataSource(const std::string& file_name);
+    FileDataSource(char const* file_name);
+    FileDataSource(std::string const& file_name);
 
     unsigned long long size() const;
 
     void rewind();
 
-    void open(const char* file_name);
-    void open(const std::string& file_name) { open(file_name.c_str()); }
+    void open(char const* file_name);
+    void open(std::string const& file_name) { open(file_name.c_str()); }
 
     void close();
 
-    FileDataSource(const FileDataSource&) = delete;
-    const FileDataSource& operator=(const FileDataSource&) = delete;
+    FileDataSource(FileDataSource const&) = delete;
+    FileDataSource const& operator=(FileDataSource const&) = delete;
 
     FileDataSource(FileDataSource&& o);
-    const FileDataSource& operator=(FileDataSource&& o);
+    FileDataSource const& operator=(FileDataSource&& o);
 
     unsigned long long minimum_read_size() const { return 1; }
 

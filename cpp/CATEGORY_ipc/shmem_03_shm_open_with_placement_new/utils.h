@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
-#include <sstream>
 #include <dirent.h>
+
 #include <cstring>
+#include <sstream>
+#include <string>
 
 inline void list_directory(std::string dirname) {
     DIR* dir;

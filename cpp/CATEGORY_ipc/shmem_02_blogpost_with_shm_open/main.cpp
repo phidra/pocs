@@ -1,6 +1,6 @@
 #include <atomic>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 #include "shared_mem.h"
 
@@ -51,7 +51,7 @@ Reste une question : comment la synchronisation des atomic a-t-elle lieu, sachan
     std::cout << std::endl;
 }
 
-const char* kSharedMemPath = "/sample_point";
+char const* kSharedMemPath = "/sample_point";
 
 struct Payload {
     // NDM : les deux flags seront sans doute à false initialement (car ftruncate sette la shared-mem à zéro)

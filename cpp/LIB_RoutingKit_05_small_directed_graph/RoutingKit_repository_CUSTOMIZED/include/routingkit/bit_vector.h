@@ -1,8 +1,9 @@
 #ifndef ROUTING_KIT_BIT_VECTOR_H
 #define ROUTING_KIT_BIT_VECTOR_H
 
-#include <stdint.h>
 #include <assert.h>
+#include <stdint.h>
+
 #include <utility>
 
 namespace RoutingKit {
@@ -16,7 +17,7 @@ class BitVector {
     BitVector(uint64_t size, Uninitialized);
     explicit BitVector(uint64_t size, bool init_value = false);
     ~BitVector();
-    BitVector(const BitVector&);
+    BitVector(BitVector const&);
     BitVector(BitVector&&);
 
     BitVector& operator=(BitVector);
@@ -97,9 +98,9 @@ class BitVector {
     uint64_t count_true() const { return population_count(); }
     uint64_t count_false() const { return size() - population_count(); }
 
-    BitVector& operator|=(const BitVector&);
-    BitVector& operator^=(const BitVector&);
-    BitVector& operator&=(const BitVector&);
+    BitVector& operator|=(BitVector const&);
+    BitVector& operator^=(BitVector const&);
+    BitVector& operator&=(BitVector const&);
 
     void inplace_not();
     BitVector operator~() const {
@@ -108,11 +109,11 @@ class BitVector {
         return v;
     }
 
-    friend bool operator==(const BitVector& l, const BitVector& r);
-    friend bool operator<(const BitVector& l, const BitVector& r);
+    friend bool operator==(BitVector const& l, BitVector const& r);
+    friend bool operator<(BitVector const& l, BitVector const& r);
 
     uint64_t* data() { return data_; }
-    const uint64_t* data() const { return data_; }
+    uint64_t const* data() const { return data_; }
 
     uint64_t uint512_count() const { return (size_ + 511) / 512; }
 
@@ -137,15 +138,15 @@ inline BitVector operator|(BitVector&& l, BitVector&& r) {
     l |= r;
     return std::move(l);
 }
-inline BitVector operator|(BitVector&& l, const BitVector& r) {
+inline BitVector operator|(BitVector&& l, BitVector const& r) {
     l |= r;
     return std::move(l);
 }
-inline BitVector operator|(const BitVector& l, BitVector&& r) {
+inline BitVector operator|(BitVector const& l, BitVector&& r) {
     r |= l;
     return std::move(r);
 }
-inline BitVector operator|(const BitVector& l, const BitVector& r) {
+inline BitVector operator|(BitVector const& l, BitVector const& r) {
     BitVector x = l;
     x |= r;
     return x;
@@ -155,15 +156,15 @@ inline BitVector operator&(BitVector&& l, BitVector&& r) {
     l &= r;
     return std::move(l);
 }
-inline BitVector operator&(BitVector&& l, const BitVector& r) {
+inline BitVector operator&(BitVector&& l, BitVector const& r) {
     l &= r;
     return std::move(l);
 }
-inline BitVector operator&(const BitVector& l, BitVector&& r) {
+inline BitVector operator&(BitVector const& l, BitVector&& r) {
     r &= l;
     return std::move(r);
 }
-inline BitVector operator&(const BitVector& l, const BitVector& r) {
+inline BitVector operator&(BitVector const& l, BitVector const& r) {
     BitVector x = l;
     x &= r;
     return x;
@@ -173,30 +174,30 @@ inline BitVector operator^(BitVector&& l, BitVector&& r) {
     l ^= r;
     return std::move(l);
 }
-inline BitVector operator^(BitVector&& l, const BitVector& r) {
+inline BitVector operator^(BitVector&& l, BitVector const& r) {
     l ^= r;
     return std::move(l);
 }
-inline BitVector operator^(const BitVector& l, BitVector&& r) {
+inline BitVector operator^(BitVector const& l, BitVector&& r) {
     r ^= l;
     return std::move(r);
 }
-inline BitVector operator^(const BitVector& l, const BitVector& r) {
+inline BitVector operator^(BitVector const& l, BitVector const& r) {
     BitVector x = l;
     x ^= r;
     return x;
 }
 
-inline bool operator!=(const BitVector& l, const BitVector& r) {
+inline bool operator!=(BitVector const& l, BitVector const& r) {
     return !(l == r);
 }
-inline bool operator>(const BitVector& l, const BitVector& r) {
+inline bool operator>(BitVector const& l, BitVector const& r) {
     return r < l;
 }
-inline bool operator<=(const BitVector& l, const BitVector& r) {
+inline bool operator<=(BitVector const& l, BitVector const& r) {
     return !(l > r);
 }
-inline bool operator>=(const BitVector& l, const BitVector& r) {
+inline bool operator>=(BitVector const& l, BitVector const& r) {
     return !(l < r);
 }
 

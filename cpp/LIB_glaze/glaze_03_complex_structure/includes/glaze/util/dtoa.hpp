@@ -816,8 +816,8 @@ inline void f64_bin_to_dec(uint64_t sig_raw,
                            int32_t* exp_dec) noexcept {
     uint64_t sp, mid;
 
-    const bool is_even = !(sig_bin & 1);
-    const bool lower_bound_closer = (sig_raw == 0 && exp_raw > 1);
+    bool const is_even = !(sig_bin & 1);
+    bool const lower_bound_closer = (sig_raw == 0 && exp_raw > 1);
 
     const uint64_t cb = 4 * sig_bin;
     const uint64_t cbl = cb - 2 + lower_bound_closer;
@@ -838,7 +838,7 @@ inline void f64_bin_to_dec(uint64_t sig_raw,
 
     uint64_t pow10hilo[2];
     pow10_table_get_sig_128(exp10, pow10hilo);
-    const uint64_t& pow10hi = pow10hilo[0];
+    uint64_t const& pow10hi = pow10hilo[0];
     uint64_t& pow10lo = pow10hilo[1];
     pow10lo += (exp10 < POW10_SIG_TABLE_128_MIN_EXACT_EXP || exp10 > POW10_SIG_TABLE_128_MAX_EXACT_EXP);
     const uint64_t vbl = round_to_odd(pow10hi, pow10lo, cbl << h);
@@ -866,7 +866,7 @@ inline void f64_bin_to_dec(uint64_t sig_raw,
     w_inside = (upper >= 4 * s + 4);
 
     mid = 4 * s + 2;
-    const bool round_up = (vb > mid) || (vb == mid && (s & 1) != 0);
+    bool const round_up = (vb > mid) || (vb == mid && (s & 1) != 0);
 
     *sig_dec = s + ((u_inside != w_inside) ? w_inside : round_up);
     *exp_dec = k;

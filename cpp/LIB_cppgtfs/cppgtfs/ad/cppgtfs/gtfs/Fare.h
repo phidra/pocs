@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "Agency.h"
 #include "Route.h"
 #include "flat/Fare.h"
@@ -24,15 +25,15 @@ class FareRule {
     FareRule() {}
 
     FareRule(typename RouteT::Ref route,
-             const std::string& originId,
-             const std::string& destId,
-             const std::string& containsId)
-        : _route(route), _originId(originId), _destId(destId), _containsId(containsId) {}
+             std::string const& originId,
+             std::string const& destId,
+             std::string const& containsId) :
+        _route(route), _originId(originId), _destId(destId), _containsId(containsId) {}
 
     typename RouteT::Ref getRoute() const { return _route; }
-    const std::string& getOriginId() const { return _originId; }
-    const std::string& getDestId() const { return _destId; }
-    const std::string& getContainsId() const { return _containsId; }
+    std::string const& getOriginId() const { return _originId; }
+    std::string const& getDestId() const { return _destId; }
+    std::string const& getContainsId() const { return _containsId; }
 
    private:
     typename RouteT::Ref _route;
@@ -51,26 +52,26 @@ class Fare {
 
     Fare() {}
 
-    Fare(const std::string& id,
+    Fare(std::string const& id,
          double price,
-         const std::string& currencyType,
+         std::string const& currencyType,
          PAYMENT_METHOD paymentMethod,
          NUM_TRANSFERS numTransfers,
          Agency* agency,
-         int64_t dur)
-        : _id(id),
-          _price(price),
-          _currencyType(currencyType),
-          _paymentMethod(paymentMethod),
-          _numTransfers(numTransfers),
-          _agency(agency),
-          _duration(dur) {}
+         int64_t dur) :
+        _id(id),
+        _price(price),
+        _currencyType(currencyType),
+        _paymentMethod(paymentMethod),
+        _numTransfers(numTransfers),
+        _agency(agency),
+        _duration(dur) {}
 
-    const std::string& getId() const { return _id; }
+    std::string const& getId() const { return _id; }
 
     double getPrice() const { return _price; }
 
-    const std::string& getCurrencyType() const { return _currencyType; }
+    std::string const& getCurrencyType() const { return _currencyType; }
 
     PAYMENT_METHOD getPaymentMethod() const { return _paymentMethod; }
 
@@ -80,9 +81,9 @@ class Fare {
 
     int64_t getDuration() const { return _duration; }
 
-    const std::vector<FareRule<RouteT>>& getFareRules() const { return _fareRules; }
+    std::vector<FareRule<RouteT>> const& getFareRules() const { return _fareRules; }
 
-    void addFareRule(const FareRule<RouteT>& rule) { _fareRules.push_back(rule); }
+    void addFareRule(FareRule<RouteT> const& rule) { _fareRules.push_back(rule); }
 
     flat::Fare getFlat() const {
         return flat::Fare{

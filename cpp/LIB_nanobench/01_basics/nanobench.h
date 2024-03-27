@@ -1162,12 +1162,12 @@ class BigO {
     static RangeMeasure collectRangeMeasure(std::vector<Result> const& results);
 
     template <typename Op>
-    BigO(char const* bigOName, RangeMeasure const& rangeMeasure, Op rangeToN)
-        : BigO(bigOName, mapRangeMeasure(rangeMeasure, rangeToN)) {}
+    BigO(char const* bigOName, RangeMeasure const& rangeMeasure, Op rangeToN) :
+        BigO(bigOName, mapRangeMeasure(rangeMeasure, rangeToN)) {}
 
     template <typename Op>
-    BigO(std::string bigOName, RangeMeasure const& rangeMeasure, Op rangeToN)
-        : BigO(std::move(bigOName), mapRangeMeasure(rangeMeasure, rangeToN)) {}
+    BigO(std::string bigOName, RangeMeasure const& rangeMeasure, Op rangeToN) :
+        BigO(std::move(bigOName), mapRangeMeasure(rangeMeasure, rangeToN)) {}
 
     BigO(char const* bigOName, RangeMeasure const& scaledRangeMeasure);
     BigO(std::string bigOName, RangeMeasure const& scaledRangeMeasure);
@@ -1355,11 +1355,11 @@ void doNotOptimizeAway(T const& val) {
 #include <unistd.h>  //sysconf
 #endif
 #if ANKERL_NANOBENCH(PERF_COUNTERS)
-#include <map>  // map
-
 #include <linux/perf_event.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
+
+#include <map>  // map
 #endif
 
 // declarations ///////////////////////////////////////////////////////////////////////////////////
@@ -2002,11 +2002,11 @@ void render(std::string const& mustacheTemplate, std::vector<Result> const& resu
     render(mustacheTemplate.c_str(), results, out);
 }
 
-void render(char const* mustacheTemplate, const Bench& bench, std::ostream& out) {
+void render(char const* mustacheTemplate, Bench const& bench, std::ostream& out) {
     render(mustacheTemplate, bench.results(), out);
 }
 
-void render(std::string const& mustacheTemplate, const Bench& bench, std::ostream& out) {
+void render(std::string const& mustacheTemplate, Bench const& bench, std::ostream& out) {
     render(mustacheTemplate.c_str(), bench.results(), out);
 }
 
@@ -2332,7 +2332,10 @@ struct IterationLogic::Impl {
                 columns.emplace_back(14, 0, "complexityN", "", mBench.complexityN());
             }
 
-            columns.emplace_back(22, 2, mBench.timeUnitName() + "/" + mBench.unit(), "",
+            columns.emplace_back(22,
+                                 2,
+                                 mBench.timeUnitName() + "/" + mBench.unit(),
+                                 "",
                                  rMedian / (mBench.timeUnit().count() * mBench.batch()));
             columns.emplace_back(22, 2, mBench.unit() + "/s", "", rMedian <= 0.0 ? 0.0 : mBench.batch() / rMedian);
 
@@ -2365,8 +2368,8 @@ struct IterationLogic::Impl {
                 }
             }
 
-            columns.emplace_back(12, 2, "total", "",
-                                 mResult.sumProduct(Result::Measure::iterations, Result::Measure::elapsed));
+            columns.emplace_back(
+                12, 2, "total", "", mResult.sumProduct(Result::Measure::iterations, Result::Measure::elapsed));
 
             // write everything
             auto& os = *mBench.output();
@@ -2464,10 +2467,10 @@ ANKERL_NANOBENCH(IGNORE_PADDED_PUSH)
 class LinuxPerformanceCounters {
    public:
     struct Target {
-        Target(uint64_t* targetValue_, bool correctMeasuringOverhead_, bool correctLoopOverhead_)
-            : targetValue(targetValue_),
-              correctMeasuringOverhead(correctMeasuringOverhead_),
-              correctLoopOverhead(correctLoopOverhead_) {}
+        Target(uint64_t* targetValue_, bool correctMeasuringOverhead_, bool correctLoopOverhead_) :
+            targetValue(targetValue_),
+            correctMeasuringOverhead(correctMeasuringOverhead_),
+            correctLoopOverhead(correctLoopOverhead_) {}
 
         uint64_t* targetValue{};          // NOLINT(misc-non-private-member-variables-in-classes)
         bool correctMeasuringOverhead{};  // NOLINT(misc-non-private-member-variables-in-classes)
@@ -2701,12 +2704,12 @@ bool LinuxPerformanceCounters::monitor(uint32_t type, uint64_t eventid, Target t
     pea.read_format =
         PERF_FORMAT_GROUP | PERF_FORMAT_ID | PERF_FORMAT_TOTAL_TIME_ENABLED | PERF_FORMAT_TOTAL_TIME_RUNNING;
 
-    const int pid = 0;             // the current process
-    const int cpu = -1;            // all CPUs
+    int const pid = 0;             // the current process
+    int const cpu = -1;            // all CPUs
 #if defined(PERF_FLAG_FD_CLOEXEC)  // since Linux 3.14
-    const unsigned long flags = PERF_FLAG_FD_CLOEXEC;
+    unsigned long const flags = PERF_FLAG_FD_CLOEXEC;
 #else
-    const unsigned long flags = 0;
+    unsigned long const flags = 0;
 #endif
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
@@ -2823,13 +2826,13 @@ std::string NumSep::do_grouping() const {
 }
 
 // RAII to save & restore a stream's state
-StreamStateRestorer::StreamStateRestorer(std::ostream& s)
-    : mStream(s),
-      mLocale(s.getloc()),
-      mPrecision(s.precision()),
-      mWidth(s.width()),
-      mFill(s.fill()),
-      mFmtFlags(s.flags()) {}
+StreamStateRestorer::StreamStateRestorer(std::ostream& s) :
+    mStream(s),
+    mLocale(s.getloc()),
+    mPrecision(s.precision()),
+    mWidth(s.width()),
+    mFill(s.fill()),
+    mFmtFlags(s.flags()) {}
 
 StreamStateRestorer::~StreamStateRestorer() {
     restore();
@@ -2875,8 +2878,8 @@ std::ostream& operator<<(std::ostream& os, Number const& n) {
     return n.write(os);
 }
 
-MarkDownColumn::MarkDownColumn(int w, int prec, std::string tit, std::string suff, double val) noexcept
-    : mWidth(w), mPrecision(prec), mTitle(std::move(tit)), mSuffix(std::move(suff)), mValue(val) {}
+MarkDownColumn::MarkDownColumn(int w, int prec, std::string tit, std::string suff, double val) noexcept :
+    mWidth(w), mPrecision(prec), mTitle(std::move(tit)), mSuffix(std::move(suff)), mValue(val) {}
 
 std::string MarkDownColumn::title() const {
     std::stringstream ss;
@@ -2951,8 +2954,8 @@ inline constexpr typename std::underlying_type<T>::type u(T val) noexcept {
 }  // namespace detail
 
 // Result returned after a benchmark has finished. Can be used as a baseline for relative().
-Result::Result(Config benchmarkConfig)
-    : mConfig(std::move(benchmarkConfig)), mNameToMeasurements{detail::u(Result::Measure::_size)} {}
+Result::Result(Config benchmarkConfig) :
+    mConfig(std::move(benchmarkConfig)), mNameToMeasurements{detail::u(Result::Measure::_size)} {}
 
 void Result::add(Clock::duration totalElapsed, uint64_t iters, detail::PerformanceCounters const& pc) {
     using detail::d;
@@ -3218,7 +3221,7 @@ std::chrono::duration<double> const& Bench::timeUnit() const noexcept {
 }
 
 // If benchmarkTitle differs from currently set title, the stored results will be cleared.
-Bench& Bench::title(const char* benchmarkTitle) {
+Bench& Bench::title(char const* benchmarkTitle) {
     if (benchmarkTitle != mConfig.mBenchmarkTitle) {
         mResults.clear();
     }
@@ -3237,7 +3240,7 @@ std::string const& Bench::title() const noexcept {
     return mConfig.mBenchmarkTitle;
 }
 
-Bench& Bench::name(const char* benchmarkName) {
+Bench& Bench::name(char const* benchmarkName) {
     mConfig.mBenchmarkName = benchmarkName;
     return *this;
 }
@@ -3433,7 +3436,7 @@ BigO::BigO(std::string bigOName, RangeMeasure const& rangeMeasure) : mName(std::
     double sumRangeMeasure = 0.0;
     double sumRangeRange = 0.0;
 
-    for (const auto& rm : rangeMeasure) {
+    for (auto const& rm : rangeMeasure) {
         sumRangeMeasure += rm.first * rm.second;
         sumRangeRange += rm.first * rm.first;
     }
@@ -3442,7 +3445,7 @@ BigO::BigO(std::string bigOName, RangeMeasure const& rangeMeasure) : mName(std::
     // calculate root mean square
     double err = 0.0;
     double sumMeasure = 0.0;
-    for (const auto& rm : rangeMeasure) {
+    for (auto const& rm : rangeMeasure) {
         auto diff = mConstant * rm.first - rm.second;
         err += diff * diff;
 
@@ -3454,7 +3457,7 @@ BigO::BigO(std::string bigOName, RangeMeasure const& rangeMeasure) : mName(std::
     mNormalizedRootMeanSquare = std::sqrt(err / n) / mean;
 }
 
-BigO::BigO(const char* bigOName, RangeMeasure const& rangeMeasure) : BigO(std::string(bigOName), rangeMeasure) {}
+BigO::BigO(char const* bigOName, RangeMeasure const& rangeMeasure) : BigO(std::string(bigOName), rangeMeasure) {}
 
 std::string const& BigO::name() const noexcept {
     return mName;

@@ -1,13 +1,13 @@
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <iterator>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 using namespace std;
 
-constexpr const int input_type_description_width = 10;
-constexpr const int value_type_description_width = 25;
+constexpr int const input_type_description_width = 10;
+constexpr int const value_type_description_width = 25;
 
 // this macro determines the type of x : lvalue or rvalue
 // (a macro is used instead of a template to avoid the pitfalls of template deduction)

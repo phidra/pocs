@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #define LENGTH 1024
 char CONTENT[LENGTH];
@@ -19,7 +19,9 @@ int main(int argc, char* argv[]) {
     printf(
         "\n[C PROGRAM] I will now fwrite every half-second, for %d times, a small content (%d bytes) to tempfile : "
         "%s\n",
-        LOOPSIZE, (int)LENGTH, TEMPFILE);
+        LOOPSIZE,
+        (int)LENGTH,
+        TEMPFILE);
     FILE* f = fopen(TEMPFILE, "w");
     sleep(2);  // seconds
 

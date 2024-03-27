@@ -17,7 +17,7 @@ struct thread_handler final {
 // If the file has been modified, a callaback is invoked.
 // This is quite cheap for one file, but is not designed to run on many files at once.
 // It is best employed on a single file as a user input interface.
-inline auto file_watch(const std::filesystem::path& path, auto&& callback) {
+inline auto file_watch(std::filesystem::path const& path, auto&& callback) {
     std::shared_ptr<thread_handler> h{new thread_handler(), [](auto* ptr) {
                                           ptr->alive = false;
                                           delete ptr;

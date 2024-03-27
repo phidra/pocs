@@ -1,11 +1,11 @@
 #define _GNU_SOURCE /* necessary for O_DIRECT */
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
     /* O_SYNC | O_DIRECt -> no page cache, but has alignment needs */
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 
     if (written < 0) {
         printf("ARF 2\n");
-        const char* pouet = strerror(errno);
+        char const* pouet = strerror(errno);
         printf("%s\n", pouet);
         return 20;
     }
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
             printf("EINTR");
         } else {
             printf("unknown errno");
-            const char* pouet = strerror(errno);
+            char const* pouet = strerror(errno);
             printf("%s\n", pouet);
         }
         return 30;

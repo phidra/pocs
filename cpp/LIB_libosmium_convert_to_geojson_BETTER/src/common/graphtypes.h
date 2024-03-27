@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-#include <vector>
 #include <osmium/osm/location.hpp>
 #include <osmium/osm/types.hpp>
+#include <string>
+#include <vector>
 
 using NodeOsmId = osmium::object_id_type;
 using WayId = osmium::object_id_type;
@@ -16,11 +16,11 @@ inline std::string node_url(NodeOsmId id) {
 using NodeId = std::string;  // this id is the one that is used in graph and hub-labelling
 
 struct Node {
-    inline Node(NodeOsmId osm_id_, osmium::Location const& location_)
-        : url{node_url(osm_id_)},
-          id{url},  // for OSM nodes, node ids are their URL
-          location{location_},
-          is_stop{false} {}
+    inline Node(NodeOsmId osm_id_, osmium::Location const& location_) :
+        url{node_url(osm_id_)},
+        id{url},  // for OSM nodes, node ids are their URL
+        location{location_},
+        is_stop{false} {}
 
     inline Node(NodeId id, osmium::Location const& location_) : url{}, id{id}, location{location_}, is_stop{false} {}
 
@@ -41,19 +41,19 @@ struct NodeHasher {
 
 // NOTE : a single OSM way can be splitted in several edges.
 struct Edge {
-    inline Edge(NodeOsmId node_from_, NodeOsmId node_to_, Polyline&& geometry_, float length_m_, float weight_)
-        : node_from{node_from_, geometry_.front()},
-          node_to{node_to_, geometry_.back()},
-          length_m{length_m_},
-          weight{weight_},
-          geometry{geometry_} {}
+    inline Edge(NodeOsmId node_from_, NodeOsmId node_to_, Polyline&& geometry_, float length_m_, float weight_) :
+        node_from{node_from_, geometry_.front()},
+        node_to{node_to_, geometry_.back()},
+        length_m{length_m_},
+        weight{weight_},
+        geometry{geometry_} {}
 
-    inline Edge(NodeId node_from_, NodeId node_to_, Polyline&& geometry_, float length_m_, float weight_)
-        : node_from{node_from_, geometry_.front()},
-          node_to{node_to_, geometry_.back()},
-          length_m{length_m_},
-          weight{weight_},
-          geometry{geometry_} {}
+    inline Edge(NodeId node_from_, NodeId node_to_, Polyline&& geometry_, float length_m_, float weight_) :
+        node_from{node_from_, geometry_.front()},
+        node_to{node_to_, geometry_.back()},
+        length_m{length_m_},
+        weight{weight_},
+        geometry{geometry_} {}
 
     Node node_from;
     Node node_to;

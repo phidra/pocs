@@ -1,14 +1,14 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
-#include <routingkit/min_max.h>
+#include <math.h>
 #include <routingkit/geo_dist.h>
-
-#include "verify.h"
+#include <routingkit/min_max.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include <math.h>
+
+#include "verify.h"
 
 using namespace RoutingKit;
 using namespace std;

@@ -10,7 +10,7 @@
 namespace glz::ex {
 template <uint32_t layout = rowwise, class T, class Buffer>
 inline void read_csv(T&& value, Buffer&& buffer) {
-    const auto ec = glz::read_csv(std::forward<T>(value), std::forward<Buffer>(buffer));
+    auto const ec = glz::read_csv(std::forward<T>(value), std::forward<Buffer>(buffer));
     if (ec) {
         throw std::runtime_error("read_csv error");
     }
@@ -27,7 +27,7 @@ inline auto read_csv(Buffer&& buffer) {
 
 template <uint32_t layout = rowwise, class T>
 inline void read_file_csv(T& value, const sv file_name, auto&& buffer) {
-    const auto ec = read_file_csv(value, file_name, buffer);
+    auto const ec = read_file_csv(value, file_name, buffer);
     if (ec) {
         throw std::runtime_error("read_file_csv error");
     }
@@ -37,7 +37,7 @@ inline void read_file_csv(T& value, const sv file_name, auto&& buffer) {
 namespace glz::ex {
 template <class T, class Buffer>
 inline auto write_csv(T&& value, Buffer&& buffer) {
-    const auto ec = write<opts{.format = csv}>(std::forward<T>(value), std::forward<Buffer>(buffer));
+    auto const ec = write<opts{.format = csv}>(std::forward<T>(value), std::forward<Buffer>(buffer));
     if (ec) {
         throw std::runtime_error("write_csv error");
     }
@@ -50,7 +50,7 @@ inline auto write_csv(T&& value) {
 
 template <uint32_t layout = rowwise, class T>
 inline void write_file_csv(T&& value, const sv file_name, auto&& buffer) {
-    const auto ec = write_file_csv(std::forward<T>(value), file_name, buffer);
+    auto const ec = write_file_csv(std::forward<T>(value), file_name, buffer);
     if (ec) {
         throw std::runtime_error("write_file_csv error");
     }

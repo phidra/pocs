@@ -1,8 +1,8 @@
-#include <iostream>
-#include <unordered_set>
-#include <numeric>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <unordered_set>
+#include <vector>
 
 using namespace std;
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     direct_iteration(myset);
     iteration_through_buckets(myset);
 
-    const char* poc_description = R"RAWSTRING(
+    char const* poc_description = R"RAWSTRING(
 La POC était supposée montrer que l'itération d'un set itérait sur ses buckets...
 
 En pratique, elle montre que ça n'EST PAS le cas :-)

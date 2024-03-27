@@ -1,22 +1,22 @@
-#include <routingkit/vector_io.h>
+#include <assert.h>
+#include <routingkit/contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/permutation.h>
 #include <routingkit/sort.h>
 #include <routingkit/timer.h>
-#include <routingkit/inverse_vector.h>
-#include <routingkit/contraction_hierarchy.h>
+#include <routingkit/vector_io.h>
+#include <stdlib.h>
 
-#include "verify.h"
-
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <random>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdlib.h>
-#include <assert.h>
-#include <random>
-#include <set>
+
+#include "verify.h"
 
 using namespace RoutingKit;
 using namespace std;

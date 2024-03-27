@@ -1,7 +1,7 @@
-#include <routingkit/vector_io.h>
 #include <routingkit/inverse_vector.h>
 #include <routingkit/nested_dissection.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>

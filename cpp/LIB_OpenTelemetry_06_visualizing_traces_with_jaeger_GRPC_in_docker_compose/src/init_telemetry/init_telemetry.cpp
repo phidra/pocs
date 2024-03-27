@@ -1,11 +1,11 @@
 #include "init_telemetry.h"
 
-#include "opentelemetry/trace/provider.h"
+#include "opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h"
+#include "opentelemetry/exporters/otlp/otlp_grpc_exporter_options.h"
 #include "opentelemetry/sdk/resource/resource.h"
 #include "opentelemetry/sdk/trace/simple_processor.h"
 #include "opentelemetry/sdk/trace/tracer_provider.h"
-#include "opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h"
-#include "opentelemetry/exporters/otlp/otlp_grpc_exporter_options.h"
+#include "opentelemetry/trace/provider.h"
 
 namespace sdktrace = opentelemetry::sdk::trace;
 

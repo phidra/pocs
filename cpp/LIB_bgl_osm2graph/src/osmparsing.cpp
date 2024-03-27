@@ -1,11 +1,11 @@
+#include "osmparsing.h"
+
 #include <iostream>
 #include <osmium/osm/way.hpp>
 
-#include "osmparsing.h"
-
 using namespace std;
 
-void FillingHandler::way(const osmium::Way& way) noexcept {
+void FillingHandler::way(osmium::Way const& way) noexcept {
     if (!is_way_interesting(way))
         return;
     if (!is_way_in_polygon(way, polygon))
@@ -29,7 +29,7 @@ void FillingHandler::way(const osmium::Way& way) noexcept {
     way_to_nodes.emplace(way.id(), move(nodes));
 };
 
-bool is_way_interesting(const osmium::Way& way) {
+bool is_way_interesting(osmium::Way const& way) {
     // as a rule of thumb, if a way has the 'highway' tag, it can be used for routing :
     // FIXME : we would probably like to filter out non-pedestrian ways.
     if (way.tags()["highway"] == nullptr)
@@ -46,7 +46,7 @@ bool is_way_interesting(const osmium::Way& way) {
     return true;
 }
 
-bool is_way_in_polygon(const osmium::Way& way, const BgPolygon& polygon) {
+bool is_way_in_polygon(osmium::Way const& way, BgPolygon const& polygon) {
     // if there is no polygon, consider that all ways are ok :
     if (::is_empty(polygon))
         return true;

@@ -365,7 +365,7 @@ struct bigint_t final {
         }
     }
 
-    auto operator<=>(const bigint_t& rhs) const noexcept {
+    auto operator<=>(bigint_t const& rhs) const noexcept {
         if (data.size() < rhs.data.size())
             return -1;
         if (data.size() > rhs.data.size())
@@ -382,10 +382,10 @@ struct bigint_t final {
 };
 
 template <std::floating_point T, bool force_conformance = false>
-requires(sizeof(T) <= 8) inline bool parse_float(T& val, const uint8_t*& cur) noexcept {
-    const uint8_t* sig_cut = nullptr;                  /* significant part cutting position for long number */
-    [[maybe_unused]] const uint8_t* sig_end = nullptr; /* significant part ending position */
-    const uint8_t* dot_pos = nullptr;                  /* decimal point position */
+requires(sizeof(T) <= 8) inline bool parse_float(T& val, uint8_t const*& cur) noexcept {
+    uint8_t const* sig_cut = nullptr;                  /* significant part cutting position for long number */
+    [[maybe_unused]] uint8_t const* sig_end = nullptr; /* significant part ending position */
+    uint8_t const* dot_pos = nullptr;                  /* decimal point position */
     uint32_t frac_zeros = 0;
     uint64_t sig = 0;    /* significant part of the number */
     int32_t exp = 0;     /* exponent part of the number */
@@ -393,8 +393,8 @@ requires(sizeof(T) <= 8) inline bool parse_float(T& val, const uint8_t*& cur) no
     int32_t exp_sig = 0; /* temporary exponent number from significant part */
     int32_t exp_lit = 0; /* temporary exponent number from exponent literal part */
     uint64_t num_tmp;    /* temporary number for reading */
-    const uint8_t* tmp;  /* temporary cursor for reading */
-    const uint8_t* hdr = cur;
+    uint8_t const* tmp;  /* temporary cursor for reading */
+    uint8_t const* hdr = cur;
     bool sign = (*hdr == '-');
     cur += sign;
     auto apply_sign = [&](auto&& val) -> T { return sign ? -static_cast<T>(val) : static_cast<T>(val); };
@@ -508,16 +508,14 @@ requires(sizeof(T) <= 8) inline bool parse_float(T& val, const uint8_t*& cur) no
 digi_frac_more:
     sig_cut = cur;        /* too large to fit in u64, excess digits need to be cut */
     sig += (*cur >= '5'); /* round */
-    while (uint8_t(*++cur - zero) < 10) {
-    }
+    while (uint8_t(*++cur - zero) < 10) {}
     if (!dot_pos) {
         dot_pos = cur;
         if (*cur == '.') {
             if (uint8_t(*++cur - zero) > 9) {
                 return false;
             }
-            while (uint8_t(*++cur - zero) < 10) {
-            }
+            while (uint8_t(*++cur - zero) < 10) {}
         }
     }
     exp_sig = static_cast<int32_t>(dot_pos - sig_cut);
@@ -644,11 +642,11 @@ digi_finish:
     static_assert(sizeof(float) == 4 && sizeof(double) == 8);
 
     using raw_t = std::conditional_t<std::is_same_v<float, std::decay_t<T>>, uint32_t, uint64_t>;
-    const auto sig_leading_zeros = std::countl_zero(sig);
-    const auto sig_norm = sig << sig_leading_zeros;
-    const auto sig2_norm = sig2_from_exp10(exp);
-    const auto sig_product = mulhi64(sig_norm, sig2_norm) + 1;
-    const auto sig_product_starts_with_1 = sig_product >> 63;
+    auto const sig_leading_zeros = std::countl_zero(sig);
+    auto const sig_norm = sig << sig_leading_zeros;
+    auto const sig2_norm = sig2_from_exp10(exp);
+    auto const sig_product = mulhi64(sig_norm, sig2_norm) + 1;
+    auto const sig_product_starts_with_1 = sig_product >> 63;
     auto mantisa = sig_product << (2 - sig_product_starts_with_1);
     constexpr uint64_t round_mask = uint64_t(1) << 63 >> (std::numeric_limits<T>::digits - 1);
     constexpr uint32_t exponent_bits =
@@ -717,8 +715,8 @@ digi_finish:
 
 template <std::floating_point T, bool force_conformance = false>
 requires(sizeof(T) <= 8) inline bool parse_float(T& val, auto& itr) noexcept {
-    const uint8_t* cur = reinterpret_cast<const uint8_t*>(&*itr);
-    const uint8_t* beg = cur;
+    uint8_t const* cur = reinterpret_cast<uint8_t const*>(&*itr);
+    uint8_t const* beg = cur;
     if (parse_float<T, force_conformance>(val, cur)) {
         itr += (cur - beg);
         return true;

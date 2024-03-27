@@ -1,7 +1,7 @@
-#include <iostream>
-#include <vector>
 #include <algorithm>
 #include <functional>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -66,7 +66,7 @@ vector<BigObject> get_test_vector() {
 
 int main(void) {
     // on ne veut garder que les éléments suffisamment éloignés de notre pivot :
-    constexpr const int pivot = 42;
+    constexpr int const pivot = 42;
     DISPLAY_ON_COUT = 0;
     BigObject big_pivot(pivot);
     DISPLAY_ON_COUT = 1;
@@ -84,8 +84,8 @@ int main(void) {
 
     // test 1 = avec une lambda (prenant une référence) et comparant directement :
     DISPLAY_ON_COUT = 1;
-    auto past_the_end_1 = remove_if(vec1.begin(), vec1.end(),
-                                    [](BigObject& x) { return max(x._value, pivot) - min(x._value, pivot) < 6; });
+    auto past_the_end_1 = remove_if(
+        vec1.begin(), vec1.end(), [](BigObject& x) { return max(x._value, pivot) - min(x._value, pivot) < 6; });
     // comportement observé :
     //      - comme la lambda prend une référence, on ne voit pas de construction d'objet
     //      - (mais si on modifie la lambda pour accepter une copie, on voit N constructions par copie + destructions)

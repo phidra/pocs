@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vector>
-
 #include <boost/geometry.hpp>
+#include <vector>
 
 using BgDegree = boost::geometry::cs::spherical_equatorial<boost::geometry::degree>;
 using BgPoint = boost::geometry::model::point<double, 2, BgDegree>;

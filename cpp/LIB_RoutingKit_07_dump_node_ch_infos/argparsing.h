@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 std::vector<unsigned> get_vector_u(std::string filename, std::string prog_name) {
     std::ifstream stream{filename};

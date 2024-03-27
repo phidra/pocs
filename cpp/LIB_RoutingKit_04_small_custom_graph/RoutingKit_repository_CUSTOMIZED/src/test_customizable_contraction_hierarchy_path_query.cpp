@@ -1,10 +1,10 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
 #include <routingkit/graph_util.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
         timer = -get_micro_time();
         CustomizableContractionHierarchy cch(
-            cch_order, tail, head, [](const std::string&) {}, true);
+            cch_order, tail, head, [](std::string const&) {}, true);
         timer += get_micro_time();
 
         cout << "done [" << timer << "musec]" << endl;
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
         cout << "done" << endl;
 
-        const unsigned query_count = source.size();
+        unsigned const query_count = source.size();
 
         cout << "Loaded " << query_count << " test queries" << endl;
 

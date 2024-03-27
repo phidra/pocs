@@ -1,15 +1,15 @@
-#include <iostream>
-#include <iomanip>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
 
 #include "common/graphtypes.h"
-#include "graph/graph.h"
 #include "dumping/geojson.h"
+#include "graph/graph.h"
 #include "parsing/polygonfile.h"
 
 using namespace std;
 
-void usage(const char* prog_name) {
+void usage(char const* prog_name) {
     const std::string description = R"DELIM(
 Convert a given OSM file to a geojson.
 Inputs :
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
         ofstream geojson_graph(output_dir + "graph.geojson");
         dump_geojson_graph(geojson_graph, edges);
 
-    } catch (const exception& e) {
+    } catch (exception const& e) {
         cerr << e.what() << '\n';
         exit(1);
     }

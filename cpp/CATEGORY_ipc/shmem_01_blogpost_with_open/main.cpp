@@ -1,13 +1,14 @@
-#include <iostream>
-#include <atomic>
 #include <fcntl.h>
-#include <new>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#include <atomic>
+#include <iostream>
+#include <new>
 
 #include "utils.h"
 
@@ -78,7 +79,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     print_poc_description();
 
     // STEP 1 = ouvrir un fichier qui accueillera la MMAP :
-    const char* filename = "/tmp/shared.dat";
+    char const* filename = "/tmp/shared.dat";
     int fid = ::open(filename, O_CREAT | O_RDWR, S_IRWXU | S_IRWXG);
     // cf. man open :
     //     O_CREAT If pathname does not exist, create it as a regular file.

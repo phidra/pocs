@@ -14,13 +14,13 @@ struct string_literal {
 
     constexpr string_literal() noexcept = default;
 
-    constexpr string_literal(const char (&str)[N]) noexcept { std::copy_n(str, N, value); }
+    constexpr string_literal(char const (&str)[N]) noexcept { std::copy_n(str, N, value); }
 
     char value[N];
-    constexpr const char* begin() const noexcept { return value; }
-    constexpr const char* end() const noexcept { return value + length; }
+    constexpr char const* begin() const noexcept { return value; }
+    constexpr char const* end() const noexcept { return value + length; }
 
-    [[nodiscard]] constexpr auto operator<=>(const string_literal&) const = default;
+    [[nodiscard]] constexpr auto operator<=>(string_literal const&) const = default;
 
     constexpr const std::string_view sv() const noexcept { return {value, length}; }
 
@@ -36,7 +36,7 @@ constexpr auto string_literal_from_view(sv str) {
 }
 
 template <size_t N>
-constexpr size_t length(const char (&)[N]) noexcept {
+constexpr size_t length(char const (&)[N]) noexcept {
     return N;
 }
 
@@ -50,14 +50,14 @@ inline constexpr std::string_view chars = chars_impl<Str>::value;
 
 template <size_t N>
 struct fixed_string final {
-    constexpr explicit(true) fixed_string(const auto... cs) : data{cs...} {}
-    constexpr explicit(false) fixed_string(const char (&str)[N + 1]) { std::copy_n(str, N + 1, data.data()); }
-    [[nodiscard]] constexpr auto operator<=>(const fixed_string&) const = default;
+    constexpr explicit(true) fixed_string(auto const... cs) : data{cs...} {}
+    constexpr explicit(false) fixed_string(char const (&str)[N + 1]) { std::copy_n(str, N + 1, data.data()); }
+    [[nodiscard]] constexpr auto operator<=>(fixed_string const&) const = default;
     [[nodiscard]] constexpr explicit(false) operator std::string_view() const { return {data.data(), N}; }
     [[nodiscard]] constexpr auto size() const -> std::size_t { return N; }
     std::array<char, N + 1> data{};
 };
 
 template <size_t N>
-fixed_string(const char (&str)[N]) -> fixed_string<N - 1>;
+fixed_string(char const (&str)[N]) -> fixed_string<N - 1>;
 }  // namespace glz

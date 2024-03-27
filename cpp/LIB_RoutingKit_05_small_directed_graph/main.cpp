@@ -1,8 +1,9 @@
 #include <routingkit/contraction_hierarchy.h>
+
 #include <iostream>
 
-#include "mygraph.h"
 #include "ch_analysis.h"
+#include "mygraph.h"
 
 // NOTE : this example is derived from :
 //      https://github.com/phidra/RoutingKit/blob/master/README.md
@@ -21,8 +22,8 @@ int main(int argc, char* argv[]) {
     cout << "node K has id '" << K << "' and name : " << nameof(K) << endl;
 
     // STEP 2 = contraction + ordering :
-    auto ch = RoutingKit::ContractionHierarchy::build(original_graph.num_nodes(), original_graph.tails,
-                                                      original_graph.heads, original_graph.weights);
+    auto ch = RoutingKit::ContractionHierarchy::build(
+        original_graph.num_nodes(), original_graph.tails, original_graph.heads, original_graph.weights);
 
     // STEP 3 = analysis of built CH (this displays lots of interesting infos) :
     analyze_ch(original_graph, ch, nameof);

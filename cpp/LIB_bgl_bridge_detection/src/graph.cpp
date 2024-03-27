@@ -1,13 +1,14 @@
+#include "graph.h"
+
 #include <iostream>
-#include <unordered_map>
+#include <osmium/geom/haversine.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/sparse_mmap_array.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
-#include <osmium/index/map/sparse_mmap_array.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <osmium/geom/haversine.hpp>
+#include <unordered_map>
 
 #include "osmparsing.h"
-#include "graph.h"
 
 using namespace std;
 using namespace boost;
@@ -97,8 +98,8 @@ Graph build_graph(map<WayId, vector<LocatedNode> > const& way_to_nodes,
             // Dit autrement : la way était une impasse, se terminant sur second_node.
             // Dans ce cas, on ajoute l'edge, et on a fini pour cette way :
             if (second_node == nodes.end()) {
-                add_edge(boost_graph, osmid2descriptor, first_node->first, (second_node - 1)->first,
-                         std::move(geometry));
+                add_edge(
+                    boost_graph, osmid2descriptor, first_node->first, (second_node - 1)->first, std::move(geometry));
                 break;
             }
 

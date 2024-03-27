@@ -2,13 +2,13 @@
 #define ROUTING_KIT_OSM_GRAPH_BUILDER_H
 
 #include <routingkit/bit_vector.h>
-#include <routingkit/tag_map.h>
 #include <routingkit/osm_decoder.h>
+#include <routingkit/tag_map.h>
+#include <stdint.h>
 
-#include <vector>
 #include <functional>
 #include <string>
-#include <stdint.h>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -19,12 +19,12 @@ struct OSMRoutingIDMapping {
 };
 
 OSMRoutingIDMapping load_osm_id_mapping_from_pbf(
-    const std::string& file_name,
-    std::function<bool(uint64_t osm_node_id, const TagMap& node_tags)>
+    std::string const& file_name,
+    std::function<bool(uint64_t osm_node_id, TagMap const& node_tags)>
         is_routing_node,  // returns true if node should be a routing node
-    std::function<bool(uint64_t osm_way_id, const TagMap& way_tags)>
+    std::function<bool(uint64_t osm_way_id, TagMap const& way_tags)>
         is_way_used_for_routing,  // return true if way should be a routing way
-    std::function<void(const std::string&)> log_message = nullptr,
+    std::function<void(std::string const&)> log_message = nullptr,
     bool all_modelling_nodes_are_routing_nodes = false);
 
 enum class OSMWayDirectionCategory { open_in_both, only_open_forwards, only_open_backwards, closed };
@@ -72,19 +72,19 @@ struct OSMRoutingGraph {
 };
 
 OSMRoutingGraph load_osm_routing_graph_from_pbf(
-    const std::string& pbf_file,
+    std::string const& pbf_file,
 
-    const OSMRoutingIDMapping& mapping,
+    OSMRoutingIDMapping const& mapping,
 
-    std::function<OSMWayDirectionCategory(uint64_t osm_way_id, unsigned routing_way_id, const TagMap& way_tags)>
+    std::function<OSMWayDirectionCategory(uint64_t osm_way_id, unsigned routing_way_id, TagMap const& way_tags)>
         way_callback,
 
     std::function<void(uint64_t osm_relation_id,
-                       const std::vector<OSMRelationMember>& member_list,
-                       const TagMap& tags,
+                       std::vector<OSMRelationMember> const& member_list,
+                       TagMap const& tags,
                        std::function<void(OSMTurnRestriction)>)> turn_restriction_decoder,
 
-    std::function<void(const std::string&)> log_message = nullptr,
+    std::function<void(std::string const&)> log_message = nullptr,
 
     bool file_is_ordered_even_though_file_header_says_that_it_is_unordered = false,
 

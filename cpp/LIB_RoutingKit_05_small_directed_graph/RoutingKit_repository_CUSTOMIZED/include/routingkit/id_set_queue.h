@@ -1,10 +1,11 @@
 #ifndef ROUTING_KIT_ID_SET_QUEUE_H
 #define ROUTING_KIT_ID_SET_QUEUE_H
 
+#include <assert.h>
 #include <routingkit/constants.h>
 #include <routingkit/min_max.h>
+
 #include <vector>
-#include <assert.h>
 
 namespace RoutingKit {
 
@@ -61,7 +62,7 @@ class IDSetMinQueue {
     // above diagram.
     // is_smaller_child
 
-    static const unsigned root = 1;
+    static unsigned const root = 1;
 
     //! Maps a node onto its parent. Only works if x != root.
     static unsigned parent(unsigned x) { return x >> 1; }
@@ -94,11 +95,11 @@ class IDSetMinQueue {
     IDSetMinQueue() {}
 
     //! The queue may contain IDs from 0 to n-1.
-    explicit IDSetMinQueue(unsigned n)
-        : max_number_of_ids(n),
-          min_id(invalid_id),
-          offset(smallest_two_power_no_smaller_than(n)),
-          data(n + offset + (n & 1), false)  // +(n&1) add an element if n is odd
+    explicit IDSetMinQueue(unsigned n) :
+        max_number_of_ids(n),
+        min_id(invalid_id),
+        offset(smallest_two_power_no_smaller_than(n)),
+        data(n + offset + (n & 1), false)  // +(n&1) add an element if n is odd
     {}
 
     unsigned id_count() const { return max_number_of_ids; }

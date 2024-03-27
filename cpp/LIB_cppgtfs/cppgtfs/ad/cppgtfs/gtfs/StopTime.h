@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include "Stop.h"
 #include "flat/StopTime.h"
 
@@ -26,31 +27,31 @@ class StopTime {
    public:
     typedef flat::StopTime::PU_DO_TYPE PU_DO_TYPE;
 
-    StopTime(const Time& at,
-             const Time& dt,
+    StopTime(Time const& at,
+             Time const& dt,
              typename StopT::Ref s,
              uint32_t seq,
-             const std::string& hs,
+             std::string const& hs,
              PU_DO_TYPE put,
              PU_DO_TYPE dot,
              float distTrav,
-             bool isTp)
-        : _at(at),
-          _dt(dt),
-          _s(s),
-          _sequence(seq),
-          _headsign(hs),
-          _pickupType(put),
-          _dropOffType(dot),
-          _isTimepoint(isTp),
-          _shapeDistTravelled(distTrav) {}
+             bool isTp) :
+        _at(at),
+        _dt(dt),
+        _s(s),
+        _sequence(seq),
+        _headsign(hs),
+        _pickupType(put),
+        _dropOffType(dot),
+        _isTimepoint(isTp),
+        _shapeDistTravelled(distTrav) {}
 
-    const Time& getArrivalTime() const { return _at; }
-    const Time& getDepartureTime() const { return _dt; }
+    Time const& getArrivalTime() const { return _at; }
+    Time const& getDepartureTime() const { return _dt; }
 
     const typename StopT::Ref getStop() const { return _s; }
     typename StopT::Ref getStop() { return _s; }
-    const std::string& getHeadsign() const { return _headsign; }
+    std::string const& getHeadsign() const { return _headsign; }
 
     PU_DO_TYPE getPickupType() const { return static_cast<PU_DO_TYPE>(_pickupType); }
 
@@ -76,7 +77,7 @@ class StopTime {
 
 template <typename StopTimeT>
 struct StopTimeCompare {
-    bool operator()(const StopTimeT& lh, const StopTimeT& rh) const { return lh.getSeq() < rh.getSeq(); }
+    bool operator()(StopTimeT const& lh, StopTimeT const& rh) const { return lh.getSeq() < rh.getSeq(); }
 };
 
 }  // namespace gtfs

@@ -1,22 +1,22 @@
 #include <routingkit/vector_io.h>
 
-#include <string>
+#include <iomanip>
 #include <iostream>
 #include <limits>
-#include <iomanip>
+#include <string>
 
 using namespace RoutingKit;
 using namespace std;
 
 template <class T>
-void convert_num_data(const string& input_vector_file) {
+void convert_num_data(string const& input_vector_file) {
     vector<T> v = load_vector<T>(input_vector_file);
 
     for (auto& x : v)
         cout << std::setprecision(std::numeric_limits<T>::digits10 + 1) << x << '\n';
 }
 
-string replace_all_substrings(string subject, const string& search, const string& replace) {
+string replace_all_substrings(string subject, string const& search, string const& replace) {
     size_t pos = 0;
     while ((pos = subject.find(search, pos)) != std::string::npos) {
         subject.replace(pos, search.length(), replace);
@@ -25,7 +25,7 @@ string replace_all_substrings(string subject, const string& search, const string
     return std::move(subject);
 }
 
-void convert_string_data(const string& input_vector_file) {
+void convert_string_data(string const& input_vector_file) {
     vector<string> v = load_vector<string>(input_vector_file);
 
     for (auto& s : v)

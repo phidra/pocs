@@ -1,13 +1,13 @@
-#include <iostream>
-#include <utility>
-#include <string>
 #include <algorithm>
-#include <numeric>
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <cassert>
+#include <iostream>
+#include <numeric>
+#include <string>
+#include <utility>
 
 using namespace boost;
 using namespace std;
@@ -85,9 +85,16 @@ int main(int, char*[]) {
         pair<int, int>{6, 7}   // GH
     };
 
-    vector<EdgeProperty> the_properties = {{5, 999001, "AB"}, {10, 999002, "AC"}, {1, 999003, "AD"}, {8, 999004, "BC"},
-                                           {3, 999005, "BE"}, {5, 999006, "CF"},  {9, 999007, "DE"}, {5, 999008, "EG"},
-                                           {2, 999009, "FH"}, {3, 999010, "GH"}};
+    vector<EdgeProperty> the_properties = {{5, 999001, "AB"},
+                                           {10, 999002, "AC"},
+                                           {1, 999003, "AD"},
+                                           {8, 999004, "BC"},
+                                           {3, 999005, "BE"},
+                                           {5, 999006, "CF"},
+                                           {9, 999007, "DE"},
+                                           {5, 999008, "EG"},
+                                           {2, 999009, "FH"},
+                                           {3, 999010, "GH"}};
 
     Graph mygraph(the_edges.begin(), the_edges.end(), the_properties.begin(), 8);
     assert(num_vertices(mygraph) == 8);

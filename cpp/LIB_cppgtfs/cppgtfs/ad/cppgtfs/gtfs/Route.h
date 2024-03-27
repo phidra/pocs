@@ -6,11 +6,13 @@
 #define AD_CPPGTFS_GTFS_ROUTE_H_
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <iomanip>
 #include <set>
 #include <sstream>
 #include <string>
+
 #include "Agency.h"
 #include "flat/Route.h"
 
@@ -31,40 +33,40 @@ class RouteB {
 
     RouteB() {}
 
-    RouteB(const string& id,
+    RouteB(string const& id,
            typename AgencyT::Ref agency,
-           const string& short_name,
-           const string& long_name,
-           const string& desc,
+           string const& short_name,
+           string const& long_name,
+           string const& desc,
            flat::Route::TYPE type,
-           const string& url,
+           string const& url,
            uint32_t color,
-           uint32_t text_color)
-        : _id(id),
-          _agency(agency),
-          _short_name(short_name),
-          _long_name(long_name),
-          _desc(desc),
-          _type(type),
-          _url(url),
-          _color(color),
-          _text_color(text_color) {}
+           uint32_t text_color) :
+        _id(id),
+        _agency(agency),
+        _short_name(short_name),
+        _long_name(long_name),
+        _desc(desc),
+        _type(type),
+        _url(url),
+        _color(color),
+        _text_color(text_color) {}
 
-    const std::string& getId() const { return _id; }
+    std::string const& getId() const { return _id; }
 
     const typename AgencyT::Ref getAgency() const { return _agency; }
 
     typename AgencyT::Ref getAgency() { return _agency; }
 
-    const std::string& getShortName() const { return _short_name; }
+    std::string const& getShortName() const { return _short_name; }
 
-    const std::string& getLongName() const { return _long_name; }
+    std::string const& getLongName() const { return _long_name; }
 
-    const std::string& getDesc() const { return _desc; }
+    std::string const& getDesc() const { return _desc; }
 
     flat::Route::TYPE getType() const { return _type; }
 
-    const std::string& getUrl() const { return _url; }
+    std::string const& getUrl() const { return _url; }
 
     uint32_t getColor() const { return _color; }
 

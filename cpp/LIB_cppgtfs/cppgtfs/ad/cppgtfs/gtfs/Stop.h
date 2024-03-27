@@ -6,8 +6,10 @@
 #define AD_CPPGTFS_GTFS_STOP_H_
 
 #include <stdint.h>
+
 #include <cassert>
 #include <string>
+
 #include "flat/Stop.h"
 
 using std::exception;
@@ -26,60 +28,60 @@ class Stop {
 
     Stop() {}
 
-    Stop(const string& id,
-         const string& code,
-         const string& name,
-         const string& desc,
+    Stop(string const& id,
+         string const& code,
+         string const& name,
+         string const& desc,
          float lat,
          float lng,
          string zone_id,
-         const string& stop_url,
+         string const& stop_url,
          flat::Stop::LOCATION_TYPE location_type,
          Stop* parent_station,
-         const string& stop_timezone,
+         string const& stop_timezone,
          flat::Stop::WHEELCHAIR_BOARDING wheelchair_boarding,
-         const std::string& platform_code)
-        : _id(id),
-          _code(code),
-          _name(name),
-          _desc(desc),
-          _zone_id(zone_id),
-          _stop_url(stop_url),
-          _stop_timezone(stop_timezone),
-          _platform_code(platform_code),
-          _parent_station(parent_station),
-          _lat(lat),
-          _lng(lng),
-          _wheelchair_boarding(wheelchair_boarding),
-          _location_type(location_type) {}
+         std::string const& platform_code) :
+        _id(id),
+        _code(code),
+        _name(name),
+        _desc(desc),
+        _zone_id(zone_id),
+        _stop_url(stop_url),
+        _stop_timezone(stop_timezone),
+        _platform_code(platform_code),
+        _parent_station(parent_station),
+        _lat(lat),
+        _lng(lng),
+        _wheelchair_boarding(wheelchair_boarding),
+        _location_type(location_type) {}
 
-    const std::string& getId() const { return _id; }
+    std::string const& getId() const { return _id; }
 
-    const std::string& getCode() const { return _code; }
+    std::string const& getCode() const { return _code; }
 
-    const std::string& getName() const { return _name; }
+    std::string const& getName() const { return _name; }
 
-    const std::string& getPlatformCode() const { return _platform_code; }
+    std::string const& getPlatformCode() const { return _platform_code; }
 
-    const std::string& getDesc() const { return _desc; }
+    std::string const& getDesc() const { return _desc; }
 
     float getLat() const { return _lat; }
 
     float getLng() const { return _lng; }
 
-    const std::string& getZoneId() const { return _zone_id; }
+    std::string const& getZoneId() const { return _zone_id; }
 
-    const std::string& getStopUrl() const { return _stop_url; }
+    std::string const& getStopUrl() const { return _stop_url; }
 
     flat::Stop::LOCATION_TYPE getLocationType() const { return _location_type; }
 
-    const Stop* getParentStation() const { return _parent_station; }
+    Stop const* getParentStation() const { return _parent_station; }
 
     Stop* getParentStation() { return _parent_station; }
 
     void setParentStation(Stop* p) { _parent_station = p; }
 
-    const std::string& getStopTimezone() const { return _stop_timezone; }
+    std::string const& getStopTimezone() const { return _stop_timezone; }
 
     flat::Stop::WHEELCHAIR_BOARDING getWheelchairBoarding() const { return _wheelchair_boarding; }
 

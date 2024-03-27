@@ -56,17 +56,18 @@ struct error final {
     // TODO: remove all these constructors when MSVC is fixed
     error() = default;
     error(error_e code) : code(code) {}
-    error(error_e code, const std::optional<std::string>& data) : code(code), data(data) {}
-    error(error_e code, const std::optional<std::string>& data, const std::string& message)
-        : code(code), data(data), message(message) {}
-    error(const error&) = default;
+    error(error_e code, std::optional<std::string> const& data) : code(code), data(data) {}
+    error(error_e code, std::optional<std::string> const& data, std::string const& message) :
+        code(code), data(data), message(message) {}
+    error(error const&) = default;
     error(error&&) = default;
-    error& operator=(const error&) = default;
+    error& operator=(error const&) = default;
     error& operator=(error&&) = default;
 
-    static error invalid(const parse_error& pe, auto& buffer) {
+    static error invalid(parse_error const& pe, auto& buffer) {
         std::string format_err{format_error(pe, buffer)};
-        return {error_e::invalid_request, format_err.empty() ? std::nullopt : std::optional{format_err},
+        return {error_e::invalid_request,
+                format_err.empty() ? std::nullopt : std::optional{format_err},
                 std::string(code_as_sv(error_e::invalid_request))};
     }
     static error version(std::string_view presumed_version) {
@@ -76,7 +77,8 @@ struct error final {
                 std::string(code_as_sv(error_e::invalid_request))};
     }
     static error method(std::string_view presumed_method) {
-        return {error_e::method_not_found, "Method: '" + std::string(presumed_method) + "' not found",
+        return {error_e::method_not_found,
+                "Method: '" + std::string(presumed_method) + "' not found",
                 std::string(code_as_sv(error_e::method_not_found))};
     }
 
@@ -166,7 +168,7 @@ struct server_method_t {
     using result_t = typename Method::result_t;
     using request_t = rpc::request_t<params_t>;
     using response_t = rpc::response_t<result_t>;
-    std::function<expected<result_t, rpc::error>(const params_t&)> callback{[](const auto&) {
+    std::function<expected<result_t, rpc::error>(params_t const&)> callback{[](auto const&) {
         return glz::unexpected{rpc::error{rpc::error_e::internal, "Not implemented"}};
     }};
 };
@@ -178,13 +180,13 @@ struct client_method_t {
     using result_t = typename Method::result_t;
     using request_t = rpc::request_t<params_t>;
     using response_t = rpc::response_t<result_t>;
-    using callback_t = std::function<void(const glz::expected<result_t, rpc::error>&, const id_t&)>;
+    using callback_t = std::function<void(glz::expected<result_t, rpc::error> const&, id_t const&)>;
     std::unordered_map<id_t, callback_t> pending_requests;
 };
 
 namespace detail {
 template <string_literal name, class... method_type>
-inline constexpr void set_callback(glz::tuplet::tuple<method_type...>& methods, const auto& callback) {
+inline constexpr void set_callback(glz::tuplet::tuple<method_type...>& methods, auto const& callback) {
     constexpr bool method_found = ((method_type::name_v == name) || ...);
     static_assert(method_found, "Method not settable in given tuple.");
 
@@ -247,7 +249,7 @@ struct server {
     glz::tuplet::tuple<server_method_t<method_type>...> methods{};
 
     template <string_literal name>
-    constexpr void on(const auto& callback)  // std::function<expected<result_t, rpc::error>(params_t const&)>
+    constexpr void on(auto const& callback)  // std::function<expected<result_t, rpc::error>(params_t const&)>
     {
         detail::set_callback<name>(methods, callback);
     }
@@ -341,7 +343,7 @@ struct server {
         return return_v;
     };
 
-    auto batch_request(const std::vector<glz::raw_json_view>& batch_requests) {
+    auto batch_request(std::vector<glz::raw_json_view> const& batch_requests) {
         std::vector<response_t<glz::raw_json>> return_vec;
         return_vec.reserve(batch_requests.size());
         for (auto&& request : batch_requests) {
@@ -457,7 +459,7 @@ struct client {
     }
 
     template <string_literal method_name>
-    [[nodiscard]] const auto& get_request_map() const {
+    [[nodiscard]] auto const& get_request_map() const {
         constexpr auto idx = detail::index_of_name<decltype(method_name), method_name, method_type...>::index;
         using method_element = std::tuple_element_t<idx, std::tuple<client_method_t<method_type>...>>;
         using request_map_t = decltype(method_element().pending_requests);

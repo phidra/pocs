@@ -1,50 +1,51 @@
 // Copyright 2016, University of Freiburg,
 // Authors: Patrick Brosi <brosi@informatik.uni-freiburg.de>
 
+#include "Service.h"
+
 #include <iostream>
 #include <map>
 #include <string>
-#include "Service.h"
 
 using ad::cppgtfs::gtfs::Service;
 using ad::cppgtfs::gtfs::ServiceDate;
 
 // _____________________________________________________________________________
-Service::Service(const std::string& id) : _id(id), _serviceDays(Service::SERVICE_DAY::NEVER), _begin(), _end() {}
+Service::Service(std::string const& id) : _id(id), _serviceDays(Service::SERVICE_DAY::NEVER), _begin(), _end() {}
 
 // _____________________________________________________________________________
-Service::Service(const std::string& id, uint8_t serviceDays, ServiceDate start, ServiceDate end)
-    : _id(id), _serviceDays(serviceDays), _begin(start), _end(end) {}
+Service::Service(std::string const& id, uint8_t serviceDays, ServiceDate start, ServiceDate end) :
+    _id(id), _serviceDays(serviceDays), _begin(start), _end(end) {}
 
 // _____________________________________________________________________________
-const std::string& Service::getId() const {
+std::string const& Service::getId() const {
     return _id;
 }
 
 // _____________________________________________________________________________
-const std::map<ServiceDate, Service::EXCEPTION_TYPE>& Service::getExceptions() const {
+std::map<ServiceDate, Service::EXCEPTION_TYPE> const& Service::getExceptions() const {
     return _exceptions;
 }
 
 // _____________________________________________________________________________
-void Service::addException(const ServiceDate& d, Service::EXCEPTION_TYPE t) {
+void Service::addException(ServiceDate const& d, Service::EXCEPTION_TYPE t) {
     _exceptions[d] = t;
 }
 
 // _____________________________________________________________________________
-bool Service::isActiveOn(const ServiceDate& d) const {
+bool Service::isActiveOn(ServiceDate const& d) const {
     return ((d >= _begin && d <= _end) && (_serviceDays & getServiceDay(d)) &&
             getExceptionOn(d) != EXCEPTION_TYPE::SERVICE_REMOVED) ||
            getExceptionOn(d) == EXCEPTION_TYPE::SERVICE_ADDED;
 }
 
 // _____________________________________________________________________________
-const ServiceDate& Service::getBeginDate() const {
+ServiceDate const& Service::getBeginDate() const {
     return _begin;
 }
 
 // _____________________________________________________________________________
-const ServiceDate& Service::getEndDate() const {
+ServiceDate const& Service::getEndDate() const {
     return _end;
 }
 
@@ -54,12 +55,12 @@ uint8_t Service::getServiceDates() const {
 }
 
 // _____________________________________________________________________________
-Service::SERVICE_DAY Service::getServiceDay(const ServiceDate& d) {
+Service::SERVICE_DAY Service::getServiceDay(ServiceDate const& d) {
     return static_cast<SERVICE_DAY>(1 << (((d.getTimeStrc().tm_wday + 6) % 7)));
 }
 
 // _____________________________________________________________________________
-Service::EXCEPTION_TYPE Service::getExceptionOn(const ServiceDate& d) const {
+Service::EXCEPTION_TYPE Service::getExceptionOn(ServiceDate const& d) const {
     auto ex = _exceptions.find(d);
     if (ex != _exceptions.end())
         return ex->second;

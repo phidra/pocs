@@ -1,30 +1,30 @@
 #ifndef ROUTING_KIT_CONTRACTION_HIERARCHY_H
 #define ROUTING_KIT_CONTRACTION_HIERARCHY_H
 
-#include <routingkit/id_queue.h>
-#include <routingkit/timestamp_flag.h>
-#include <routingkit/bit_vector.h>
-#include <routingkit/permutation.h>
-
-#include <vector>
-#include <string>
-#include <functional>
-#include <cassert>
-#include <type_traits>
 #include <limits.h>
+#include <routingkit/bit_vector.h>
+#include <routingkit/id_queue.h>
+#include <routingkit/permutation.h>
+#include <routingkit/timestamp_flag.h>
+
+#include <cassert>
+#include <functional>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace RoutingKit {
 
 class ContractionHierarchy {
    public:
-    static const unsigned default_max_pop_count = 500;
+    static unsigned const default_max_pop_count = 500;
 
     static ContractionHierarchy build(
         unsigned node_count,
         std::vector<unsigned> tail,
         std::vector<unsigned> head,
         std::vector<unsigned> weight,
-        const std::function<void(std::string)>& log_message = std::function<void(std::string)>(),
+        std::function<void(std::string)> const& log_message = std::function<void(std::string)>(),
         unsigned max_pop_count = default_max_pop_count);
 
     static ContractionHierarchy build_given_rank(
@@ -32,7 +32,7 @@ class ContractionHierarchy {
         std::vector<unsigned> tail,
         std::vector<unsigned> head,
         std::vector<unsigned> weight,
-        const std::function<void(std::string)>& log_message = std::function<void(std::string)>(),
+        std::function<void(std::string)> const& log_message = std::function<void(std::string)>(),
         unsigned max_pop_count = default_max_pop_count);
 
     static ContractionHierarchy build_given_order(
@@ -40,7 +40,7 @@ class ContractionHierarchy {
         std::vector<unsigned> tail,
         std::vector<unsigned> head,
         std::vector<unsigned> weight,
-        const std::function<void(std::string)>& log_message = std::function<void(std::string)>(),
+        std::function<void(std::string)> const& log_message = std::function<void(std::string)>(),
         unsigned max_pop_count = default_max_pop_count);
 
     static ContractionHierarchy read(std::function<void(char*, unsigned long long)> data_source);
@@ -48,11 +48,11 @@ class ContractionHierarchy {
                                      unsigned long long file_size);
     static ContractionHierarchy read(std::istream& in);
     static ContractionHierarchy read(std::istream& in, unsigned long long file_size);
-    static ContractionHierarchy load_file(const std::string& file_name);
+    static ContractionHierarchy load_file(std::string const& file_name);
 
-    void write(std::function<void(const char*, unsigned long long)> data_sink) const;
+    void write(std::function<void(char const*, unsigned long long)> data_sink) const;
     void write(std::ostream& out) const;
-    void save_file(const std::string& file_name) const;
+    void save_file(std::string const& file_name) const;
 
     unsigned node_count() const { return rank.size(); }
 
@@ -70,23 +70,23 @@ class ContractionHierarchy {
     Side forward, backward;
 };
 
-void check_contraction_hierarchy_for_errors(const ContractionHierarchy& ch);
+void check_contraction_hierarchy_for_errors(ContractionHierarchy const& ch);
 
 template <class Weight>
 struct ContractionHierarchyExtraWeight {
     ContractionHierarchyExtraWeight() {}
 
     template <class InputWeightContainer, class LinkFunction>
-    ContractionHierarchyExtraWeight(const ContractionHierarchy& ch,
-                                    const InputWeightContainer& extra_weight,
-                                    const LinkFunction& link) {
+    ContractionHierarchyExtraWeight(ContractionHierarchy const& ch,
+                                    InputWeightContainer const& extra_weight,
+                                    LinkFunction const& link) {
         reset(ch, extra_weight, link);
     }
 
     template <class InputWeightContainer, class LinkFunction>
-    ContractionHierarchyExtraWeight& reset(const ContractionHierarchy& ch,
-                                           const InputWeightContainer& extra_weight,
-                                           const LinkFunction& link);
+    ContractionHierarchyExtraWeight& reset(ContractionHierarchy const& ch,
+                                           InputWeightContainer const& extra_weight,
+                                           LinkFunction const& link);
 
     std::vector<Weight> forward_weight, backward_weight;
 };
@@ -117,10 +117,10 @@ using GetExtraWeightType = typename GetExtraWeightTypeHelper<T>::type;
 class ContractionHierarchyQuery {
    public:
     ContractionHierarchyQuery() : ch(0) {}
-    explicit ContractionHierarchyQuery(const ContractionHierarchy& ch);
+    explicit ContractionHierarchyQuery(ContractionHierarchy const& ch);
 
     ContractionHierarchyQuery& reset();
-    ContractionHierarchyQuery& reset(const ContractionHierarchy& ch);
+    ContractionHierarchyQuery& reset(ContractionHierarchy const& ch);
 
     ContractionHierarchyQuery& add_source(unsigned s, unsigned dist_to_s = 0);
     ContractionHierarchyQuery& add_target(unsigned t, unsigned dist_to_t = 0);
@@ -135,11 +135,11 @@ class ContractionHierarchyQuery {
     std::vector<unsigned> get_arc_path();
 
     template <class ExtraWeight, class LinkFunction>
-    detail::GetExtraWeightType<ExtraWeight> get_extra_weight_distance(const ExtraWeight& extra_weight,
-                                                                      const LinkFunction& link);
+    detail::GetExtraWeightType<ExtraWeight> get_extra_weight_distance(ExtraWeight const& extra_weight,
+                                                                      LinkFunction const& link);
 
     ContractionHierarchyQuery& reset_source();
-    ContractionHierarchyQuery& pin_targets(const std::vector<unsigned>&);
+    ContractionHierarchyQuery& pin_targets(std::vector<unsigned> const&);
     unsigned get_pinned_target_count();
     ContractionHierarchyQuery& run_to_pinned_targets();
 
@@ -147,7 +147,7 @@ class ContractionHierarchyQuery {
     std::vector<unsigned> get_distances_to_targets();
 
     ContractionHierarchyQuery& reset_target();
-    ContractionHierarchyQuery& pin_sources(const std::vector<unsigned>&);
+    ContractionHierarchyQuery& pin_sources(std::vector<unsigned> const&);
     unsigned get_pinned_source_count();
     ContractionHierarchyQuery& run_to_pinned_sources();
 
@@ -207,31 +207,31 @@ class ContractionHierarchyQuery {
 
     template <class ExtraWeight, class LinkFunction>
     std::vector<detail::GetExtraWeightType<ExtraWeight>> get_extra_weight_distances_to_targets(
-        const ExtraWeight& extra_weight,
-        const LinkFunction& link);
+        ExtraWeight const& extra_weight,
+        LinkFunction const& link);
     template <class ExtraWeight, class LinkFunction, class TmpContainer>
     std::vector<detail::GetExtraWeightType<ExtraWeight>>
-    get_extra_weight_distances_to_targets(const ExtraWeight& extra_weight, const LinkFunction& link, TmpContainer& tmp);
+    get_extra_weight_distances_to_targets(ExtraWeight const& extra_weight, LinkFunction const& link, TmpContainer& tmp);
     template <class ExtraWeight, class LinkFunction, class TmpContainer, class DistContainer>
-    ContractionHierarchyQuery& get_extra_weight_distances_to_targets(const ExtraWeight& extra_weight,
-                                                                     const LinkFunction& link,
+    ContractionHierarchyQuery& get_extra_weight_distances_to_targets(ExtraWeight const& extra_weight,
+                                                                     LinkFunction const& link,
                                                                      TmpContainer& tmp,
                                                                      DistContainer& dist);
     template <class ExtraWeight, class LinkFunction>
     std::vector<detail::GetExtraWeightType<ExtraWeight>> get_extra_weight_distances_to_sources(
-        const ExtraWeight& extra_weight,
-        const LinkFunction& link);
+        ExtraWeight const& extra_weight,
+        LinkFunction const& link);
     template <class ExtraWeight, class LinkFunction, class TmpContainer>
     std::vector<detail::GetExtraWeightType<ExtraWeight>>
-    get_extra_weight_distances_to_sources(const ExtraWeight& extra_weight, const LinkFunction& link, TmpContainer& tmp);
+    get_extra_weight_distances_to_sources(ExtraWeight const& extra_weight, LinkFunction const& link, TmpContainer& tmp);
     template <class ExtraWeight, class LinkFunction, class TmpContainer, class DistContainer>
-    ContractionHierarchyQuery& get_extra_weight_distances_to_sources(const ExtraWeight& extra_weight,
-                                                                     const LinkFunction& link,
+    ContractionHierarchyQuery& get_extra_weight_distances_to_sources(ExtraWeight const& extra_weight,
+                                                                     LinkFunction const& link,
                                                                      TmpContainer& tmp,
                                                                      DistContainer& dist);
 
     // private:
-    const ContractionHierarchy* ch;
+    ContractionHierarchy const* ch;
 
     TimestampFlags was_forward_pushed, was_backward_pushed;
     MinIDQueue forward_queue, backward_queue;
@@ -272,8 +272,8 @@ inline unsigned ContractionHierarchyQuery::get_pinned_source_count() {
 
 template <class ExtraWeight, class LinkFunction>
 std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::get_extra_weight_distances_to_targets(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link) {
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link) {
     std::vector<detail::GetExtraWeightType<ExtraWeight>> tmp(ch->node_count()), dist(get_pinned_target_count());
     get_extra_weight_distances_to_targets(extra_weight, link, tmp, dist);
     return dist;  // NVRO
@@ -281,8 +281,8 @@ std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::
 
 template <class ExtraWeight, class LinkFunction, class TmpContainer>
 std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::get_extra_weight_distances_to_targets(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link,
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link,
     TmpContainer& tmp) {
     std::vector<detail::GetExtraWeightType<ExtraWeight>> dist(get_pinned_target_count());
     get_extra_weight_distances_to_targets(extra_weight, link, tmp, dist);
@@ -291,8 +291,8 @@ std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::
 
 template <class ExtraWeight, class LinkFunction>
 std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::get_extra_weight_distances_to_sources(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link) {
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link) {
     std::vector<detail::GetExtraWeightType<ExtraWeight>> tmp(ch->node_count()), dist(get_pinned_source_count());
     get_extra_weight_distances_to_sources(extra_weight, link, tmp, dist);
     return dist;  // NVRO
@@ -300,8 +300,8 @@ std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::
 
 template <class ExtraWeight, class LinkFunction, class TmpContainer>
 std::vector<detail::GetExtraWeightType<ExtraWeight>> ContractionHierarchyQuery::get_extra_weight_distances_to_sources(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link,
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link,
     TmpContainer& tmp) {
     std::vector<detail::GetExtraWeightType<ExtraWeight>> dist(get_pinned_source_count());
     get_extra_weight_distances_to_sources(extra_weight, link, tmp, dist);
@@ -333,7 +333,7 @@ inline int SaturatedWeightAddition::operator()(int l, int r) const {
 namespace detail {
 template <class LinkFunction>
 struct InverseLinkFunction {
-    explicit InverseLinkFunction(const LinkFunction& link) : link(link) {}
+    explicit InverseLinkFunction(LinkFunction const& link) : link(link) {}
 
     template <class L, class R>
     auto operator()(L&& l, R&& r) const
@@ -341,11 +341,11 @@ struct InverseLinkFunction {
         return link(std::forward<R>(r), std::forward<L>(l));
     }
 
-    const LinkFunction& link;
+    LinkFunction const& link;
 };
 
 template <class LinkFunction>
-InverseLinkFunction<LinkFunction> inverse_link_function(const LinkFunction& link) {
+InverseLinkFunction<LinkFunction> inverse_link_function(LinkFunction const& link) {
     return InverseLinkFunction<LinkFunction>(link);
 }
 
@@ -353,13 +353,15 @@ template <class InputWeightContainer, class LinkFunction>
 struct ShortcutWeights {
     typedef typename std::remove_reference<decltype(std::declval<InputWeightContainer>()[0])>::type Weight;
 
-    const InputWeightContainer& input_weight;
-    const LinkFunction& link;
+    InputWeightContainer const& input_weight;
+    LinkFunction const& link;
 
-    const ContractionHierarchy& ch;
+    ContractionHierarchy const& ch;
 
-    ShortcutWeights(const InputWeightContainer& input_weight, const LinkFunction& link, const ContractionHierarchy& ch)
-        : input_weight(input_weight), link(link), ch(ch) {}
+    ShortcutWeights(InputWeightContainer const& input_weight,
+                    LinkFunction const& link,
+                    ContractionHierarchy const& ch) :
+        input_weight(input_weight), link(link), ch(ch) {}
 
     Weight get_forward_weight(unsigned a) const {
         assert(a < ch.forward.is_shortcut_an_original_arc.size());
@@ -386,22 +388,22 @@ template <class WeightT, class LinkFunction>
 struct ShortcutWeights<ContractionHierarchyExtraWeight<WeightT>, LinkFunction> {
     typedef WeightT Weight;
 
-    const ContractionHierarchyExtraWeight<WeightT>& extra_weight;
+    ContractionHierarchyExtraWeight<WeightT> const& extra_weight;
 
-    explicit ShortcutWeights(const ContractionHierarchyExtraWeight<WeightT>& extra_weight,
-                             const LinkFunction&,
-                             const ContractionHierarchy&)
-        : extra_weight(extra_weight) {}
+    explicit ShortcutWeights(ContractionHierarchyExtraWeight<WeightT> const& extra_weight,
+                             LinkFunction const&,
+                             ContractionHierarchy const&) :
+        extra_weight(extra_weight) {}
 
-    const Weight& get_forward_weight(unsigned a) const { return extra_weight.forward_weight[a]; }
+    Weight const& get_forward_weight(unsigned a) const { return extra_weight.forward_weight[a]; }
 
-    const Weight& get_backward_weight(unsigned a) const { return extra_weight.backward_weight[a]; }
+    Weight const& get_backward_weight(unsigned a) const { return extra_weight.backward_weight[a]; }
 };
 
 template <class ExtraWeight, class LinkFunction>
-ShortcutWeights<ExtraWeight, LinkFunction> make_shortcut_weights(const ExtraWeight& extra_weight,
-                                                                 const LinkFunction& link,
-                                                                 const ContractionHierarchy& ch) {
+ShortcutWeights<ExtraWeight, LinkFunction> make_shortcut_weights(ExtraWeight const& extra_weight,
+                                                                 LinkFunction const& link,
+                                                                 ContractionHierarchy const& ch) {
     return ShortcutWeights<ExtraWeight, LinkFunction>{extra_weight, link, ch};
 }
 
@@ -409,9 +411,9 @@ template <class ShortcutWeights>
 struct InvertShorcutWeights {
     typedef typename ShortcutWeights::Weight Weight;
 
-    const ShortcutWeights& shortcut_weights;
+    ShortcutWeights const& shortcut_weights;
 
-    explicit InvertShorcutWeights(const ShortcutWeights& shortcut_weights) : shortcut_weights(shortcut_weights) {}
+    explicit InvertShorcutWeights(ShortcutWeights const& shortcut_weights) : shortcut_weights(shortcut_weights) {}
 
     auto get_forward_weight(unsigned a) const -> decltype(std::declval<ShortcutWeights>().get_backward_weight(a)) {
         return shortcut_weights.get_backward_weight(a);
@@ -423,17 +425,17 @@ struct InvertShorcutWeights {
 };
 
 template <class ShortcutWeights>
-InvertShorcutWeights<ShortcutWeights> inverse_shortcut_weights(const ShortcutWeights& shortcut_weights) {
+InvertShorcutWeights<ShortcutWeights> inverse_shortcut_weights(ShortcutWeights const& shortcut_weights) {
     return InvertShorcutWeights<ShortcutWeights>(shortcut_weights);
 }
 
 template <class GetForwardWeight, class LinkFunction>
 ReturnTypeWhenPassedIntOf<GetForwardWeight> get_extra_weight_up_distance(
     unsigned shortest_path_meeting_node,
-    const std::vector<unsigned>& forward_predecessor_node,
-    const std::vector<unsigned>& forward_predecessor_arc,
-    const GetForwardWeight& get_forward_extra_weight,
-    const LinkFunction& link) {
+    std::vector<unsigned> const& forward_predecessor_node,
+    std::vector<unsigned> const& forward_predecessor_arc,
+    GetForwardWeight const& get_forward_extra_weight,
+    LinkFunction const& link) {
     using Weight = ReturnTypeWhenPassedIntOf<GetForwardWeight>;
 
     unsigned x = shortest_path_meeting_node;
@@ -450,13 +452,13 @@ ReturnTypeWhenPassedIntOf<GetForwardWeight> get_extra_weight_up_distance(
 
 template <class ShortcutWeights, class LinkFunction>
 typename ShortcutWeights::Weight internal_get_extra_weight_distance(
-    const ShortcutWeights& shortcut_weights,
-    const LinkFunction& link,
+    ShortcutWeights const& shortcut_weights,
+    LinkFunction const& link,
     unsigned shortest_path_meeting_node,
-    const std::vector<unsigned>& forward_predecessor_node,
-    const std::vector<unsigned>& forward_predecessor_arc,
-    const std::vector<unsigned>& backward_predecessor_node,
-    const std::vector<unsigned>& backward_predecessor_arc) {
+    std::vector<unsigned> const& forward_predecessor_node,
+    std::vector<unsigned> const& forward_predecessor_arc,
+    std::vector<unsigned> const& backward_predecessor_node,
+    std::vector<unsigned> const& backward_predecessor_arc) {
     using Weight = typename ShortcutWeights::Weight;
 
     if (shortest_path_meeting_node == invalid_id)
@@ -473,27 +475,35 @@ typename ShortcutWeights::Weight internal_get_extra_weight_distance(
         return Weight{};
     } else if (has_up_part && has_down_part) {
         return link(detail::get_extra_weight_up_distance(
-                        shortest_path_meeting_node, forward_predecessor_node, forward_predecessor_arc,
+                        shortest_path_meeting_node,
+                        forward_predecessor_node,
+                        forward_predecessor_arc,
                         [&](unsigned a) -> decltype(shortcut_weights.get_forward_weight(a)) {
                             return shortcut_weights.get_forward_weight(a);
                         },
                         link),
                     detail::get_extra_weight_up_distance(
-                        shortest_path_meeting_node, backward_predecessor_node, backward_predecessor_arc,
+                        shortest_path_meeting_node,
+                        backward_predecessor_node,
+                        backward_predecessor_arc,
                         [&](unsigned a) -> decltype(shortcut_weights.get_backward_weight(a)) {
                             return shortcut_weights.get_backward_weight(a);
                         },
                         inverted_link));
     } else if (has_up_part) {
         return detail::get_extra_weight_up_distance(
-            shortest_path_meeting_node, forward_predecessor_node, forward_predecessor_arc,
+            shortest_path_meeting_node,
+            forward_predecessor_node,
+            forward_predecessor_arc,
             [&](unsigned a) -> decltype(shortcut_weights.get_forward_weight(a)) {
                 return shortcut_weights.get_forward_weight(a);
             },
             link);
     } else {
         return detail::get_extra_weight_up_distance(
-            shortest_path_meeting_node, backward_predecessor_node, backward_predecessor_arc,
+            shortest_path_meeting_node,
+            backward_predecessor_node,
+            backward_predecessor_arc,
             [&](unsigned a) -> decltype(shortcut_weights.get_backward_weight(a)) {
                 return shortcut_weights.get_backward_weight(a);
             },
@@ -505,25 +515,29 @@ typename ShortcutWeights::Weight internal_get_extra_weight_distance(
 
 template <class ExtraWeight, class LinkFunction>
 detail::GetExtraWeightType<ExtraWeight> ContractionHierarchyQuery::get_extra_weight_distance(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link) {
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link) {
     assert(ch && "query object must have an attached CH");
     assert(state == ContractionHierarchyQuery::InternalState::run);
 
     auto shortcut_weight = detail::make_shortcut_weights(extra_weight, link, *ch);
 
-    return detail::internal_get_extra_weight_distance(shortcut_weight, link, shortest_path_meeting_node,
-                                                      forward_predecessor_node, forward_predecessor_arc,
-                                                      backward_predecessor_node, backward_predecessor_arc);
+    return detail::internal_get_extra_weight_distance(shortcut_weight,
+                                                      link,
+                                                      shortest_path_meeting_node,
+                                                      forward_predecessor_node,
+                                                      forward_predecessor_arc,
+                                                      backward_predecessor_node,
+                                                      backward_predecessor_arc);
 }
 
 template <class Weight>
 template <class InputWeightContainer, class LinkFunction>
 ContractionHierarchyExtraWeight<Weight>& ContractionHierarchyExtraWeight<Weight>::reset(
-    const ContractionHierarchy& ch,
-    const InputWeightContainer& input_extra_weight,
-    const LinkFunction& link) {
-    const unsigned node_count = ch.node_count();
+    ContractionHierarchy const& ch,
+    InputWeightContainer const& input_extra_weight,
+    LinkFunction const& link) {
+    unsigned const node_count = ch.node_count();
 
     forward_weight.resize(ch.forward.weight.size());
     backward_weight.resize(ch.backward.weight.size());
@@ -551,18 +565,18 @@ ContractionHierarchyExtraWeight<Weight>& ContractionHierarchyExtraWeight<Weight>
 
 namespace detail {
 template <class LinkFunction, class ExtraWeight, class TmpContainer, class DistContainer>
-void extract_distances_to_targets(const std::vector<unsigned>& target_list,
+void extract_distances_to_targets(std::vector<unsigned> const& target_list,
                                   unsigned target_count,
 
-                                  const TimestampFlags& has_forward_predecessor,
-                                  const std::vector<unsigned>& forward_predecessor_node,
-                                  const std::vector<unsigned>& predecessor_arc,
+                                  TimestampFlags const& has_forward_predecessor,
+                                  std::vector<unsigned> const& forward_predecessor_node,
+                                  std::vector<unsigned> const& predecessor_arc,
 
-                                  const ExtraWeight& extra_weight,
-                                  const std::vector<unsigned>& forward_first_out,
-                                  const std::vector<unsigned>& forward_head,
-                                  const std::vector<unsigned>& backward_first_out,
-                                  const std::vector<unsigned>& backward_head,
+                                  ExtraWeight const& extra_weight,
+                                  std::vector<unsigned> const& forward_first_out,
+                                  std::vector<unsigned> const& forward_head,
+                                  std::vector<unsigned> const& backward_first_out,
+                                  std::vector<unsigned> const& backward_head,
 
                                   TmpContainer& source_to_node_distance,
                                   TimestampFlags& has_source_to_node_distance,
@@ -571,7 +585,7 @@ void extract_distances_to_targets(const std::vector<unsigned>& target_list,
 
                                   std::vector<unsigned>& stack,
 
-                                  const LinkFunction& link) {
+                                  LinkFunction const& link) {
     using Weight = typename ExtraWeight::Weight;
 
     has_source_to_node_distance.reset_all();
@@ -673,22 +687,29 @@ void extract_distances_to_targets(const std::vector<unsigned>& target_list,
 
 template <class ExtraWeight, class LinkFunction, class TmpContainer, class DistContainer>
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_targets(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link,
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link,
     TmpContainer& tmp,
     DistContainer& dist) {
     assert(state == ContractionHierarchyQuery::InternalState::target_run);
 
     auto shortcut_weight = detail::make_shortcut_weights(extra_weight, link, *ch);
 
-    detail::extract_distances_to_targets(backward_predecessor_node, many_to_many_source_or_target_count,
+    detail::extract_distances_to_targets(backward_predecessor_node,
+                                         many_to_many_source_or_target_count,
 
-                                         was_forward_pushed, forward_predecessor_node, forward_predecessor_arc,
+                                         was_forward_pushed,
+                                         forward_predecessor_node,
+                                         forward_predecessor_arc,
 
-                                         shortcut_weight, ch->forward.first_out, ch->forward.head,
-                                         ch->backward.first_out, ch->backward.head,
+                                         shortcut_weight,
+                                         ch->forward.first_out,
+                                         ch->forward.head,
+                                         ch->backward.first_out,
+                                         ch->backward.head,
 
-                                         tmp, was_backward_pushed,
+                                         tmp,
+                                         was_backward_pushed,
 
                                          dist,
 
@@ -701,8 +722,8 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances
 
 template <class ExtraWeight, class LinkFunction, class TmpContainer, class DistContainer>
 ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_sources(
-    const ExtraWeight& extra_weight,
-    const LinkFunction& link,
+    ExtraWeight const& extra_weight,
+    LinkFunction const& link,
     TmpContainer& tmp,
     DistContainer& dist) {
     assert(state == ContractionHierarchyQuery::InternalState::source_run);
@@ -712,14 +733,21 @@ ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances
     auto shortcut_weight = detail::make_shortcut_weights(extra_weight, link, *ch);
     auto inverted_shortcut_weight = detail::inverse_shortcut_weights(shortcut_weight);
 
-    detail::extract_distances_to_targets(forward_predecessor_node, many_to_many_source_or_target_count,
+    detail::extract_distances_to_targets(forward_predecessor_node,
+                                         many_to_many_source_or_target_count,
 
-                                         was_backward_pushed, backward_predecessor_node, backward_predecessor_arc,
+                                         was_backward_pushed,
+                                         backward_predecessor_node,
+                                         backward_predecessor_arc,
 
-                                         inverted_shortcut_weight, ch->backward.first_out, ch->backward.head,
-                                         ch->forward.first_out, ch->forward.head,
+                                         inverted_shortcut_weight,
+                                         ch->backward.first_out,
+                                         ch->backward.head,
+                                         ch->forward.first_out,
+                                         ch->forward.head,
 
-                                         tmp, was_forward_pushed,
+                                         tmp,
+                                         was_forward_pushed,
 
                                          dist,
 
@@ -736,89 +764,89 @@ extern template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_targets<std::vector<int>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<int>,
-                                                                 std::vector<int>>(const std::vector<int>&,
-                                                                                   const SaturatedWeightAddition&,
+                                                                 std::vector<int>>(std::vector<int> const&,
+                                                                                   SaturatedWeightAddition const&,
                                                                                    std::vector<int>&,
                                                                                    std::vector<int>&);
 extern template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_sources<std::vector<int>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<int>,
-                                                                 std::vector<int>>(const std::vector<int>&,
-                                                                                   const SaturatedWeightAddition&,
+                                                                 std::vector<int>>(std::vector<int> const&,
+                                                                                   SaturatedWeightAddition const&,
                                                                                    std::vector<int>&,
                                                                                    std::vector<int>&);
 extern template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_targets<std::vector<unsigned>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<unsigned>,
-                                                                 std::vector<unsigned>>(const std::vector<unsigned>&,
-                                                                                        const SaturatedWeightAddition&,
+                                                                 std::vector<unsigned>>(std::vector<unsigned> const&,
+                                                                                        SaturatedWeightAddition const&,
                                                                                         std::vector<unsigned>&,
                                                                                         std::vector<unsigned>&);
 extern template ContractionHierarchyQuery&
 ContractionHierarchyQuery::get_extra_weight_distances_to_sources<std::vector<unsigned>,
                                                                  SaturatedWeightAddition,
                                                                  std::vector<unsigned>,
-                                                                 std::vector<unsigned>>(const std::vector<unsigned>&,
-                                                                                        const SaturatedWeightAddition&,
+                                                                 std::vector<unsigned>>(std::vector<unsigned> const&,
+                                                                                        SaturatedWeightAddition const&,
                                                                                         std::vector<unsigned>&,
                                                                                         std::vector<unsigned>&);
 extern template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_targets<
     ContractionHierarchyExtraWeight<int>,
     SaturatedWeightAddition,
     std::vector<int>,
-    std::vector<int>>(const ContractionHierarchyExtraWeight<int>&,
-                      const SaturatedWeightAddition&,
+    std::vector<int>>(ContractionHierarchyExtraWeight<int> const&,
+                      SaturatedWeightAddition const&,
                       std::vector<int>&,
                       std::vector<int>&);
 extern template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_sources<
     ContractionHierarchyExtraWeight<int>,
     SaturatedWeightAddition,
     std::vector<int>,
-    std::vector<int>>(const ContractionHierarchyExtraWeight<int>&,
-                      const SaturatedWeightAddition&,
+    std::vector<int>>(ContractionHierarchyExtraWeight<int> const&,
+                      SaturatedWeightAddition const&,
                       std::vector<int>&,
                       std::vector<int>&);
 extern template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_targets<
     ContractionHierarchyExtraWeight<unsigned>,
     SaturatedWeightAddition,
     std::vector<unsigned>,
-    std::vector<unsigned>>(const ContractionHierarchyExtraWeight<unsigned>&,
-                           const SaturatedWeightAddition&,
+    std::vector<unsigned>>(ContractionHierarchyExtraWeight<unsigned> const&,
+                           SaturatedWeightAddition const&,
                            std::vector<unsigned>&,
                            std::vector<unsigned>&);
 extern template ContractionHierarchyQuery& ContractionHierarchyQuery::get_extra_weight_distances_to_sources<
     ContractionHierarchyExtraWeight<unsigned>,
     SaturatedWeightAddition,
     std::vector<unsigned>,
-    std::vector<unsigned>>(const ContractionHierarchyExtraWeight<unsigned>&,
-                           const SaturatedWeightAddition&,
+    std::vector<unsigned>>(ContractionHierarchyExtraWeight<unsigned> const&,
+                           SaturatedWeightAddition const&,
                            std::vector<unsigned>&,
                            std::vector<unsigned>&);
 extern template ContractionHierarchyExtraWeight<unsigned>& ContractionHierarchyExtraWeight<
-    unsigned>::reset<std::vector<unsigned>, SaturatedWeightAddition>(const ContractionHierarchy& ch,
-                                                                     const std::vector<unsigned>&,
-                                                                     const SaturatedWeightAddition&);
+    unsigned>::reset<std::vector<unsigned>, SaturatedWeightAddition>(ContractionHierarchy const& ch,
+                                                                     std::vector<unsigned> const&,
+                                                                     SaturatedWeightAddition const&);
 extern template ContractionHierarchyExtraWeight<int>&
-ContractionHierarchyExtraWeight<int>::reset<std::vector<int>, SaturatedWeightAddition>(const ContractionHierarchy& ch,
-                                                                                       const std::vector<int>&,
-                                                                                       const SaturatedWeightAddition&);
+ContractionHierarchyExtraWeight<int>::reset<std::vector<int>, SaturatedWeightAddition>(ContractionHierarchy const& ch,
+                                                                                       std::vector<int> const&,
+                                                                                       SaturatedWeightAddition const&);
 extern template unsigned
 ContractionHierarchyQuery::get_extra_weight_distance<std::vector<unsigned>, SaturatedWeightAddition>(
-    const std::vector<unsigned>&,
-    const SaturatedWeightAddition&);
+    std::vector<unsigned> const&,
+    SaturatedWeightAddition const&);
 extern template int ContractionHierarchyQuery::get_extra_weight_distance<std::vector<int>, SaturatedWeightAddition>(
-    const std::vector<int>&,
-    const SaturatedWeightAddition&);
+    std::vector<int> const&,
+    SaturatedWeightAddition const&);
 extern template unsigned ContractionHierarchyQuery::get_extra_weight_distance<ContractionHierarchyExtraWeight<unsigned>,
                                                                               SaturatedWeightAddition>(
-    const ContractionHierarchyExtraWeight<unsigned>&,
-    const SaturatedWeightAddition&);
+    ContractionHierarchyExtraWeight<unsigned> const&,
+    SaturatedWeightAddition const&);
 extern template int
 ContractionHierarchyQuery::get_extra_weight_distance<ContractionHierarchyExtraWeight<int>, SaturatedWeightAddition>(
-    const ContractionHierarchyExtraWeight<int>&,
-    const SaturatedWeightAddition&);
+    ContractionHierarchyExtraWeight<int> const&,
+    SaturatedWeightAddition const&);
 
 }  // namespace RoutingKit
 

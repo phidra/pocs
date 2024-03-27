@@ -1,8 +1,9 @@
-#include <routingkit/osm_simple.h>
 #include <routingkit/contraction_hierarchy.h>
-#include <routingkit/inverse_vector.h>
-#include <routingkit/timer.h>
 #include <routingkit/geo_position_to_node.h>
+#include <routingkit/inverse_vector.h>
+#include <routingkit/osm_simple.h>
+#include <routingkit/timer.h>
+
 #include <iostream>
 
 // NOTE : this example is derived from :

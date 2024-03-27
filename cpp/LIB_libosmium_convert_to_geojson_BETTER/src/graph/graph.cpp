@@ -1,11 +1,12 @@
+#include "graph.h"
+
+#include <osmium/geom/haversine.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+#include <osmium/index/map/sparse_mmap_array.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
-#include <osmium/index/map/sparse_mmap_array.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <osmium/geom/haversine.hpp>
 
 #include "graph/osmparsing.h"
-#include "graph.h"
 
 using namespace std;
 

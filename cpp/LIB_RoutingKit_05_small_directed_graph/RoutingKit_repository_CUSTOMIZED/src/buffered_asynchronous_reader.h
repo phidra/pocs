@@ -10,13 +10,13 @@ class BufferedAsynchronousReader {
    public:
     BufferedAsynchronousReader();
     template <class Source>
-    BufferedAsynchronousReader(Source& source)
-        : BufferedAsynchronousReader(source.get_read_function_object(), source.minimum_read_size()) {}
+    BufferedAsynchronousReader(Source& source) :
+        BufferedAsynchronousReader(source.get_read_function_object(), source.minimum_read_size()) {}
     BufferedAsynchronousReader(std::function<unsigned long long(char*, unsigned long long)> byte_source,
                                unsigned block_size);
 
-    BufferedAsynchronousReader(const BufferedAsynchronousReader&) = delete;
-    BufferedAsynchronousReader& operator=(const BufferedAsynchronousReader&) = delete;
+    BufferedAsynchronousReader(BufferedAsynchronousReader const&) = delete;
+    BufferedAsynchronousReader& operator=(BufferedAsynchronousReader const&) = delete;
 
     BufferedAsynchronousReader(BufferedAsynchronousReader&&);
     BufferedAsynchronousReader& operator=(BufferedAsynchronousReader&&);

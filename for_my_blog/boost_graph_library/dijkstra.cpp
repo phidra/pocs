@@ -1,8 +1,7 @@
-#include <iostream>
-#include <string>
-
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <iostream>
+#include <string>
 
 using namespace boost;
 using namespace std;
@@ -183,7 +182,8 @@ int main(int, char*[]) {
 
     // https://www.boost.org/doc/libs/1_74_0/libs/graph/doc/dijkstra_shortest_paths.html
     dijkstra_shortest_paths(
-        mygraph, SOURCE,
+        mygraph,
+        SOURCE,
         weight_map(weight_property_map).predecessor_map(predecessors_pmap).distance_map(tentative_distances_pmap));
 
     cout << "Le plus court chemin de " << nameof(SOURCE) << " vers " << nameof(TARGET)

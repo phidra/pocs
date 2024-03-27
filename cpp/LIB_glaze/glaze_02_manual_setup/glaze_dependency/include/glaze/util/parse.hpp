@@ -30,7 +30,7 @@ GLZ_ALWAYS_INLINE void match(is_context auto&& ctx, auto&& it, auto&&) noexcept 
 
 template <string_literal str>
 GLZ_ALWAYS_INLINE void match(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
-    const auto n = size_t(end - it);
+    auto const n = size_t(end - it);
     if ((n < str.size()) || std::memcmp(&*it, str.value, str.size())) [[unlikely]] {
         ctx.error = error_code::syntax_error;
     } else [[likely]] {
@@ -66,7 +66,7 @@ GLZ_ALWAYS_INLINE void skip_comment(is_context auto&& ctx, auto&& it, auto&& end
 }
 
 consteval uint64_t repeat_byte(char c) {
-    const auto byte = uint8_t(c);
+    auto const byte = uint8_t(c);
     uint64_t res{};
     res |= uint64_t(byte) << 56;
     res |= uint64_t(byte) << 48;
@@ -170,7 +170,7 @@ GLZ_ALWAYS_INLINE void skip_ws_no_pre_check(is_context auto&& ctx, auto&& it, au
 GLZ_ALWAYS_INLINE void skip_till_escape_or_quote(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
     static_assert(std::contiguous_iterator<std::decay_t<decltype(it)>>);
 
-    const auto end_m7 = end - 7;
+    auto const end_m7 = end - 7;
     for (; it < end_m7; it += 8) {
         uint64_t chunk;
         std::memcpy(&chunk, it, 8);
@@ -212,7 +212,7 @@ GLZ_ALWAYS_INLINE void skip_till_quote(is_context auto&& ctx, auto&& it, auto&& 
 
     auto start = it;
 
-    const auto end_m7 = end - 7;
+    auto const end_m7 = end - 7;
     for (; it < end_m7; it += 8) {
         uint64_t chunk;
         std::memcpy(&chunk, it, 8);
@@ -461,7 +461,7 @@ GLZ_ALWAYS_INLINE void skip_until_closed(is_context auto&& ctx, auto&& it, auto&
     }
 }
 
-GLZ_ALWAYS_INLINE constexpr bool is_numeric(const auto c) noexcept {
+GLZ_ALWAYS_INLINE constexpr bool is_numeric(auto const c) noexcept {
     switch (c) {
         case '0':
         case '1':
@@ -499,7 +499,7 @@ inline constexpr std::optional<uint64_t> stoui(const std::string_view s) noexcep
 
 GLZ_ALWAYS_INLINE void skip_number_with_validation(is_context auto&& ctx, auto&& it, auto&& end) noexcept {
     it += *it == '-';
-    const auto sig_start_it = it;
+    auto const sig_start_it = it;
     auto frac_start_it = end;
     if (*it == '0') {
         ++it;
@@ -533,7 +533,7 @@ frac_start:
     ++it;
 exp_start:
     it += *it == '+' || *it == '-';
-    const auto exp_start_it = it;
+    auto const exp_start_it = it;
     it = std::find_if_not(it, end, is_digit);
     if (it == exp_start_it) {
         ctx.error = error_code::syntax_error;

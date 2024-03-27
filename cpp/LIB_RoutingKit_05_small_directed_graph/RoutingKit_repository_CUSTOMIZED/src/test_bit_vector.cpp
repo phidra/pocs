@@ -1,7 +1,8 @@
 #include <routingkit/bit_vector.h>
 
-#include "expect.h"
 #include <iostream>
+
+#include "expect.h"
 
 using namespace RoutingKit;
 using namespace std;

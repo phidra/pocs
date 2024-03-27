@@ -1,11 +1,10 @@
-#include <iostream>
+#include <rapidjson/document.h>
+#include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
-
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/ostreamwrapper.h>
+#include <iostream>
 
 using namespace std;
 namespace bg = boost::geometry;

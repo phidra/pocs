@@ -1,6 +1,6 @@
-#include "my_code.h"
-
 #include <gtest/gtest.h>
+
+#include "my_code.h"
 
 TEST(MyCode, check_the_truth) {
     MyClass obj;

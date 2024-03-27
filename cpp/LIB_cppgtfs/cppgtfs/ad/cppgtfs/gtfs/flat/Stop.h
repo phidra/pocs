@@ -6,6 +6,7 @@
 #define AD_CPPGTFS_GTFS_FLAT_STOP_H_
 
 #include <stdint.h>
+
 #include <cassert>
 #include <string>
 

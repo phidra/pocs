@@ -11,19 +11,19 @@
 // The source node of the path must be obtained by some other mean
 
 template <class OnNewInputArc>
-void unpack_forward_arc(const RoutingKit::ContractionHierarchy& ch,
+void unpack_forward_arc(RoutingKit::ContractionHierarchy const& ch,
                         unsigned arc,
-                        const OnNewInputArc& on_new_input_arc);
+                        OnNewInputArc const& on_new_input_arc);
 
 template <class OnNewInputArc>
-void unpack_backward_arc(const RoutingKit::ContractionHierarchy& ch,
+void unpack_backward_arc(RoutingKit::ContractionHierarchy const& ch,
                          unsigned arc,
-                         const OnNewInputArc& on_new_input_arc);
+                         OnNewInputArc const& on_new_input_arc);
 
 template <class OnNewInputArc>
-void unpack_forward_arc(const RoutingKit::ContractionHierarchy& ch,
+void unpack_forward_arc(RoutingKit::ContractionHierarchy const& ch,
                         unsigned arc,
-                        const OnNewInputArc& on_new_input_arc) {
+                        OnNewInputArc const& on_new_input_arc) {
     if (ch.forward.is_shortcut_an_original_arc.is_set(arc)) {
         on_new_input_arc(ch.forward.shortcut_first_arc[arc], ch.forward.shortcut_second_arc[arc]);
     } else {
@@ -35,9 +35,9 @@ void unpack_forward_arc(const RoutingKit::ContractionHierarchy& ch,
 }
 
 template <class OnNewInputArc>
-void unpack_backward_arc(const RoutingKit::ContractionHierarchy& ch,
+void unpack_backward_arc(RoutingKit::ContractionHierarchy const& ch,
                          unsigned arc,
-                         const OnNewInputArc& on_new_input_arc) {
+                         OnNewInputArc const& on_new_input_arc) {
     if (ch.backward.is_shortcut_an_original_arc.is_set(arc)) {
         on_new_input_arc(ch.backward.shortcut_first_arc[arc], ch.backward.shortcut_second_arc[arc]);
     } else {

@@ -1,9 +1,9 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/customizable_contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 
         cout << "Generating queries ... " << flush;
 
-        const unsigned source_count = 500, target_count = 500;
+        unsigned const source_count = 500, target_count = 500;
 
         std::vector<unsigned> source_set(source_count), target_set(target_count);
 

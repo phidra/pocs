@@ -15,8 +15,8 @@ template <>
 struct read<ndjson> {
     template <auto Opts, class T, is_context Ctx, class It0, class It1>
     static void op(T&& value, Ctx&& ctx, It0&& it, It1&& end) {
-        from_ndjson<std::decay_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                        std::forward<It0>(it), std::forward<It1>(end));
+        from_ndjson<std::decay_t<T>>::template op<Opts>(
+            std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<It0>(it), std::forward<It1>(end));
     }
 };
 
@@ -38,7 +38,7 @@ requires readable_array_t<T> &&(emplace_backable<T> || !resizeable<T>)struct fro
             }
         }
 
-        const auto n = value.size();
+        auto const n = value.size();
 
         auto value_it = value.begin();
 
@@ -148,8 +148,8 @@ template <>
 struct write<ndjson> {
     template <auto Opts, class T, is_context Ctx, class B, class IX>
     static void op(T&& value, Ctx&& ctx, B&& b, IX&& ix) {
-        to_ndjson<std::decay_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                      std::forward<B>(b), std::forward<IX>(ix));
+        to_ndjson<std::decay_t<T>>::template op<Opts>(
+            std::forward<T>(value), std::forward<Ctx>(ctx), std::forward<B>(b), std::forward<IX>(ix));
     }
 };
 
@@ -157,7 +157,7 @@ template <writable_array_t T>
 struct to_ndjson<T> {
     template <auto Opts, class... Args>
     static void op(auto&& value, is_context auto&& ctx, Args&&... args) noexcept {
-        const auto is_empty = [&]() -> bool {
+        auto const is_empty = [&]() -> bool {
             if constexpr (has_size<T>) {
                 return value.size() ? false : true;
             } else {
@@ -169,7 +169,7 @@ struct to_ndjson<T> {
             auto it = value.begin();
             write<json>::op<Opts>(*it, ctx, std::forward<Args>(args)...);
             ++it;
-            const auto end = value.end();
+            auto const end = value.end();
             for (; it != end; ++it) {
                 dump<'\n'>(std::forward<Args>(args)...);
                 write<json>::op<Opts>(*it, ctx, std::forward<Args>(args)...);
@@ -247,7 +247,7 @@ template <class T, class Buffer>
 [[nodiscard]] inline expected<T, parse_error> read_ndjson(Buffer&& buffer) {
     T value{};
     context ctx{};
-    const auto ec = read<opts{.format = ndjson}>(value, std::forward<Buffer>(buffer), ctx);
+    auto const ec = read<opts{.format = ndjson}>(value, std::forward<Buffer>(buffer), ctx);
     if (ec == error_code::none) {
         return value;
     }
@@ -261,7 +261,7 @@ template <auto Opts = opts{.format = ndjson}, class T>
 
     std::string buffer;
 
-    const auto ec = file_to_buffer(buffer, ctx.current_file);
+    auto const ec = file_to_buffer(buffer, ctx.current_file);
 
     if (bool(ec)) {
         return {ec};
@@ -283,7 +283,7 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] inline write_error write_file_ndjson(T&& value, const std::string& file_name, auto&& buffer) noexcept {
+[[nodiscard]] inline write_error write_file_ndjson(T&& value, std::string const& file_name, auto&& buffer) noexcept {
     write<opts{.format = ndjson}>(std::forward<T>(value), buffer);
     return {buffer_to_file(buffer, file_name)};
 }

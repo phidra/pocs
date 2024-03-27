@@ -4,10 +4,10 @@
 #include <routingkit/bit_vector.h>
 #include <routingkit/constants.h>
 
-#include <vector>
-#include <stdexcept>
 #include <functional>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace RoutingKit {
 
@@ -24,8 +24,8 @@ struct GraphFragment {
 };
 
 GraphFragment make_graph_fragment(unsigned node_count,
-                                  const std::vector<unsigned>& tail,
-                                  const std::vector<unsigned>& head);
+                                  std::vector<unsigned> const& tail,
+                                  std::vector<unsigned> const& head);
 
 std::vector<GraphFragment> decompose_graph_fragment_into_connected_components(GraphFragment fragment);
 
@@ -39,7 +39,7 @@ void pick_smaller_side(CutSide& cut);
 
 class BlockingFlow {
    private:
-    const GraphFragment* fragment;
+    GraphFragment const* fragment;
     BitVector is_source;
     BitVector is_target;
 
@@ -52,7 +52,7 @@ class BlockingFlow {
 
    public:
     BlockingFlow() {}
-    BlockingFlow(const GraphFragment&, BitVector is_source, BitVector is_target);
+    BlockingFlow(GraphFragment const&, BitVector is_source, BitVector is_target);
 
     CutSide get_source_cut();
     CutSide get_target_cut();
@@ -66,19 +66,19 @@ class BlockingFlow {
 };
 
 CutSide inertial_flow(
-    const GraphFragment& fragment,
+    GraphFragment const& fragment,
     unsigned min_balance,
-    const std::vector<float>& latitude,
-    const std::vector<float>& longitude,
-    const std::function<void(const std::string&)>& log_message = [](const std::string&) {});
+    std::vector<float> const& latitude,
+    std::vector<float> const& longitude,
+    std::function<void(std::string const&)> const& log_message = [](std::string const&) {});
 
 CutSide inertial_flow(
-    const GraphFragment& fragment,
-    const std::vector<float>& latitude,
-    const std::vector<float>& longitude,
-    const std::function<void(const std::string&)>& log_message = [](const std::string&) {});
+    GraphFragment const& fragment,
+    std::vector<float> const& latitude,
+    std::vector<float> const& longitude,
+    std::function<void(std::string const&)> const& log_message = [](std::string const&) {});
 
-BitVector derive_separator_from_cut(const GraphFragment& fragment, const BitVector& cut);
+BitVector derive_separator_from_cut(GraphFragment const& fragment, BitVector const& cut);
 
 struct SeparatorDecomposition {
     struct Node {
@@ -94,21 +94,21 @@ struct SeparatorDecomposition {
 
 SeparatorDecomposition compute_separator_decomposition(
     GraphFragment fragment,
-    const std::function<BitVector(const GraphFragment&)>& compute_separator,
-    const std::function<void(const std::string&)>& log_message = [](const std::string&) {});
+    std::function<BitVector(GraphFragment const&)> const& compute_separator,
+    std::function<void(std::string const&)> const& log_message = [](std::string const&) {});
 
 std::vector<unsigned> compute_nested_node_dissection_order(
     GraphFragment fragment,
-    const std::function<BitVector(const GraphFragment&)>& compute_separator,
-    const std::function<void(const std::string&)>& log_message = [](const std::string&) {});
+    std::function<BitVector(GraphFragment const&)> const& compute_separator,
+    std::function<void(std::string const&)> const& log_message = [](std::string const&) {});
 
 std::vector<unsigned> compute_nested_node_dissection_order_using_inertial_flow(
     unsigned node_count,
-    const std::vector<unsigned>& tail,
-    const std::vector<unsigned>& head,
-    const std::vector<float>& latitude,
-    const std::vector<float>& longitude,
-    const std::function<void(const std::string&)>& log_message = [](const std::string&) {});
+    std::vector<unsigned> const& tail,
+    std::vector<unsigned> const& head,
+    std::vector<float> const& latitude,
+    std::vector<float> const& longitude,
+    std::function<void(std::string const&)> const& log_message = [](std::string const&) {});
 
 }  // namespace RoutingKit
 

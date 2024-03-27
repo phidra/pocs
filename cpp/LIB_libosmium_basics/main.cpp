@@ -1,10 +1,9 @@
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
-#include <chrono>
-
-#include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
+#include <osmium/io/any_input.hpp>
 #include <osmium/util/memory.hpp>
 #include <osmium/visitor.hpp>
 
@@ -17,13 +16,13 @@ struct CountHandler : public osmium::handler::Handler {
     std::uint64_t relations = 0;
 
     // This callback is called by osmium::apply for each node in the data.
-    void node(const osmium::Node&) noexcept { ++nodes; }
+    void node(osmium::Node const&) noexcept { ++nodes; }
 
     // This callback is called by osmium::apply for each way in the data.
-    void way(const osmium::Way&) noexcept { ++ways; }
+    void way(osmium::Way const&) noexcept { ++ways; }
 
     // This callback is called by osmium::apply for each relation in the data.
-    void relation(const osmium::Relation&) noexcept { ++relations; }
+    void relation(osmium::Relation const&) noexcept { ++relations; }
 
 };  // struct CountHandler
 
@@ -62,7 +61,7 @@ int main(int argc, char* argv[]) {
         osmium::MemoryUsage memory;
 
         std::cout << "\nMemory used: " << memory.peak() << " MBytes\n";
-    } catch (const std::exception& e) {
+    } catch (std::exception const& e) {
         // All exceptions used by the Osmium library derive from std::exception.
         std::cerr << e.what() << '\n';
         std::exit(1);

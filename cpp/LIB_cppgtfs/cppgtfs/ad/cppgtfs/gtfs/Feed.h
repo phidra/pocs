@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
 #include "Agency.h"
 #include "ContContainer.h"
 #include "Container.h"
@@ -21,16 +22,45 @@
 #include "Transfer.h"
 #include "Trip.h"
 
-#define FEEDTPL                                                                                      \
-    template <typename AgencyT, typename RouteT, typename StopT, typename ServiceT,                  \
-              template <typename> class StopTimeT, typename ShapeT, template <typename> class FareT, \
-              template <typename> class AContainerT, template <typename> class RContainerT,          \
-              template <typename> class SContainerT, template <typename> class StContainerT,         \
-              template <typename> class TContainerT, template <typename> class ShContainerT,         \
-              template <typename> class FContainerT>
-#define FEEDB                                                                                                \
-    FeedB<AgencyT, RouteT, StopT, ServiceT, StopTimeT, ShapeT, FareT, AContainerT, RContainerT, SContainerT, \
-          StContainerT, TContainerT, ShContainerT, FContainerT>
+#define FEEDTPL                   \
+    template <typename AgencyT,   \
+              typename RouteT,    \
+              typename StopT,     \
+              typename ServiceT,  \
+              template <typename> \
+              class StopTimeT,    \
+              typename ShapeT,    \
+              template <typename> \
+              class FareT,        \
+              template <typename> \
+              class AContainerT,  \
+              template <typename> \
+              class RContainerT,  \
+              template <typename> \
+              class SContainerT,  \
+              template <typename> \
+              class StContainerT, \
+              template <typename> \
+              class TContainerT,  \
+              template <typename> \
+              class ShContainerT, \
+              template <typename> \
+              class FContainerT>
+#define FEEDB           \
+    FeedB<AgencyT,      \
+          RouteT,       \
+          StopT,        \
+          ServiceT,     \
+          StopTimeT,    \
+          ShapeT,       \
+          FareT,        \
+          AContainerT,  \
+          RContainerT,  \
+          SContainerT,  \
+          StContainerT, \
+          TContainerT,  \
+          ShContainerT, \
+          FContainerT>
 
 namespace ad {
 namespace cppgtfs {
@@ -49,51 +79,51 @@ class FeedB {
     typedef std::set<std::string> Zones;
 
    public:
-    FeedB()
-        : _maxLat(std::numeric_limits<double>::lowest()),
-          _maxLon(std::numeric_limits<double>::lowest()),
-          _minLat(std::numeric_limits<double>::max()),
-          _minLon(std::numeric_limits<double>::max()) {}
+    FeedB() :
+        _maxLat(std::numeric_limits<double>::lowest()),
+        _maxLon(std::numeric_limits<double>::lowest()),
+        _minLat(std::numeric_limits<double>::max()),
+        _minLon(std::numeric_limits<double>::max()) {}
 
-    const Agencies& getAgencies() const;
+    Agencies const& getAgencies() const;
     Agencies& getAgencies();
 
-    const Stops& getStops() const;
+    Stops const& getStops() const;
     Stops& getStops();
 
-    const Routes& getRoutes() const;
+    Routes const& getRoutes() const;
     Routes& getRoutes();
 
-    const Trips& getTrips() const;
+    Trips const& getTrips() const;
     Trips& getTrips();
 
-    const Shapes& getShapes() const;
+    Shapes const& getShapes() const;
     Shapes& getShapes();
-    const Services& getServices() const;
+    Services const& getServices() const;
     Services& getServices();
 
-    const Transfers& getTransfers() const;
+    Transfers const& getTransfers() const;
     Transfers& getTransfers();
 
-    const Zones& getZones() const;
+    Zones const& getZones() const;
     Zones& getZones();
 
-    const Fares& getFares() const;
+    Fares const& getFares() const;
     Fares& getFares();
 
-    const std::string& getPublisherName() const;
-    const std::string& getPublisherUrl() const;
-    const std::string& getLang() const;
-    const std::string& getVersion() const;
-    const ServiceDate& getStartDate() const;
-    const ServiceDate& getEndDate() const;
+    std::string const& getPublisherName() const;
+    std::string const& getPublisherUrl() const;
+    std::string const& getLang() const;
+    std::string const& getVersion() const;
+    ServiceDate const& getStartDate() const;
+    ServiceDate const& getEndDate() const;
 
-    void setPublisherName(const std::string& name);
-    void setPublisherUrl(const std::string& url);
-    void setLang(const std::string& lang);
-    void setVersion(const std::string& version);
-    void setStartDate(const ServiceDate& start);
-    void setEndDate(const ServiceDate& end);
+    void setPublisherName(std::string const& name);
+    void setPublisherUrl(std::string const& url);
+    void setLang(std::string const& lang);
+    void setVersion(std::string const& version);
+    void setStartDate(ServiceDate const& start);
+    void setEndDate(ServiceDate const& end);
 
     void updateBox(double lat, double lon);
     double getMinLat() const;
@@ -101,8 +131,8 @@ class FeedB {
     double getMaxLat() const;
     double getMaxLon() const;
 
-    const std::string& getPath() const { return _path; }
-    void setPath(const std::string& p) { _path = p; }
+    std::string const& getPath() const { return _path; }
+    void setPath(std::string const& p) { _path = p; }
 
    private:
     Agencies _agencies;

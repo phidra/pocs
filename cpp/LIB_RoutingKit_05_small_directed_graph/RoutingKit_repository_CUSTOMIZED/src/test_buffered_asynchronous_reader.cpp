@@ -1,7 +1,7 @@
-#include "buffered_asynchronous_reader.h"
-
 #include <iostream>
 #include <stdexcept>
+
+#include "buffered_asynchronous_reader.h"
 
 using namespace RoutingKit;
 using namespace std;

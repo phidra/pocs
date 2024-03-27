@@ -2,8 +2,8 @@
 #define ROUTING_KIT_EMULATE_GCC_BUILTIN_H
 #ifdef ROUTING_KIT_NO_GCC_EXTENSIONS
 
-#include <mutex>
 #include <atomic>
+#include <mutex>
 
 #define __builtin_expect(x, y) (x)
 

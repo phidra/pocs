@@ -7,6 +7,7 @@
 #define AD_UTIL_CSVPARSER_H_
 
 #include <stdint.h>
+
 #include <exception>
 #include <iostream>
 #include <istream>
@@ -30,11 +31,11 @@ namespace util {
 
 class CsvParserException : public exception {
    public:
-    CsvParserException(std::string msg, int index, std::string fieldName, uint64_t line)
-        : _msg(msg), _index(index), _fieldName(fieldName), _line(line) {}
+    CsvParserException(std::string msg, int index, std::string fieldName, uint64_t line) :
+        _msg(msg), _index(index), _fieldName(fieldName), _line(line) {}
     ~CsvParserException() throw() {}
 
-    virtual const char* what() const throw() {
+    virtual char const* what() const throw() {
         std::stringstream ss;
         ss << _msg;
         if (_index > -1)
@@ -45,8 +46,8 @@ class CsvParserException : public exception {
 
     virtual uint64_t getLine() const { return _line; }
 
-    const std::string& getMsg() const { return _msg; }
-    const std::string& getFieldName() const { return _fieldName; }
+    std::string const& getMsg() const { return _msg; }
+    std::string const& getFieldName() const { return _fieldName; }
 
    private:
     mutable std::string _what_msg;
@@ -75,7 +76,7 @@ class CsvParser {
     // Second arguments are default values.
 
     // returns the i-th column as a trimmed string
-    const char* getTString(const size_t i) const;
+    char const* getTString(const size_t i) const;
 
     // returns the i-th column as a double
     double getDouble(const size_t i) const;
@@ -86,29 +87,29 @@ class CsvParser {
     // returns the column with given field name.
     // these methods behave exactly the same as the ones above, except that
     // columns are accessed by their identifier.
-    const char* getTString(const std::string& fieldName) const;
+    char const* getTString(std::string const& fieldName) const;
 
-    double getDouble(const std::string& fieldName) const;
+    double getDouble(std::string const& fieldName) const;
 
-    int32_t getLong(const std::string& fieldName) const;
+    int32_t getLong(std::string const& fieldName) const;
 
     // returns the line number the parser is currently at
     int32_t getCurLine() const;
 
     // checks whether a column with a specific name exists in this file
-    bool hasItem(const std::string& fieldName) const;
+    bool hasItem(std::string const& fieldName) const;
 
     // checks whether the field is empty in the current line
-    bool fieldIsEmpty(const std::string& fieldName) const;
+    bool fieldIsEmpty(std::string const& fieldName) const;
     bool fieldIsEmpty(size_t field) const;
 
     // Get the number of columns. Will be zero before openFile has been called.
     size_t getNumColumns() const;
 
     // returns the index number of a field name
-    size_t getFieldIndex(const string& fieldName) const;
+    size_t getFieldIndex(string const& fieldName) const;
 
-    size_t getOptFieldIndex(const string& fieldName) const;
+    size_t getOptFieldIndex(string const& fieldName) const;
 
     const string getFieldName(size_t i) const;
 
@@ -125,7 +126,7 @@ class CsvParser {
     //
     // careful: this function is not idempotent. it will leave t
     // right-trimmed.
-    const char* inlineRightTrim(const char* t) const;
+    char const* inlineRightTrim(char const* t) const;
 
     // Map of field names to column indices. Parsed from the
     // table header (first row in a CSV file).
@@ -133,15 +134,15 @@ class CsvParser {
     std::vector<std::string> _headerVec;
 
     // Pointers to the items in the current line.
-    std::vector<const char*> _currentItems;
+    std::vector<char const*> _currentItems;
 
     // modified, quote-escaped strings
     std::vector<std::string> _currentModItems;
 
     char _buff[10000] = {0};
 
-    static double atof(const char* p, uint8_t mn, bool* fail);
-    static uint32_t atoi(const char* p, bool* fail);
+    static double atof(char const* p, uint8_t mn, bool* fail);
+    static uint32_t atoi(char const* p, bool* fail);
 };
 }  // namespace util
 }  // namespace ad

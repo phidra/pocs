@@ -9,7 +9,7 @@ namespace glz {
 namespace detail {
 enum class general_state : uint32_t { NORMAL, ESCAPED, STRING, BEFORE_ASTERISK, COMMENT, BEFORE_FSLASH };
 
-inline void prettify_normal_state(const char c, auto& out, uint32_t& indent, auto nl, general_state& state) noexcept {
+inline void prettify_normal_state(char const c, auto& out, uint32_t& indent, auto nl, general_state& state) noexcept {
     switch (c) {
         case ',':
             out += c;
@@ -61,7 +61,7 @@ inline void prettify_normal_state(const char c, auto& out, uint32_t& indent, aut
     }
 }
 
-inline void prettify_other_states(const char c, general_state& state) noexcept {
+inline void prettify_other_states(char const c, general_state& state) noexcept {
     switch (state) {
         case general_state::ESCAPED:
             state = general_state::NORMAL;
@@ -96,7 +96,7 @@ inline void prettify_other_states(const char c, general_state& state) noexcept {
 /// <summary>
 /// pretty print a JSON string
 /// </summary>
-inline void prettify(const auto& in, auto& out, const bool tabs = false, const uint32_t indent_size = 3) noexcept {
+inline void prettify(auto const& in, auto& out, bool const tabs = false, const uint32_t indent_size = 3) noexcept {
     out.reserve(in.size());
     uint32_t indent{};
 
@@ -125,7 +125,7 @@ inline void prettify(const auto& in, auto& out, const bool tabs = false, const u
 /// <summary>
 /// allocating version of prettify
 /// </summary>
-inline std::string prettify(const auto& in, const bool tabs = false, const uint32_t indent_size = 3) noexcept {
+inline std::string prettify(auto const& in, bool const tabs = false, const uint32_t indent_size = 3) noexcept {
     std::string out{};
     prettify(in, out, tabs, indent_size);
     return out;

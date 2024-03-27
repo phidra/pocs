@@ -34,16 +34,16 @@ struct bit_array {
     std::array<Chunk_t, n_chunks> data{};
 
     constexpr reference operator[](size_t pos) {
-        const auto chunk = pos / n_chunk_bits;
-        const auto offset = pos % n_chunk_bits;
-        const auto maskbit = Chunk_t{1} << offset;
+        auto const chunk = pos / n_chunk_bits;
+        auto const offset = pos % n_chunk_bits;
+        auto const maskbit = Chunk_t{1} << offset;
         return reference{&data[chunk], maskbit};
     }
 
     constexpr bool operator[](size_t pos) const {
-        const auto chunk = pos / n_chunk_bits;
-        const auto offset = pos % n_chunk_bits;
-        const auto maskbit = Chunk_t{1} << offset;
+        auto const chunk = pos / n_chunk_bits;
+        auto const offset = pos % n_chunk_bits;
+        auto const maskbit = Chunk_t{1} << offset;
         return data[chunk] & maskbit;
     }
 
@@ -65,7 +65,7 @@ struct bit_array {
         } else {
             int res{};
             for (auto&& item : data) {
-                const auto leading_zeros = std::countl_zero(item);
+                auto const leading_zeros = std::countl_zero(item);
                 res += leading_zeros;
                 if (leading_zeros < n_chunk_bits) {
                     return res;
@@ -81,7 +81,7 @@ struct bit_array {
         } else {
             int res{};
             for (int i = static_cast<int>(data.size()) - 1; i > -1; --i) {
-                const auto trailing_zeros = std::countr_zero(data[i]);
+                auto const trailing_zeros = std::countr_zero(data[i]);
                 res += trailing_zeros;
                 if (trailing_zeros < n_chunk_bits) {
                     return res;
@@ -106,18 +106,18 @@ struct bit_array {
         return *this;
     }
 
-    constexpr bit_array& operator&=(const bit_array& rhs) noexcept {
+    constexpr bit_array& operator&=(bit_array const& rhs) noexcept {
         for (size_t i{}; i < n_chunks; ++i) {
             data[i] &= rhs.data[i];
         }
         return *this;
     }
 
-    constexpr bit_array operator&(const bit_array& rhs) const noexcept {
+    constexpr bit_array operator&(bit_array const& rhs) const noexcept {
         auto ret = *this;
         return ret &= rhs;
     }
 
-    constexpr bool operator==(const bit_array& rhs) const noexcept { return data == rhs.data; }
+    constexpr bool operator==(bit_array const& rhs) const noexcept { return data == rhs.data; }
 };
 }  // namespace glz::detail

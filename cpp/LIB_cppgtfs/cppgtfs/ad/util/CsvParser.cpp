@@ -3,13 +3,14 @@
 // Authors: Hannah Bast <bast@informatik.uni-freiburg.de>,
 //          Patrick Brosi <brosi@informatik.uni-freiburg.de>
 
+#include "CsvParser.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <string>
-#include "CsvParser.h"
 
 using ad::util::CsvParser;
 using std::remove;
@@ -76,13 +77,13 @@ bool CsvParser::readNextLine() {
         firstChar = true;
 
         if (!esc) {
-            const char* c = strchr(_buff + pos, ',');
+            char const* c = strchr(_buff + pos, ',');
             if (c)
                 pos = c - _buff;
             else
                 pos = readN - 1;
         } else {
-            const char* c = strchr(_buff + pos, '"');
+            char const* c = strchr(_buff + pos, '"');
             if (c)
                 pos = c - _buff;
             else
@@ -99,7 +100,7 @@ bool CsvParser::readNextLine() {
                 esc = false;
                 firstChar = false;
 
-                const char* c = strchr(_buff + pos + 1, ',');
+                char const* c = strchr(_buff + pos + 1, ',');
                 if (c)
                     pos = c - _buff;
                 else
@@ -141,7 +142,7 @@ bool CsvParser::readNextLine() {
 }
 
 // _____________________________________________________________________________
-const char* CsvParser::getTString(const size_t i) const {
+char const* CsvParser::getTString(const size_t i) const {
     return _currentItems[i];
 }
 
@@ -172,12 +173,12 @@ int32_t CsvParser::getLong(const size_t i) const {
 }
 
 // _____________________________________________________________________________
-bool CsvParser::hasItem(const std::string& fieldName) const {
+bool CsvParser::hasItem(std::string const& fieldName) const {
     return _headerMap.find(fieldName) != _headerMap.end();
 }
 
 // _____________________________________________________________________________
-bool CsvParser::fieldIsEmpty(const std::string& fieldName) const {
+bool CsvParser::fieldIsEmpty(std::string const& fieldName) const {
     return strlen(getTString(fieldName)) == 0;
 }
 
@@ -187,17 +188,17 @@ bool CsvParser::fieldIsEmpty(size_t field) const {
 }
 
 // _____________________________________________________________________________
-const char* CsvParser::getTString(const std::string& fieldName) const {
+char const* CsvParser::getTString(std::string const& fieldName) const {
     return getTString(getFieldIndex(fieldName));
 }
 
 // _____________________________________________________________________________
-double CsvParser::getDouble(const std::string& fieldName) const {
+double CsvParser::getDouble(std::string const& fieldName) const {
     return getDouble(getFieldIndex(fieldName));
 }
 
 // _____________________________________________________________________________
-int32_t CsvParser::getLong(const std::string& fieldName) const {
+int32_t CsvParser::getLong(std::string const& fieldName) const {
     return getDouble(getFieldIndex(fieldName));
 }
 
@@ -207,14 +208,14 @@ size_t CsvParser::getNumColumns() const {
 }
 
 // _____________________________________________________________________________
-size_t CsvParser::getFieldIndex(const string& fieldName) const {
+size_t CsvParser::getFieldIndex(string const& fieldName) const {
     if (_headerMap.find(fieldName) == _headerMap.end())
         throw CsvParserException("field " + fieldName + " does not exist.", -1, fieldName, _curLine);
     return _headerMap.find(fieldName)->second;
 }
 
 // _____________________________________________________________________________
-size_t CsvParser::getOptFieldIndex(const string& fieldName) const {
+size_t CsvParser::getOptFieldIndex(string const& fieldName) const {
     if (_headerMap.find(fieldName) == _headerMap.end())
         return std::numeric_limits<std::size_t>::max();
     return _headerMap.find(fieldName)->second;
@@ -244,7 +245,7 @@ void CsvParser::parseHeader() {
 }
 
 // _____________________________________________________________________________
-const char* CsvParser::inlineRightTrim(const char* t) const {
+char const* CsvParser::inlineRightTrim(char const* t) const {
     char* s = const_cast<char*>(t);
     char* end = s + std::strlen(s) - 1;
     while (std::isspace(*end))
@@ -253,7 +254,7 @@ const char* CsvParser::inlineRightTrim(const char* t) const {
 }
 
 // ___________________________________________________________________________
-inline uint32_t CsvParser::atoi(const char* p, bool* fail) {
+inline uint32_t CsvParser::atoi(char const* p, bool* fail) {
     uint32_t x = 0;
     while (*p >= '0' && *p <= '9') {
         x = (x * 10) + (*p - '0');
@@ -265,7 +266,7 @@ inline uint32_t CsvParser::atoi(const char* p, bool* fail) {
 }
 
 // ___________________________________________________________________________
-inline double CsvParser::atof(const char* p, uint8_t mn, bool* fail) {
+inline double CsvParser::atof(char const* p, uint8_t mn, bool* fail) {
     // this atof implementation works only on "normal" float strings like
     // 56.445 or -345.00, but should be faster than std::atof
     double ret = 0.0;

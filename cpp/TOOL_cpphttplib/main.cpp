@@ -1,17 +1,16 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-
+#include <httplib.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include <httplib.h>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 using namespace std;
 
-void handle_echo(const httplib::Request& req, httplib::Response& res) {
+void handle_echo(httplib::Request const& req, httplib::Response& res) {
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
@@ -48,8 +47,8 @@ void handle_echo(const httplib::Request& req, httplib::Response& res) {
     // headers :
     rapidjson::Value headers(rapidjson::kObjectType);
     for (auto it = req.headers.begin(); it != req.headers.end(); ++it) {
-        headers.AddMember(rapidjson::Value().SetString(it->first.c_str(), a),
-                          rapidjson::Value().SetString(it->second.c_str(), a), a);
+        headers.AddMember(
+            rapidjson::Value().SetString(it->first.c_str(), a), rapidjson::Value().SetString(it->second.c_str(), a), a);
     }
     doc.AddMember("headers", headers, a);
 

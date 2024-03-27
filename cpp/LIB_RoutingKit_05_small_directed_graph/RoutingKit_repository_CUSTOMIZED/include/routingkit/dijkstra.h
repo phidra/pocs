@@ -1,9 +1,10 @@
 #ifndef DIJKSTRA_H
 #define DIJKSTRA_H
 
-#include <routingkit/id_queue.h>
 #include <routingkit/constants.h>
+#include <routingkit/id_queue.h>
 #include <routingkit/timestamp_flag.h>
+
 #include <vector>
 
 namespace RoutingKit {
@@ -12,16 +13,16 @@ class Dijkstra {
    public:
     Dijkstra() : first_out(nullptr) {}
 
-    Dijkstra(const std::vector<unsigned>& first_out,
-             const std::vector<unsigned>& tail,
-             const std::vector<unsigned>& head)
-        : tentative_distance(first_out.size() - 1),
-          predecessor_arc(first_out.size() - 1),
-          was_popped(first_out.size() - 1),
-          queue(first_out.size() - 1),
-          first_out(&first_out),
-          tail(&tail),
-          head(&head) {
+    Dijkstra(std::vector<unsigned> const& first_out,
+             std::vector<unsigned> const& tail,
+             std::vector<unsigned> const& head) :
+        tentative_distance(first_out.size() - 1),
+        predecessor_arc(first_out.size() - 1),
+        was_popped(first_out.size() - 1),
+        queue(first_out.size() - 1),
+        first_out(&first_out),
+        tail(&tail),
+        head(&head) {
         assert(!first_out.empty());
         assert(first_out.front() == 0);
         assert(first_out.back() == tail.size());
@@ -34,9 +35,9 @@ class Dijkstra {
         return *this;
     }
 
-    Dijkstra& reset(const std::vector<unsigned>& first_out,
-                    const std::vector<unsigned>& tail,
-                    const std::vector<unsigned>& head) {
+    Dijkstra& reset(std::vector<unsigned> const& first_out,
+                    std::vector<unsigned> const& tail,
+                    std::vector<unsigned> const& head) {
         assert(!first_out.empty());
         assert(first_out.front() == 0);
         assert(first_out.back() == tail.size());
@@ -82,7 +83,7 @@ class Dijkstra {
     };
 
     template <class GetWeightFunc>
-    SettleResult settle(const GetWeightFunc& get_weight) {
+    SettleResult settle(GetWeightFunc const& get_weight) {
         assert(!is_finished());
 
         auto p = queue.pop();
@@ -153,14 +154,14 @@ class Dijkstra {
     TimestampFlags was_popped;
     MinIDQueue queue;
 
-    const std::vector<unsigned>* first_out;
-    const std::vector<unsigned>* tail;
-    const std::vector<unsigned>* head;
+    std::vector<unsigned> const* first_out;
+    std::vector<unsigned> const* tail;
+    std::vector<unsigned> const* head;
 };
 
 class ScalarGetWeight {
    public:
-    explicit ScalarGetWeight(const std::vector<unsigned>& weight) : weight(&weight) {}
+    explicit ScalarGetWeight(std::vector<unsigned> const& weight) : weight(&weight) {}
 
     unsigned operator()(unsigned arc, unsigned departure_time) const {
         (void)departure_time;
@@ -168,7 +169,7 @@ class ScalarGetWeight {
     }
 
    private:
-    const std::vector<unsigned>* weight;
+    std::vector<unsigned> const* weight;
 };
 
 }  // namespace RoutingKit

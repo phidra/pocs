@@ -1,6 +1,6 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
 #include <routingkit/contraction_hierarchy.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
 #include <stdexcept>

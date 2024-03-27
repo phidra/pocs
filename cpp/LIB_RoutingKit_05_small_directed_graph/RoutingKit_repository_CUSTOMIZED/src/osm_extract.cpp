@@ -1,13 +1,13 @@
-#include <routingkit/osm_profile.h>
-#include <routingkit/osm_graph_builder.h>
-#include <routingkit/vector_io.h>
-#include <routingkit/timer.h>
-#include <routingkit/tag_map.h>
 #include <routingkit/id_mapper.h>
+#include <routingkit/osm_graph_builder.h>
+#include <routingkit/osm_profile.h>
+#include <routingkit/tag_map.h>
+#include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
+#include <exception>
 #include <iostream>
 #include <string>
-#include <exception>
 
 using namespace RoutingKit;
 using namespace std;
@@ -52,11 +52,12 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        std::function<void(const std::string&)> log_message = [](const string& msg) { cout << msg << endl; };
+        std::function<void(std::string const&)> log_message = [](string const& msg) { cout << msg << endl; };
 
         auto mapping = load_osm_id_mapping_from_pbf(
-            pbf_file, nullptr,
-            [&](uint64_t osm_way_id, const TagMap& tags) {
+            pbf_file,
+            nullptr,
+            [&](uint64_t osm_way_id, TagMap const& tags) {
                 return is_osm_way_used_by_cars(osm_way_id, tags, log_message);
             },
             log_message);
@@ -66,13 +67,15 @@ int main(int argc, char* argv[]) {
         std::vector<std::string> way_name(routing_way_count);
 
         auto routing_graph = load_osm_routing_graph_from_pbf(
-            pbf_file, mapping,
-            [&](uint64_t osm_way_id, unsigned routing_way_id, const TagMap& way_tags) {
+            pbf_file,
+            mapping,
+            [&](uint64_t osm_way_id, unsigned routing_way_id, TagMap const& way_tags) {
                 way_speed[routing_way_id] = get_osm_way_speed(osm_way_id, way_tags, log_message);
                 way_name[routing_way_id] = get_osm_way_name(osm_way_id, way_tags, log_message);
                 return get_osm_car_direction_category(osm_way_id, way_tags, log_message);
             },
-            nullptr, log_message);
+            nullptr,
+            log_message);
 
         unsigned arc_count = routing_graph.arc_count();
 

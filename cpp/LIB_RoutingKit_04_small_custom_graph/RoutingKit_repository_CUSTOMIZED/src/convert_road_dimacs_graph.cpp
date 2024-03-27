@@ -1,10 +1,10 @@
-#include <routingkit/vector_io.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/permutation.h>
 #include <routingkit/sort.h>
-#include <routingkit/inverse_vector.h>
+#include <routingkit/vector_io.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>

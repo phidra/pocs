@@ -1,8 +1,9 @@
-#include <string>
-#include <cctype>
-#include <algorithm>
-
 #include "name_modifier.h"
+
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 #include "add_exclamation.h"
 
 std::string modify_name(std::string name) {

@@ -18,14 +18,14 @@ struct progress_bar final {
         std::string s{};
 
         const size_t one = 1;
-        const auto one_or_total = (std::max)(total, one);
-        const auto one_or_completed = (std::min)(completed, one_or_total);
-        const auto progress = static_cast<double>(one_or_completed) / one_or_total;
-        const auto percentage = static_cast<size_t>(std::round(progress * 100));
+        auto const one_or_total = (std::max)(total, one);
+        auto const one_or_completed = (std::min)(completed, one_or_total);
+        auto const progress = static_cast<double>(one_or_completed) / one_or_total;
+        auto const percentage = static_cast<size_t>(std::round(progress * 100));
 
         if (width > 2) {
-            const auto len = width - 2;
-            const auto filled = static_cast<size_t>(std::round(progress * len));
+            auto const len = width - 2;
+            auto const filled = static_cast<size_t>(std::round(progress * len));
 
             s += "[";
 
@@ -40,10 +40,10 @@ struct progress_bar final {
             s += "]";
         }
 
-        const auto eta_s = static_cast<size_t>(
+        auto const eta_s = static_cast<size_t>(
             std::round(((one_or_total - one_or_completed) * time_taken) / (std::max)(one_or_completed, one)));
-        const auto minutes = eta_s / 60;
-        const auto seconds = eta_s - minutes * 60;
+        auto const minutes = eta_s / 60;
+        auto const seconds = eta_s - minutes * 60;
         s += " " + std::to_string(std::lround(percentage)) + "%";
         s += " | ETA: " + std::to_string(minutes) + "m " + std::to_string(seconds) + "s";
         s += " | " + std::to_string(one_or_completed) + "/" + std::to_string(one_or_total);
@@ -59,7 +59,7 @@ struct progress_bar final {
     }
 };
 
-inline std::ostream& operator<<(std::ostream& o, const progress_bar& bar) {
+inline std::ostream& operator<<(std::ostream& o, progress_bar const& bar) {
     o << bar.string();
     return o;
 }

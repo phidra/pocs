@@ -38,7 +38,7 @@ struct recorder {
 
     using container_type = std::variant<std::deque<Ts>...>;
 
-    std::deque<std::pair<std::string, std::pair<container_type, const void*>>> data;
+    std::deque<std::pair<std::string, std::pair<container_type, void const*>>> data;
 
     auto operator[](const sv name) { return detail::recorder_assigner<decltype(data)>{data, name}; }
 
@@ -129,7 +129,7 @@ struct from_json<T> {
 
             // find the string, escape characters are not supported for recorders
             skip_ws<Opts>(ctx, it, end);
-            const auto name = parse_key(ctx, it, end);
+            auto const name = parse_key(ctx, it, end);
 
             auto& [str, v] = value.data[i];
             if (name != str) {
@@ -179,7 +179,7 @@ struct to_csv<T> {
             }
         } else {
             // dump titles
-            const auto n = value.data.size();
+            auto const n = value.data.size();
             size_t i = 0;
             for (auto& [name, data] : value.data) {
                 dump(name, args...);

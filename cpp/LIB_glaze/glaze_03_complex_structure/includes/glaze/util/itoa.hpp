@@ -240,15 +240,15 @@ inline auto* to_chars(auto* buf, T val) noexcept {
         return buf;
     } else if (val < 100000000ull * 100000000ull) { /* 9-16 digits */
         const uint64_t hgh = val / 100000000;
-        const auto low = uint32_t(val - hgh * 100000000); /* (val % 100000000) */
+        auto const low = uint32_t(val - hgh * 100000000); /* (val % 100000000) */
         buf = to_chars_u64_len_1_8(buf, uint32_t(hgh));
         buf = to_chars_u64_len_8(buf, low);
         return buf;
     } else { /* 17-20 digits */
         const uint64_t tmp = val / 100000000;
-        const auto low = uint32_t(val - tmp * 100000000); /* (val % 100000000) */
-        const auto hgh = uint32_t(tmp / 10000);
-        const auto mid = uint32_t(tmp - hgh * 10000); /* (tmp % 10000) */
+        auto const low = uint32_t(val - tmp * 100000000); /* (val % 100000000) */
+        auto const hgh = uint32_t(tmp / 10000);
+        auto const mid = uint32_t(tmp - hgh * 10000); /* (tmp % 10000) */
         buf = to_chars_u64_len_5_8(buf, hgh);
         buf = to_chars_u64_len_4(buf, mid);
         buf = to_chars_u64_len_8(buf, low);

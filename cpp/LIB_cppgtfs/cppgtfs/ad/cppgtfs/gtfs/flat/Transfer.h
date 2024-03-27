@@ -6,6 +6,7 @@
 #define AD_CPPGTFS_GTFS_FLAT_TRANSFER_H_
 
 #include <string>
+
 #include "../StopTime.h"
 
 namespace ad {

@@ -1,12 +1,12 @@
 #ifndef ROUTING_KIT_TAG_MAP_H
 #define ROUTING_KIT_TAG_MAP_H
 
-#include <routingkit/sort.h>
-#include <routingkit/permutation.h>
 #include <routingkit/inverse_vector.h>
+#include <routingkit/permutation.h>
+#include <routingkit/sort.h>
+#include <string.h>
 
 #include <vector>
-#include <string.h>
 
 namespace RoutingKit {
 
@@ -46,9 +46,9 @@ class TagMap {
         }
     }
 
-    static const unsigned char_hash_count = 16;
+    static unsigned const char_hash_count = 16;
 
-    static unsigned compute_hash(const char* str) {
+    static unsigned compute_hash(char const* str) {
         unsigned last_char = strlen(str);
         if (last_char == 0)
             return 0;
@@ -59,7 +59,7 @@ class TagMap {
                compute_char_hash(str[last_char / 2]);
     }
 
-    static const unsigned hash_count = char_hash_count * char_hash_count * char_hash_count;
+    static unsigned const hash_count = char_hash_count * char_hash_count * char_hash_count;
 
    public:
     TagMap() : entry_begin(hash_count, 0), entry_end(hash_count, 0) {}
@@ -72,7 +72,7 @@ class TagMap {
     }
 
     template <class GetKey, class GetValue>
-    void build(unsigned key_value_count, const GetKey& get_key, const GetValue& get_value) {
+    void build(unsigned key_value_count, GetKey const& get_key, GetValue const& get_value) {
         clear();
 
         hash_element_list.resize(key_value_count);
@@ -97,7 +97,7 @@ class TagMap {
         }
     }
 
-    const char* operator[](const char* key) const {
+    char const* operator[](char const* key) const {
         unsigned hash = compute_hash(key);
 
         for (unsigned i = entry_begin[hash]; i < entry_end[hash]; ++i)
@@ -112,8 +112,8 @@ class TagMap {
     unsigned size() const { return entry.size(); }
 
     struct Entry {
-        const char* key;
-        const char* value;
+        char const* key;
+        char const* value;
     };
 
     std::vector<Entry>::const_iterator begin() const { return entry.begin(); }

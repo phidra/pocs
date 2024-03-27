@@ -1,13 +1,13 @@
-#include <routingkit/vector_io.h>
 #include <routingkit/dijkstra.h>
 #include <routingkit/inverse_vector.h>
-
-#include "verify.h"
+#include <routingkit/vector_io.h>
 
 #include <iostream>
+#include <random>
 #include <stdexcept>
 #include <vector>
-#include <random>
+
+#include "verify.h"
 
 using namespace RoutingKit;
 using namespace std;

@@ -1,14 +1,14 @@
-#include <routingkit/vector_io.h>
-#include <routingkit/permutation.h>
-#include <routingkit/inverse_vector.h>
 #include <routingkit/contraction_hierarchy.h>
+#include <routingkit/inverse_vector.h>
 #include <routingkit/min_max.h>
+#include <routingkit/permutation.h>
 #include <routingkit/timer.h>
+#include <routingkit/vector_io.h>
 
 #include <iostream>
+#include <random>
 #include <stdexcept>
 #include <vector>
-#include <random>
 
 #include "expect.h"
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
         auto scalar_link = SaturatedWeightAddition();
 
-        auto log_message = [](const std::string& msg) { cout << msg << endl; };
+        auto log_message = [](std::string const& msg) { cout << msg << endl; };
 
         {
             auto link = SaturatedWeightAddition();
@@ -90,7 +90,8 @@ int main(int argc, char* argv[]) {
             EXPECT_CMP(q.get_extra_weight_distance(extra_weight1, SaturatedWeightAddition()), ==, 20);
             EXPECT_CMP(q.get_extra_weight_distance(extra_weight2, SaturatedWeightAddition()), ==, -20);
             EXPECT_CMP(q.get_extra_weight_distance(extra_weight3, [](std::string l, std::string r) { return l + r; }),
-                       ==, "foobar");
+                       ==,
+                       "foobar");
 
             ContractionHierarchyExtraWeight<unsigned> extra_weight4(ch, extra_weight1, SaturatedWeightAddition());
             EXPECT_CMP(q.get_extra_weight_distance(extra_weight4, SaturatedWeightAddition()), ==, 20);
@@ -115,13 +116,13 @@ int main(int argc, char* argv[]) {
         }
 
         {
-            const unsigned node_count = 8;
+            unsigned const node_count = 8;
 
             vector<unsigned> tail = {0, 1, 1, 1, 2, 3, 4, 4, 4, 5, 6, 6, 6, 7, 7, 7},
                              head = {4, 5, 6, 7, 6, 7, 0, 6, 7, 1, 1, 2, 4, 1, 3, 4},
                              weight = {2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1}, extra_scalar_weight = tail;
 
-            const unsigned arc_count = tail.size();
+            unsigned const arc_count = tail.size();
 
             EXPECT_CMP(arc_count, ==, head.size());
             EXPECT_CMP(arc_count, ==, weight.size());
@@ -288,8 +289,8 @@ int main(int argc, char* argv[]) {
                              head = load_vector<unsigned>(argv[2]), weight = load_vector<unsigned>(argv[3]),
                              extra_scalar_weight = load_vector<unsigned>(argv[4]);
 
-            const unsigned node_count = first_out.size() - 1;
-            const unsigned arc_count = tail.size();
+            unsigned const node_count = first_out.size() - 1;
+            unsigned const arc_count = tail.size();
 
             EXPECT_CMP(head.size(), ==, arc_count);
             EXPECT_CMP(weight.size(), ==, arc_count);
@@ -321,7 +322,7 @@ int main(int argc, char* argv[]) {
             cout << "number of arcs in forward CH : " << ch.forward.head.size() << endl;
             cout << "number of arcs in forward extra path weight : " << total_size << endl;
 
-            const unsigned test_count = 10000;
+            unsigned const test_count = 10000;
 
             std::minstd_rand gen;
             gen.seed(42);
@@ -359,7 +360,7 @@ int main(int argc, char* argv[]) {
                 cout << "Finished " << test_count << " one-to-one tests" << endl;
             }
 
-            const unsigned target_test_count = 300;
+            unsigned const target_test_count = 300;
 
             vector<unsigned> test_node_list(target_test_count);
             for (unsigned i = 0; i < target_test_count; ++i)

@@ -1,10 +1,10 @@
-#include <routingkit/strongly_connected_component.h>
 #include <routingkit/inverse_vector.h>
+#include <routingkit/strongly_connected_component.h>
+
+#include <random>
+#include <vector>
 
 #include "expect.h"
-
-#include <vector>
-#include <random>
 
 using namespace RoutingKit;
 using namespace std;
@@ -23,7 +23,7 @@ int main() {
     }
 
     {
-        const unsigned node_count = 11;
+        unsigned const node_count = 11;
         std::vector<unsigned> tail = {0, 1, 2, 2, 2, 3, 4, 4, 5, 5, 6, 7, 8, 9};
         std::vector<unsigned> head = {1, 2, 1, 3, 4, 2, 5, 8, 2, 6, 7, 9, 8, 6};
         std::vector<unsigned> first_out = invert_vector(tail, node_count);
