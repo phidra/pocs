@@ -13,6 +13,9 @@ POC sur le fait de renvoyer une réponse JSON avec axum.
 
 La POC lance un server → le requête avec un browser (chaque page indique les URLs utiles)
 
+Le content-type renvoyé en sortie dépend du type de la réponse :
+    https://docs.rs/axum/latest/axum/response/index.html#building-responses
+
 ";
 
 const FOOTER: &str = r#"

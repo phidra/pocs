@@ -14,6 +14,8 @@ POC sur la gestion des status HTTP en retour de requête GET avec axum.
 
 La POC lance un server → le requête avec un browser (chaque page indique les URLs utiles)
 
+La liste des status code gérée par axum est ici : https://docs.rs/http/0.2.9/http/status/struct.StatusCode.html
+
 ";
 
 const FOOTER: &str = "
