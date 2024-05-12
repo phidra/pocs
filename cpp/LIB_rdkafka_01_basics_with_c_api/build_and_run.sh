@@ -26,7 +26,8 @@ then
 
 ERREUR : cette POC nécessite d'avoir installé manuellement librdkafka, comme suit :
 
-git clone https://github.com/confluentinc/librdkafka.git NOGIT_librdkafka
+# NOTE : la POC a été testée avec la branche v2.4.0 de kafka, donc je clone cette version (à bumper si besoin)
+git clone --depth=1 --shallow-submodules --branch=v2.4.0 https://github.com/confluentinc/librdkafka.git NOGIT_librdkafka
 cd NOGIT_librdkafka
 cmake -H. -B_cmake_build
 ccmake _cmake_build
