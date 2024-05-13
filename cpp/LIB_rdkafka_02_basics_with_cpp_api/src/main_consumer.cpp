@@ -1,9 +1,6 @@
 #include <librdkafka/rdkafkacpp.h>
 
 #include <csignal>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <string>
 
