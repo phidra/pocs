@@ -29,11 +29,21 @@ ERREUR : cette POC nécessite d'avoir installé manuellement librdkafka, comme s
 # NOTE : la POC a été testée avec la branche v2.4.0 de kafka, donc je clone cette version (à bumper si besoin)
 git clone --depth=1 --shallow-submodules --branch=v2.4.0 https://github.com/confluentinc/librdkafka.git NOGIT_librdkafka
 cd NOGIT_librdkafka
-cmake -H. -B_cmake_build
-ccmake _cmake_build
-    modifier CMAKE_INSTALL_PREFIX pour indiquer ce chemin : $LIBRDKAFKA_INSTALL_DIR
-    (i.e. indiquer /path/to/poc/NOGIT_install_librdkafka)
-    puis, choisir "configure" puis "quit"
+
+# pour builder kafka en statique et sans dépendances :
+cmake -H. -B_cmake_build \\
+    -DCMAKE_INSTALL_PREFIX=$LIBRDKAFKA_INSTALL_DIR \\
+    -DENABLE_LZ4_EXT=OFF \\
+    -DRDKAFKA_BUILD_EXAMPLES=OFF \\
+    -DRDKAFKA_BUILD_STATIC=OFF \\
+    -DRDKAFKA_BUILD_TESTS=OFF \\
+    -DWITH_CURL=OFF \\
+    -DWITH_PLUGINS=OFF \\
+    -DWITH_SASL=OFF \\
+    -DWITH_SSL=OFF \\
+    -DWITH_ZLIB=OFF \\
+    -DWITH_ZSTD=OFF
+
 cmake --build _cmake_build
 cmake --build _cmake_build --target install
     vérifier dans les logs qu'on a bien installé librdkafka au bon endroit :
@@ -79,6 +89,7 @@ cat << EOF
 ...les binaires ont maintenant été compilés, reste à lancer la POC manuellement, dans plusieurs terminaux :
 
 STEP 0 = dans un premier terminal, lancer :
+    (si besoin : docker container prune --force)
     docker-compose up
 
 STEP 1 = dans un second terminal, créer le topic :
