@@ -30,7 +30,7 @@ ERREUR : cette POC nécessite d'avoir installé manuellement librdkafka, comme s
 git clone --depth=1 --shallow-submodules --branch=v2.4.0 https://github.com/confluentinc/librdkafka.git NOGIT_librdkafka
 cd NOGIT_librdkafka
 
-# pour builder kafka en statique et sans dépendances :
+# pour builder kafka en lib dynamique, sans dépendance :
 cmake -H. -B_cmake_build \\
     -DCMAKE_INSTALL_PREFIX=$LIBRDKAFKA_INSTALL_DIR \\
     -DENABLE_LZ4_EXT=OFF \\
