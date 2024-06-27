@@ -1,0 +1,5 @@
+# on ignore subprojects :
+subprojects/*
+
+# mais on commit les spec wrap :
+!subprojects/*.wrap

@@ -18,6 +18,8 @@ CE QUE MONTRE CETTE POC = les bases pour utiliser la lib sqlite3 pour créer/lir
 - ce qu'il faut pour passer une requête qui ne retourne pas de résultats
 - ce qu'il faut pour passer une requête qui retourne des résultats
 
+^ les requêtes sont passées avec le wrapper simple sqlite3_exec.
+
 C'est un peu lourd, mais quand on appelle sqlite3_exec, pour lire les résultats renvoyés par la requête (par exemple
 ce que renvoie une SELECT * FROM mytable), il faut passer une callback qui sera appelée par sqlite3.
 Comment on peut passer un argument custom à cette callback, on peut lui faire (comme dans cette POC) remplir un
