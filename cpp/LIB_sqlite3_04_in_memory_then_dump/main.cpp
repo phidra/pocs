@@ -7,25 +7,11 @@
 
 void print_poc_description() {
     std::cout << R"DELIM(
-CE QUE MONTRE CETTE POC = l'insertion de nombreuses lignes dans une DB sqlite.
+CE QUE MONTRE CETTE POC = l'utilisation d'une DB in-memory + son dump sur disque.
 
-IMPORTANT = on peut enchaîner plusieurs sqlite3_exec("INSERT INTO") sans s'embêter à réutiliser un prepared_statement.
-En revanche, il est CRUCIAL de wrapper ses statements dans une TRANSACTION !
-
-Chiffres sur mon vieux PC :
-- si j'insère en me contentant d'enchaîner les sqlite3_exec("INSERT INTO ...") séquentiellement
-- l'insertion de 100 lignes SANS transaction prend ~5.5s.
-- l'insertion de 100.000 lignes AVEC transaction prend ~600 ms.
-
-CONCLUSION : "oublier" de wrapper ses insert dans une transaction est donc des millions de fois plus lent...
-Note : cette surlenteur provient d'une transaction implicite à chaque INSERT, désactivé si on explicite la transaction :
-https://www.sqlite.org/lang_transaction.html
-
-PERFS> ce post a plein de tweaks pour améliorer les perfs de sqlite3 en insertion :
-    https://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
-    --------------------------------------------------------------------------------
-    (par exemple, réutiliser un statement en le bindant avec d'autres valeurs sera encore plus rapide que de construire
-    des strings ad-hoc stockant la requête SQL, mais je ne m'embête pas avec ça pour cette POC)
+TL;DR :
+    passer le filename ":memory:" ouvre une DB en mémoire
+    il existe des fonctions sqlite3_backup_init/backup_step/backup_finish pour cloner une DB dans une autre
 
 )DELIM";
     std::cout << std::endl;
@@ -62,6 +48,18 @@ void make_non_returning_query(sqlite3* db, std::string sql_query) {
     }
 }
 
+void dump_to_disk(sqlite3* db, std::filesystem::path outfile) {
+    // see https://www.sqlite.org/c3ref/backup_finish.html  and  https://www.sqlite.org/backup.html
+    sqlite3* on_disk_db;
+    sqlite3_open(outfile.c_str(), &on_disk_db);
+    auto src_db_name = "main";
+    auto dst_db_name = "main";
+    sqlite3_backup* backup = sqlite3_backup_init(on_disk_db, dst_db_name, db, src_db_name);
+    sqlite3_backup_step(backup, -1);
+    sqlite3_backup_finish(backup);
+    sqlite3_close(on_disk_db);
+}
+
 int main(int argc, char** argv) {
     print_poc_description();
 
@@ -69,10 +67,9 @@ int main(int argc, char** argv) {
         std::cout << "ERROR> missing database name" << std::endl;
         return 1;
     }
-
     std::string database_name(argv[1]);
-    std::cout << "Using database = " << database_name << std::endl;
-    DbWrapper wrapper(database_name);
+
+    DbWrapper wrapper(":memory:");  // pour le moment, la DB est en mémoire
 
     make_non_returning_query(wrapper.db, "DROP TABLE IF EXISTS persons");
     make_non_returning_query(wrapper.db, "CREATE TABLE persons (name TEXT, age SMALLINT)");
@@ -91,6 +88,10 @@ int main(int argc, char** argv) {
     auto after = std::chrono::steady_clock::now();
     auto measured_ms = std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
     std::cout << "Insertion of " << max << " rows took : " << measured_ms << " ms" << std::endl;
+
+    // on a maintenant 100k lignes dans notre DB in-memory, on va la dumper sur le disque :
+    std::cout << "Dumping in-memory DB to : " << database_name << std::endl;
+    dump_to_disk(wrapper.db, database_name);
 
     return 0;
 }
