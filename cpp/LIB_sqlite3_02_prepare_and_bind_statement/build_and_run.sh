@@ -10,7 +10,10 @@ echo "parent = $this_script_parent" > /dev/null
 rm -rf NOGIT_build
  CXX=clang++-14 meson setup NOGIT_build/ .
  CXX=clang++-14 meson compile  -C NOGIT_build/
-NOGIT_build/bin
+DB="${this_script_parent}/NOGIT_skywalkers.db"
+NOGIT_build/bin "$DB"
 
 # en alternative :
 # g++ main.cpp -lsqlite3 && ./a.out
+
+sqlite3 "$DB" "SELECT * FROM persons LIMIT 5;"
