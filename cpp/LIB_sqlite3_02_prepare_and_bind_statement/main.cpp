@@ -14,6 +14,8 @@ CE QUE MONTRE CETTE POC = l'utilisation de sqlite3_prepare/bind/step/finalize en
 On montre notamment comment préparer un statement + binder ses placeholders.
 On montre aussi comment RÉUTILISER le même prepared statement avec différents bindings pour deux requêtes différentes.
 
+Autre avantage du binding = il fait l'escaping des caractères spéciaux (' pour un TEXT)
+
 )DELIM";
     cout << endl;
 }
@@ -115,7 +117,7 @@ int main(int argc, char** argv) {
     sqlite3_clear_bindings(prepared_statement);
 
     // deuxième insertion :
-    make_prepared_statement(prepared_statement, wrapper.db, "Anakin", 62);
+    make_prepared_statement(prepared_statement, wrapper.db, "An'akin", 62);
 
     // finalement, on détruit le statement :
     auto return_code_finalize = sqlite3_finalize(prepared_statement);
