@@ -5,19 +5,23 @@
 
 using namespace std;
 
-// std::chrono :
-//      - duration    = elapsed period of time as a number of ticks, of a given unit
-//      - time_point  = number of elapsed ticks since a reference point (e.g. since epoch)
-//      - clock       = allows to get a time_point (defines a reference, and a tick-frequency)
-//
-// measure time = get a time_point BEFORE, a time_point AFTER, and computes duration
+void print_poc_description() {
+    cout << R"DELIM(
+CE QUE MONTRE CETTE POC = les structures de base de std::chrono pour mesurer le temps :
 
-void demonstrate_that_only_fully_elapsed_ticks_are_used();
-void howto_measure_elapsed_time();
+      - duration    = elapsed period of time as a number of ticks, of a given unit
+      - time_point  = number of elapsed ticks since a reference point (e.g. since epoch)
+      - clock       = allows to get a time_point (defines a reference, and a tick-frequency)
 
-int main(int argc, char* argv[]) {
-    howto_measure_elapsed_time();
-    demonstrate_that_only_fully_elapsed_ticks_are_used();
+Et comment s'en servir :
+
+      - measure time = get a time_point BEFORE, a time_point AFTER, and computes duration
+
+Plus une petite vérification = une "duration" est un nombre ENTIER de tickets (i.e. un tick n'est comptabilisé que
+s'il a eu le temps de terminer).
+
+)DELIM";
+    cout << endl;
 }
 
 void howto_measure_elapsed_time() {
@@ -53,4 +57,11 @@ void demonstrate_that_only_fully_elapsed_ticks_are_used() {
     cout << "The seconds 'count' is now 1, because NOW a whole second has passed : " << count2 << endl;
     assert(count2 == 1);
     cout << endl;
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
+    print_poc_description();
+
+    howto_measure_elapsed_time();
+    demonstrate_that_only_fully_elapsed_ticks_are_used();
 }
