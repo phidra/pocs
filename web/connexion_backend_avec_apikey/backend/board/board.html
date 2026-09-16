@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Board</title>
+    <style>
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background: #f3f5f9;
+        color: #172033;
+        font-family: Arial, sans-serif;
+      }
+
+      main { text-align: center; }
+      p { margin: 0 0 12px; color: #536176; }
+      #value { font-size: clamp(5rem, 20vw, 12rem); font-weight: bold; }
+      button { margin-top: 18px; padding: 8px 12px; color: #fff; background: #1e4e92; border: 0; border-radius: 5px; font: inherit; font-weight: bold; cursor: pointer; }
+      button:hover { background: #153b72; }
+      .cookie-box { margin-top: 18px; padding: 10px 12px; background: #fff; border: 1px solid #dce1ea; border-radius: 6px; text-align: left; }
+      .cookie-box p { margin: 0 0 4px; font-size: .8rem; }
+      #cookie-value { display: block; font-family: monospace; overflow-wrap: anywhere; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>Valeur courante</p>
+      <output id="value" aria-live="polite">…</output>
+      <br>
+      <button id="toggle-polling" type="button" aria-pressed="false">Mettre en pause</button>
+      <section class="cookie-box" aria-labelledby="cookie-title">
+        <p id="cookie-title">Cookie <code>apikey</code></p>
+        <output id="cookie-value">Aucun cookie</output>
+      </section>
+    </main>
+    <script src="/board/board.js"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administration des clés API</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+  </head>
+  <body>
+    <main>
+      <section class="panel compact-panel state-panel" aria-labelledby="state-title">
+        <h2 id="state-title">État actuel</h2>
+        <span id="mode" class="mode">Chargement…</span>
+        <dl class="key-values">
+          <div>
+            <dt>Clé API principale</dt>
+            <dd id="current-key">—</dd>
+          </div>
+          <div>
+            <dt>Clé API secondaire</dt>
+            <dd id="previous-key">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel compact-panel action-panel" aria-labelledby="action-title">
+        <h2 id="action-title">Changer de mode</h2>
+        <form id="rotate-form" hidden>
+          <label for="new-key">Nouvelle clé API principale</label>
+          <div class="form-row">
+            <input id="new-key" name="new-key" type="text" required autocomplete="off">
+            <button type="submit">Passer en transition</button>
+          </div>
+        </form>
+        <div id="end-transition-action" hidden>
+          <button id="end-transition" type="button">Terminer la transition</button>
+        </div>
+        <p id="action-error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="panel" aria-labelledby="logs-title">
+        <div class="section-heading">
+          <h2 id="logs-title">Journal des requêtes</h2>
+          <div class="log-controls">
+            <button id="clear-log" class="clear-log" type="button">Vider les logs</button>
+            <span id="stream-status" class="stream-status">Connexion SSE…</span>
+          </div>
+        </div>
+        <ol id="request-log" class="request-log"></ol>
+      </section>
+    </main>
+    <script src="/admin/admin.js"></script>
+  </body>
+</html>

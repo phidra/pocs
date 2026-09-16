@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion</title>
+    <style>
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background: #f3f5f9;
+        color: #172033;
+        font-family: Arial, sans-serif;
+      }
+
+      main { width: min(360px, calc(100% - 32px)); }
+      h1 { margin: 0 0 20px; font-size: 1.4rem; }
+      form { display: grid; gap: 10px; }
+      form[hidden] { display: none; }
+      label { font-weight: bold; }
+      input, button { padding: 9px 10px; border-radius: 5px; font: inherit; }
+      input { border: 1px solid #99a5b6; }
+      button { color: #fff; background: #1e4e92; border: 0; font-weight: bold; cursor: pointer; }
+      button:hover { background: #153b72; }
+      #error { margin: 0; color: #8d1919; font-weight: bold; }
+      #session-check { color: #536176; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Connexion</h1>
+      <p id="session-check" role="status">Veuillez patienter pendant la vérification de la session…</p>
+      <form id="login-form" hidden>
+        <label for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password">
+        <button type="submit">Se connecter</button>
+        <p id="error" role="alert" hidden></p>
+      </form>
+    </main>
+    <script src="/login/login.js"></script>
+  </body>
+</html>
